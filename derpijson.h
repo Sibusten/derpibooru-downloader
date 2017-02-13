@@ -1,0 +1,117 @@
+#ifndef DERPIJSON_H
+#define DERPIJSON_H
+
+#include <QObject>
+
+#include <QVector>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
+
+#include <QDateTime>
+
+#include <QUrl>
+
+/*
+	Site Filters:
+	Everything:			56027
+	18+ R34:			37432
+	18+ Dark:			37429
+	Default:			100073
+	Maximum Spoilers:	37430
+	Legacy Default:		37431
+*/
+
+class DerpiJson : public QObject
+{
+	Q_OBJECT
+public:
+	enum FlagType
+	{
+		Ignore, Only, Not
+	};
+	
+	enum SearchFormat
+	{
+		CreationDate, Score, Relevance, Width, Height, Comments, Random
+	};
+	
+	enum SearchDirection
+	{
+		Desc, Asc
+	};
+	
+	class SearchSettings
+	{
+	public:
+		SearchSettings(QString query, int page = 1, int perPage = 15, bool showComments = false, bool showFavorites = false,
+							int searchFormat = CreationDate, int searchDirection = Desc, QString apiKey = 0,
+						    int faves = Ignore, int upvotes = Ignore, int uploads = Ignore, int watched = Ignore,
+						    bool scoreConstraint = false, int minScore = 0, int maxScore = 0, int filterId = -1);
+		
+		QString query;
+		int page;
+		int perPage;
+		bool showComments;
+		bool showFavorites;
+		int searchFormat;
+		int searchDirection;
+		QString apiKey;
+		int faves;
+		int upvotes;
+		int uploads;
+		int watched;
+		bool scoreConstraint;
+		int minScore;
+		int maxScore;
+		int filterId;
+	};
+
+	static QVector<DerpiJson*> splitArray(QJsonArray jsonArray);
+	
+	static QUrl getSearchUrl(QString query, int page = 1, int perPage = 15, bool showComments = false, bool showFavorites = false,
+							 int searchFormat = CreationDate, int searchDirection = Desc, QString apiKey = 0,
+							 int faves = Ignore, int upvotes = Ignore, int uploads = Ignore, int watched = Ignore,
+							 bool scoreConstraint = false, int minScore = 0, int maxScore = 0, int filterId = -1);
+	static QUrl getSearchUrl(SearchSettings settings);
+	
+	
+	
+	explicit DerpiJson(QByteArray jsonData, QObject *parent = 0);
+	explicit DerpiJson(QJsonObject jsonObject, QObject *parent = 0);
+	
+	int getId();
+	QUrl getImageUrl();
+	QString getName();
+	QString getOriginalName();
+	QString getUploader();
+	QString getFormat();
+	QString getSha512Hash();
+	
+	QDateTime getCreationDate();
+	int getYear();
+	int getMonth();
+	int getDay();
+	
+	int getScore();
+	int getUpvotes();
+	int getDownvotes();
+	int getFaves();
+	int getComments();
+	
+	int getWidth();
+	int getHeight();
+	int getAspectRatio();
+	
+	QJsonDocument getJson();
+	
+	bool isRendered();
+	bool isOptimized();
+	
+private:
+	QJsonDocument json;
+};
+
+#endif // DERPIJSON_H
