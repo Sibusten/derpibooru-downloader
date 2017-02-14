@@ -45,7 +45,6 @@ private slots:
 	void showAbout();
 	
 	void on_saveJson_toggled(bool checked);
-	void on_scoreConstraint_toggled(bool checked);
 	void on_limitImagesDownloadedCheck_toggled(bool checked);
 	void on_customFilterCheck_toggled(bool checked);
 	void on_showAdditionalInfo_toggled(bool checked);

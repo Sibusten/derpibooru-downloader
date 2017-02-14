@@ -39,16 +39,15 @@ QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray)
  * filterId:			The id of the filter to be used when searching. -1 uses default filter (or current user filter if a key is provided) Default: -1
  *						Filter ids can be found by examining the url of the filter page. Ex: https://derpibooru.org/filters/100073, where 100073 is the id of the default filter.
  * 
+ * NOTE: as February 2017, search by faves/upvotes/uploads/watched, and other options are only done from the search query, not by individual html parameters.
+ * 
  */
 QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComments, bool showFavorites, 
-							 int searchFormat, int searchDirection, QString apiKey,
-							 int faves, int upvotes, int uploads, int watched,
-							 bool scoreConstraint, int minScore, int maxScore, int filterId)
+							 int searchFormat, int searchDirection, QString apiKey, int filterId)
 {
 	//Convenience arrays to convert enums into their proper string codes
 	QString searchFormats[] = {"created_at", "score", "relevance", "width", "height", "comments", "random"};
 	QString searchDirections[] = {"desc", "asc"};
-	QString flagTypes[] = {"", "only", "not"};
 	
 	//Spaces are replaced with + in search string
 	QString temp = query.replace(" ", "+");
@@ -63,17 +62,6 @@ QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComm
 	if(!apiKey.isEmpty())
 	{
 		temp += "&key=" + apiKey;
-		
-		temp += "&faves=" + flagTypes[faves];
-		temp += "&upvotes=" + flagTypes[upvotes];
-		temp += "&uploads=" + flagTypes[uploads];
-		temp += "&watched=" + flagTypes[watched];
-	}
-	
-	if(scoreConstraint)
-	{
-		temp += "&min_score=" + QString::number(minScore);
-		temp += "&max_score=" + QString::number(maxScore);
 	}
 	
 	if(filterId != -1) temp += "&filter_id=" + QString::number(filterId);
@@ -90,9 +78,7 @@ QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComm
 QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
 {
 	return getSearchUrl(settings.query, settings.page, settings.perPage, settings.showComments, settings.showFavorites, 
-						settings.searchFormat, settings.searchDirection, settings.apiKey,
-					    settings.faves, settings.upvotes, settings.uploads, settings.watched,
-					    settings.scoreConstraint, settings.minScore, settings.maxScore, settings.filterId);
+						settings.searchFormat, settings.searchDirection, settings.apiKey, settings.filterId);
 }
 
 DerpiJson::DerpiJson(QByteArray jsonData, QObject *parent) : QObject(parent)
@@ -220,9 +206,7 @@ bool DerpiJson::isOptimized()
 }
 
 DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, bool showComments, bool showFavorites,
-										  int searchFormat, int searchDirection, QString apiKey,
-										  int faves, int upvotes, int uploads, int watched,
-										  bool scoreConstraint, int minScore, int maxScore, int filterId)
+										  int searchFormat, int searchDirection, QString apiKey, int filterId)
 {
 	this->query = query;
 	this->page = page;
@@ -232,12 +216,5 @@ DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, 
 	this->searchFormat = searchFormat;
 	this->searchDirection = searchDirection;
 	this->apiKey = apiKey;
-	this->faves = faves;
-	this->upvotes = upvotes;
-	this->uploads = uploads;
-	this->watched = watched;
-	this->scoreConstraint = scoreConstraint;
-	this->minScore = minScore;
-	this->maxScore = maxScore;
 	this->filterId = filterId;
 }

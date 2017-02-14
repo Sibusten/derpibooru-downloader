@@ -10,13 +10,13 @@ MainWindow::MainWindow(DownloadManager* manager, QWidget *parent) :
 	ui(new Ui::MainWindow),
 	manager(manager),
 	VERSION(QApplication::applicationVersion()),
-	DEFAULT_PRESET("AAAAcXici1ZS0jHUMTUAEgY6aYk5xalAGgZR+Uou+eV5OfmJKcX61ZkptXrVqRUltUo6Sl7F+XkQkSwgSwmqCwcZCwAtQCPN"),
+	DEFAULT_PRESET("AAAAUXici1ZS0jHUMTUAEgY6aYk5xalAGgSVXPLL83LyE1OK9aszU2r1qlMrSmqVdIDKIapwkLEAxtsZ+A=="),
 	isRunning(false),
 	isPaused(false)
 {
 	ui->setupUi(this);
 	
-	setWindowTitle("Derpibooru Downloader");
+	setWindowTitle("Derpibooru Downloader v" + VERSION);
 	setWindowIcon(QIcon(QPixmap(":/icon128.png")));
 	
 	//Connect finished signal
@@ -284,6 +284,9 @@ void MainWindow::showAbout()
 	messageBox->setDefaultButton(QMessageBox::Ok);
 	messageBox->setWindowTitle("About");
 	messageBox->setText("Derpibooru Downloader v" + VERSION + "\n\nBy Sibusten");
+	messageBox->setText("<html><body>Derpibooru Downloader v" + VERSION +
+						"<br><br>By <a href='https://github.com/Sibusten'>Sibusten</a><br><br>" +
+						"<a href='https://github.com/Sibusten/derpibooru-downloader'>GitHub Page</a></body></html>");
 	messageBox->setIconPixmap(QPixmap(":/icon128.png"));
 	messageBox->show();
 }
@@ -292,11 +295,6 @@ void MainWindow::on_saveJson_toggled(bool checked)
 {
     ui->frameSaveJson->setVisible(checked);
 	ui->frameJsonOptions->setVisible(checked);
-}
-
-void MainWindow::on_scoreConstraint_toggled(bool checked)
-{
-    ui->frameScore->setEnabled(checked);
 }
 
 void MainWindow::on_limitImagesDownloadedCheck_toggled(bool checked)
@@ -328,11 +326,12 @@ void MainWindow::on_showAdditionalInfo_toggled(bool checked)
 
 void MainWindow::setHasAPIKey(bool hasKey)
 {
-	//Restrict user specific options unless key is given
-	ui->frameUserConstraints->setEnabled(hasKey);
-	
 	ui->apiKey->setDisabled(hasKey);
 	ui->enterAPIKeyButton->setDisabled(hasKey);
+	
+	//Disable filter selection if an api key is given.
+	//As of Feb 13, 2017, The site will *always* use your selected filter on the site, and ignore the custom one sent with the search query.
+	ui->filterFrame->setEnabled(!hasKey);
 	
 	//Set text to show if a key is given
 	if(hasKey)
@@ -361,13 +360,6 @@ QJsonArray MainWindow::exportPreset()
 	preset.append(ui->filter->currentIndex());
 	preset.append(ui->customFilterCheck->isChecked());
 	preset.append(ui->customFilterNumber->value());
-	preset.append(ui->searchFaves->currentIndex());
-	preset.append(ui->searchUpvotes->currentIndex());
-	preset.append(ui->searchUploads->currentIndex());
-	preset.append(ui->searchWatched->currentIndex());
-	preset.append(ui->scoreConstraint->isChecked());
-	preset.append(ui->minimumScore->value());
-	preset.append(ui->maximumScore->value());
 	preset.append(ui->searchFormat->currentIndex());
 	preset.append(ui->searchDirection->currentIndex());
 	preset.append(ui->imageFileNameFormat->text());
@@ -389,22 +381,15 @@ void MainWindow::importPreset(QJsonArray preset)
 	ui->filter->setCurrentIndex(preset[4].toInt());
 	ui->customFilterCheck->setChecked(preset[5].toBool());
 	ui->customFilterNumber->setValue(preset[6].toInt());
-	ui->searchFaves->setCurrentIndex(preset[7].toInt());
-	ui->searchUpvotes->setCurrentIndex(preset[8].toInt());
-	ui->searchUploads->setCurrentIndex(preset[9].toInt());
-	ui->searchWatched->setCurrentIndex(preset[10].toInt());
-	ui->scoreConstraint->setChecked(preset[11].toBool());
-	ui->minimumScore->setValue(preset[12].toInt());
-	ui->maximumScore->setValue(preset[13].toInt());
-	ui->searchFormat->setCurrentIndex(preset[14].toInt());
-	ui->searchDirection->setCurrentIndex(preset[15].toInt());
-	ui->imageFileNameFormat->setText(preset[16].toString());
-	ui->jsonFileNameFormat->setText(preset[17].toString());
-	ui->saveJson->setChecked(preset[18].toBool());
-	ui->updateJson->setChecked(preset[19].toBool());
-	ui->includeComments->setChecked(preset[20].toBool());
-	ui->includeFavorites->setChecked(preset[21].toBool());
-	ui->limitImagesDownloadedCheck->setChecked(preset[22].toBool());
+	ui->searchFormat->setCurrentIndex(preset[7].toInt());
+	ui->searchDirection->setCurrentIndex(preset[8].toInt());
+	ui->imageFileNameFormat->setText(preset[9].toString());
+	ui->jsonFileNameFormat->setText(preset[10].toString());
+	ui->saveJson->setChecked(preset[11].toBool());
+	ui->updateJson->setChecked(preset[12].toBool());
+	ui->includeComments->setChecked(preset[13].toBool());
+	ui->includeFavorites->setChecked(preset[14].toBool());
+	ui->limitImagesDownloadedCheck->setChecked(preset[15].toBool());
 }
 
 void MainWindow::addPreset()
@@ -573,9 +558,10 @@ void MainWindow::saveSettings()
 void MainWindow::loadSettings()
 {
 	QSettings settings("Sibusten", "DerpibooruArchiver");
+	
 	//settings.remove("mainSettings");
 	QString settingsString = settings.value("mainSettings", "").toString();
-	
+
 	//If options are saved, load them
 	if(!settingsString.isEmpty())
 	{
@@ -737,15 +723,14 @@ DerpiJson::SearchSettings MainWindow::getSearchSetttings()
 	}
 	
 	return DerpiJson::SearchSettings(query, ui->startingPage->value(), ui->imagesPerPage->value(), ui->includeComments->isChecked(), ui->includeFavorites->isChecked(),
-									 ui->searchFormat->currentIndex(), ui->searchDirection->currentIndex(), apiKey,
-									 ui->searchFaves->currentIndex(), ui->searchUpvotes->currentIndex(), ui->searchUploads->currentIndex(), ui->searchWatched->currentIndex(),
-									 ui->scoreConstraint->isChecked(), ui->minimumScore->value(), ui->maximumScore->value(), filterId);
+									 ui->searchFormat->currentIndex(), ui->searchDirection->currentIndex(), apiKey, filterId);
 }
 
 void MainWindow::resetInformation()
 {
 	ui->currentDownloadProgress->setValue(0);
 	ui->totalDownloadProgress->setValue(0);
+	ui->totalDownloadProgress->setMaximum(100);
 	
 	ui->currentDownloadProgressLabel->setText("---");
 	ui->totalDownloadProgressLabel->setText("---/---");
