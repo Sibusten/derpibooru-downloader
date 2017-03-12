@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>848</width>
+    <width>850</width>
     <height>740</height>
    </rect>
   </property>
@@ -279,7 +279,7 @@
                  <item row="1" column="0">
                   <widget class="QComboBox" name="searchFormat">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;What the images should be sorted by.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic; color:#000000;&quot;&gt;Warning: &lt;/span&gt;&lt;span style=&quot; font-style:italic; color:#000000;&quot;&gt;Random search order cannot be preserved across more than one page, so images beyond the first page cannot be guaranteed to be unique. Duplicates will be simply skipped over, but the number of images downloaed may not be as expected.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;What the images should be sorted by.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <item>
                     <property name="text">
@@ -1085,7 +1085,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>848</width>
+     <width>850</width>
      <height>21</height>
     </rect>
    </property>

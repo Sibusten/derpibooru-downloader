@@ -47,8 +47,8 @@ public:
 	{
 	public:
 		SearchSettings(QString query, int page = 1, int perPage = 15, bool showComments = false, bool showFavorites = false,
-							int searchFormat = CreationDate, int searchDirection = Desc, QString apiKey = 0, int filterId = -1);
-		
+							int searchFormat = CreationDate, int searchDirection = Desc, QString apiKey = 0, int filterId = -1,
+							int random_seed = 0);
 		QString query;
 		int page;
 		int perPage;
@@ -58,12 +58,14 @@ public:
 		int searchDirection;
 		QString apiKey;
 		int filterId;
+		int random_seed;
 	};
 
 	static QVector<DerpiJson*> splitArray(QJsonArray jsonArray);
 	
 	static QUrl getSearchUrl(QString query, int page = 1, int perPage = 15, bool showComments = false, bool showFavorites = false,
-							 int searchFormat = CreationDate, int searchDirection = Desc, QString apiKey = 0, int filterId = -1);
+							 int searchFormat = CreationDate, int searchDirection = Desc, QString apiKey = 0, int filterId = -1,
+							 int random_seed = 0);
 	static QUrl getSearchUrl(SearchSettings settings);
 	
 	

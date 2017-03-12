@@ -723,7 +723,7 @@ DerpiJson::SearchSettings MainWindow::getSearchSetttings()
 	}
 	
 	return DerpiJson::SearchSettings(query, ui->startingPage->value(), ui->imagesPerPage->value(), ui->includeComments->isChecked(), ui->includeFavorites->isChecked(),
-									 ui->searchFormat->currentIndex(), ui->searchDirection->currentIndex(), apiKey, filterId);
+									 ui->searchFormat->currentIndex(), ui->searchDirection->currentIndex(), apiKey, filterId, qrand());
 }
 
 void MainWindow::resetInformation()
