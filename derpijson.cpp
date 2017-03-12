@@ -27,23 +27,17 @@ QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray)
  * searchDirection:		The direction to sort images. Options are Desc and Asc. Default: Desc
  * apiKey:				The user's api key. Needed to use constraints such as faves, upvotes, uploads, and watched. Also affects the filter used when getting images. Default: none
  * 
- * User Constraints follow. These allow searches to include images that only match, or do not match, the contraint. Requires an api key to be provided. Ignored by default.
- * * faves:				Images the user has favorited
- * * upvotes:			Images the user has upvoted
- * * uploads:			Images the user has uploaded
- * * watched:			Images that match the user's watched list
- * 
- * scoreConstraint:		Whether to limit images to a certain score range. Default: false
- * minScore:			The minimum score an image can have, inclusive. Default: 0
- * maxScore:			The maximum score an image can have, inclusive. Default: 0
  * filterId:			The id of the filter to be used when searching. -1 uses default filter (or current user filter if a key is provided) Default: -1
  *						Filter ids can be found by examining the url of the filter page. Ex: https://derpibooru.org/filters/100073, where 100073 is the id of the default filter.
  * 
- * NOTE: as February 2017, search by faves/upvotes/uploads/watched, and other options are only done from the search query, not by individual html parameters.
- * 
+ * NOTE: as of February 2017, search by faves/upvotes/uploads/watched, and other options are only done from the search query, not by individual html parameters.
+ * 999999999999999999
+ * 1111111111111111111
+ * 9223372036854775807
+ * 10000000000000000000
  */
 QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComments, bool showFavorites, 
-							 int searchFormat, int searchDirection, QString apiKey, int filterId)
+							 int searchFormat, int searchDirection, QString apiKey, int filterId, int random_seed)
 {
 	//Convenience arrays to convert enums into their proper string codes
 	QString searchFormats[] = {"created_at", "score", "relevance", "width", "height", "comments", "random"};
@@ -58,6 +52,14 @@ QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComm
 	if(showComments) temp += "&comments=";
 	if(showFavorites) temp += "&fav=";
 	temp += "&sf=" + searchFormats[searchFormat];
+	
+	// If random order is chosen, add the provided random seed to the search.
+	// This will allow multiple pages of random images to be downloaded without fear of duplicates.
+	if(searchFormat == Random)
+	{
+		temp += ":" + QString::number(random_seed);
+	}
+	
 	temp += "&sd=" + searchDirections[searchDirection];
 	if(!apiKey.isEmpty())
 	{
@@ -78,7 +80,7 @@ QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComm
 QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
 {
 	return getSearchUrl(settings.query, settings.page, settings.perPage, settings.showComments, settings.showFavorites, 
-						settings.searchFormat, settings.searchDirection, settings.apiKey, settings.filterId);
+						settings.searchFormat, settings.searchDirection, settings.apiKey, settings.filterId, settings.random_seed);
 }
 
 DerpiJson::DerpiJson(QByteArray jsonData, QObject *parent) : QObject(parent)
@@ -206,7 +208,7 @@ bool DerpiJson::isOptimized()
 }
 
 DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, bool showComments, bool showFavorites,
-										  int searchFormat, int searchDirection, QString apiKey, int filterId)
+										  int searchFormat, int searchDirection, QString apiKey, int filterId, int random_seed)
 {
 	this->query = query;
 	this->page = page;
@@ -217,4 +219,5 @@ DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, 
 	this->searchDirection = searchDirection;
 	this->apiKey = apiKey;
 	this->filterId = filterId;
+	this->random_seed = random_seed;
 }
