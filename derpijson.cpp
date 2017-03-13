@@ -31,10 +31,6 @@ QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray)
  *						Filter ids can be found by examining the url of the filter page. Ex: https://derpibooru.org/filters/100073, where 100073 is the id of the default filter.
  * 
  * NOTE: as of February 2017, search by faves/upvotes/uploads/watched, and other options are only done from the search query, not by individual html parameters.
- * 999999999999999999
- * 1111111111111111111
- * 9223372036854775807
- * 10000000000000000000
  */
 QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComments, bool showFavorites, 
 							 int searchFormat, int searchDirection, QString apiKey, int filterId, int random_seed)
