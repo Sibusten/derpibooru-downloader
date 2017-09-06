@@ -116,12 +116,12 @@ void MainWindow::setTotalDownloadProgress(qint64 imagesDownloaded, qint64 images
 
 void MainWindow::networkError(int errorCode, QString errorDesc, QUrl url)
 {
-	reportError(QString("Network Error - ") + errorCode + " - " + errorDesc);
+	reportError(QString("Network Error - ") + QString::number(errorCode) + " - " + errorDesc);
 }
 
 void MainWindow::fileError(int errorCode, QString errorDesc, QFile* file)
 {
-	reportError(QString("File Error - ") + errorCode + " - " + errorDesc);
+	reportError(QString("File Error - ") + QString::number(errorCode) + " - " + errorDesc);
 }
 
 void MainWindow::setMetadataTimeoutReading(int time)
