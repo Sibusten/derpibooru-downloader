@@ -396,26 +396,41 @@ void DownloadManager::getImageResults()
 		}
 		else //If it was a network error
 		{
-			imageAttempts++;
-			imageTimeout = expDelay(1, imageAttempts, 32);
-			imageWaiting = true;
-			QTimer::singleShot(0, this, SLOT(getImages()));
-			return;
+			//If the server says that the image is not available, skip it
+			if(imageDownloader.getErrorCode() == QNetworkReply::ContentNotFoundError)
+			{
+				//Execution will move from here to down below, and queue up the next image to download
+			}
+			else
+			{
+				//Increment attempts and try again
+				imageAttempts++;
+				imageTimeout = expDelay(1, imageAttempts, 32);
+				imageWaiting = true;
+				QTimer::singleShot(0, this, SLOT(getImages()));
+				return;
+			}
 		}
 	}
-	
-	//If set to save json, do so now.
-	if(saveJson)
+	else  //If there was no error
 	{
-		saveJsonToFile();
+		//If set to save json, do so now.
+		if(saveJson)
+		{
+			saveJsonToFile();
+		}
+		
+		//Emit successful download (Not used)
+		emit downloaded(queuedImages.at(0)->getId());
 	}
+	
+	//Code from here is executed on successful image download, or if an image is skipped because it can not be found on the server
 	
 	//Reset attempts after a successful download
 	imageAttempts = 0;
 	
 	//Increment number of images downloaded and remove the downloaded image from the queue
 	imagesDownloaded++;
-	emit downloaded(queuedImages.at(0)->getId());
 	delete queuedImages.at(0);
 	queuedImages.remove(0);
 	emit queueSizeChanged(queuedImages.size());
