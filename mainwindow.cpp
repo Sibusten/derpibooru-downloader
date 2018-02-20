@@ -540,47 +540,78 @@ void MainWindow::reportError(QString errorMessage)
 
 void MainWindow::saveSettings()
 {
-	QSettings settings("Sibusten", "DerpibooruArchiver");
-	QJsonObject settingsObj;
-	settingsObj["currentOptions"] = exportPreset();
-	settingsObj["apiKey"] = apiKey;
-	settingsObj["presets"] = presets;
-	settingsObj["showAdditional"] = ui->showAdditionalInfo->isChecked();
-	settingsObj["currentPreset"] = ui->presetCombobox->currentIndex();
-	settingsObj["suppressWarnings"] = ui->suppressWarnings->isChecked();
-	
-	QString settingsString = encodeJson(QJsonDocument(settingsObj));
-	
-	settings.setValue("mainSettings", settingsString);
-	settings.setValue("geometry", saveGeometry());
+	QSettings settings("DerpibooruDownloader.ini", QSettings::IniFormat);
+	settings.setValue("currentOptions", QString(QJsonDocument(exportPreset()).toJson(QJsonDocument::Compact)));
+	settings.setValue("showAdditionalInfo", ui->showAdditionalInfo->isChecked());
+	settings.setValue("suppressWarnings", ui->suppressWarnings->isChecked());
+	settings.setValue("apiKey", apiKey);
+	settings.setValue("presets", QString(QJsonDocument(presets).toJson(QJsonDocument::Compact)));
+	settings.setValue("currentPreset", ui->presetCombobox->currentIndex());
+	settings.setValue("windowGeometry", QString(saveGeometry().toBase64()));
 }
 
 void MainWindow::loadSettings()
 {
-	QSettings settings("Sibusten", "DerpibooruArchiver");
+	// Local .ini settings file
+	QSettings settings("DerpibooruDownloader.ini", QSettings::IniFormat);
 	
-	//settings.remove("mainSettings");
-	QString settingsString = settings.value("mainSettings", "").toString();
-
-	//If options are saved, load them
-	if(!settingsString.isEmpty())
-	{
-		QJsonObject settingsObj = decodeJson(settingsString).object();
-		importPreset(settingsObj["currentOptions"].toArray());
-		apiKey = settingsObj["apiKey"].toString();
-		presets = settingsObj["presets"].toObject();
+	// If there are settings stored in the .ini file
+	if (settings.contains("windowGeometry")) {
+		// Load settings
+		
+		QString settingCurrentOptions = settings.value("currentOptions", QString()).toString();
+		if (!settingCurrentOptions.isEmpty())
+			importPreset(QJsonDocument::fromJson(settingCurrentOptions.toUtf8()).array());
+		
+		apiKey = settings.value("apiKey", QString()).toString();
+		
+		QString settingPresets = settings.value("presets", QString()).toString();
+		if (!settingPresets.isEmpty()) {
+			// Add saved presets
+			presets = QJsonDocument::fromJson(settingPresets.toUtf8()).object();
+		} else {
+			// Add default preset
+			presets["-Default-"] = decodeJson(DEFAULT_PRESET).array();
+		}
+		
 		updatePresetCombobox();
-		ui->showAdditionalInfo->setChecked(settingsObj["showAdditional"].toBool());
-		ui->presetCombobox->setCurrentIndex(settingsObj["currentPreset"].toInt());
-		ui->suppressWarnings->setChecked(settingsObj["suppressWarnings"].toBool());
+		
+		ui->showAdditionalInfo->setChecked(settings.value("showAdditionalInfo", false).toBool());
+		ui->presetCombobox->setCurrentIndex(settings.value("currentPreset", 0).toInt());
+		ui->suppressWarnings->setChecked(settings.value("suppressWarnings", false).toBool());
+		
+		QString settingGeometry = settings.value("windowGeometry", QString()).toString();
+		if (!settingGeometry.isEmpty())
+			restoreGeometry(QByteArray::fromBase64(settingGeometry.toUtf8()));
+	} else {
+		// There are no settings stored in the .ini file.
+		// Check if there are settings stored using the old method, in the default platform location
+		QSettings oldSettings("Sibusten", "DerpibooruArchiver");
+		
+		if (oldSettings.contains("geometry")) {
+			// Load old settings
+			
+			QString settingsString = oldSettings.value("mainSettings", "").toString();
+		
+			//If options are saved, load them
+			if(!settingsString.isEmpty())
+			{
+				QJsonObject settingsObj = decodeJson(settingsString).object();
+				importPreset(settingsObj["currentOptions"].toArray());
+				apiKey = settingsObj["apiKey"].toString();
+				presets = settingsObj["presets"].toObject();
+				updatePresetCombobox();
+				ui->showAdditionalInfo->setChecked(settingsObj["showAdditional"].toBool());
+				ui->presetCombobox->setCurrentIndex(settingsObj["currentPreset"].toInt());
+				ui->suppressWarnings->setChecked(settingsObj["suppressWarnings"].toBool());
+			}
+			
+			restoreGeometry(oldSettings.value("geometry").toByteArray());
+			
+			// Now that the old settings are loaded, save them in the new format
+			saveSettings();
+		}
 	}
-	else
-	{
-		//Add default preset
-		presets["-Default-"] = decodeJson(DEFAULT_PRESET).array();
-	}
-	
-	restoreGeometry(settings.value("geometry").toByteArray());
 }
 
 void MainWindow::on_enterAPIKeyButton_clicked()
