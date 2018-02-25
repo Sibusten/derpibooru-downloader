@@ -31,6 +31,7 @@ signals:
 	
 	void networkError(int errorCode, QString errorDesc, QUrl url);				//Reports network errors
 	void fileError(int error, QString errorDesc, QFile* file);					//Reports file errors
+	void reportError(QString errorMessage);
 	
 	void metadataTimeoutRemaining(int time);									//Reports metaDownloader timeout due to network error.
 	void imageTimeoutRemaining(int time);										//Reports imageDownloader timeout due to network error

@@ -29,6 +29,7 @@ MainWindow::MainWindow(DownloadManager* manager, QWidget *parent) :
 	//Connect error signals
 	connect(manager, SIGNAL(networkError(int,QString,QUrl)), this, SLOT(networkError(int,QString,QUrl)));
 	connect(manager, SIGNAL(fileError(int,QString,QFile*)), this, SLOT(fileError(int,QString,QFile*)));
+	connect(manager, SIGNAL(reportError(QString)), this, SLOT(reportError(QString)));
 	
 	//Connect other information signals
 	connect(manager, SIGNAL(metadataTimeoutRemaining(int)), this, SLOT(setMetadataTimeoutReading(int)));

@@ -91,8 +91,15 @@ DerpiJson::DerpiJson(QJsonObject jsonObject, QObject* parent) : QObject(parent)
 
 int DerpiJson::getId()
 {
-	//July 30 2016: changed from id_number to id and became a string for some reason...
-	return json.object()["id"].toString().toInt();
+	// July 30 2016: changed from id_number to id and became a string for some reason...
+	// February 25, 2018: changed from a string back to an int...
+	//   Going to add a check so this shouldn't need to be changed again
+	if (json.object()["id"].isString())
+		return json.object()["id"].toString().toInt();
+	else if (json.object()["id"].isDouble())  // Also refers to ints
+		return json.object()["id"].toInt();
+	else
+		return -1;  // Something went wrong, and the ID can't be identified
 }
 
 QUrl DerpiJson::getImageUrl()

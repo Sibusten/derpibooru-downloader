@@ -31,6 +31,7 @@ private slots:
 	
 	void networkError(int errorCode, QString errorDesc, QUrl url);
 	void fileError(int errorCode, QString errorDesc, QFile* file);
+	void reportError(QString errorMessage);
 	
 	void setMetadataTimeoutReading(int time);
 	void setImageTimeoutReading(int time);
@@ -92,7 +93,7 @@ private:
 	QString encodeJson(QJsonDocument doc);
 	QJsonDocument decodeJson(QString encodedJson);
 	
-	void reportError(QString errorMessage);
+	
 	
 	void saveSettings();
 	void loadSettings();

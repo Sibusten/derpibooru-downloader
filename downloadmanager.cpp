@@ -216,6 +216,9 @@ void DownloadManager::getMetadataResults()
 		return;
 	}
 	
+	// TODO: This is pretty poorly written. Possibly rewrite this eventually
+	
+	
 	//Create a temporary vector to store all the ids on the current page.
 	QVector<int> newIds;
 	
@@ -224,6 +227,20 @@ void DownloadManager::getMetadataResults()
 	{
 		//Check every image and see if its id is in lastPageIds. If so, delete the object and remove it from the vector.
 		int id = newImages.at(i)->getId();
+		
+		if (id == -1) {
+			// ID could not be found, skip this image and report the error
+			delete newImages.at(i);
+			newImages.remove(i);
+			i--;
+			
+			// Flag that no more images will be downloaded. The current queue will be cleared
+			noMoreImages = true;
+			
+			emit reportError("Could not determine image ID! Please report this to the developer");
+			continue;
+		}
+		
 		newIds.append(id);
 		if(lastPageIds.contains(id))
 		{
