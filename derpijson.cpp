@@ -104,7 +104,15 @@ int DerpiJson::getId()
 
 QUrl DerpiJson::getImageUrl()
 {
-	return QUrl("https:" + json.object()["image"].toString());
+	QString url_string = QString("https:") + json.object()["image"].toString();  // image link begins with '//'
+	
+	// Check whether this image is an svg
+	if (getFormat() == "svg") {
+		// If the image is an svg, change the extension to get the actual svg file, instead of the rasterized png
+		url_string = url_string.left(url_string.lastIndexOf(".")) + ".svg";
+	}
+	
+	return QUrl(url_string);
 }
 
 QString DerpiJson::getName()
