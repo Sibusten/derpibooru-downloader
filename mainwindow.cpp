@@ -10,7 +10,7 @@ MainWindow::MainWindow(DownloadManager* manager, QWidget *parent) :
 	ui(new Ui::MainWindow),
 	manager(manager),
 	VERSION(QApplication::applicationVersion()),
-	DEFAULT_PRESET("AAAAUXici1ZS0jHUMTUAEgY6aYk5xalAGgSVXPLL83LyE1OK9aszU2r1qlMrSmqVdIDKIapwkLEAxtsZ+A=="),
+	DEFAULT_PRESET("AAAAUXici1ZS0jHUMTUAEgY6aYk5xalAGgSVXPLL83LyE1OK9aszU2r1qlMrSmqVdIDKIapwkLEAxtsZ+A=="),  // TODO remove this, and remove export/import presets
 	isRunning(false),
 	isPaused(false)
 {
@@ -18,6 +18,11 @@ MainWindow::MainWindow(DownloadManager* manager, QWidget *parent) :
 	
 	setWindowTitle("Derpibooru Downloader v" + VERSION);
 	setWindowIcon(QIcon(QPixmap(":/icon128.png")));
+	
+	// Set up SVG button group
+	ui->buttonGroupSVGOptions->setId(ui->radioSaveSVG, 0);
+	ui->buttonGroupSVGOptions->setId(ui->radioSavePNG, 1);
+	ui->buttonGroupSVGOptions->setId(ui->radioSaveBoth, 2);
 	
 	//Connect finished signal
 	connect(manager, SIGNAL(finished()), this, SLOT(finished()));
@@ -202,7 +207,7 @@ void MainWindow::confirmAddPreset(QAbstractButton* button)
 			presetName = ui->presetCombobox->currentText();
 		}
 		
-		QJsonArray preset = exportPreset();
+		QJsonObject preset = exportPreset();
 		presets[presetName] = preset;
 		ui->presetName->clear();
 		updatePresetCombobox();
@@ -348,49 +353,53 @@ void MainWindow::setHasAPIKey(bool hasKey)
 }
 
 /*
- * Exports the current state of search options to a QJsonArray
+ * Exports the current state of search options to a QJsonObject
  * 
  */
-QJsonArray MainWindow::exportPreset()
+QJsonObject MainWindow::exportPreset()
 {
-	QJsonArray preset;
-	preset.append(ui->query->text());
-	preset.append(ui->startingPage->value());
-	preset.append(ui->imagesPerPage->value());
-	preset.append(ui->limitImagesDownloaded->value());
-	preset.append(ui->filter->currentIndex());
-	preset.append(ui->customFilterCheck->isChecked());
-	preset.append(ui->customFilterNumber->value());
-	preset.append(ui->searchFormat->currentIndex());
-	preset.append(ui->searchDirection->currentIndex());
-	preset.append(ui->imageFileNameFormat->text());
-	preset.append(ui->jsonFileNameFormat->text());
-	preset.append(ui->saveJson->isChecked());
-	preset.append(ui->updateJson->isChecked());
-	preset.append(ui->includeComments->isChecked());
-	preset.append(ui->includeFavorites->isChecked());
-	preset.append(ui->limitImagesDownloadedCheck->isChecked());
+	QJsonObject preset;
+	
+	preset.insert("query", ui->query->text());
+	preset.insert("startPage", ui->startingPage->value());
+	preset.insert("perPage", ui->imagesPerPage->value());
+	preset.insert("imageLimit", ui->limitImagesDownloaded->value());
+	preset.insert("filter", ui->filter->currentIndex());
+	preset.insert("useCustomFilter", ui->customFilterCheck->isChecked());
+	preset.insert("customFilterID", ui->customFilterNumber->value());
+	preset.insert("searchFormat", ui->searchFormat->currentIndex());
+	preset.insert("searchDirection", ui->searchDirection->currentIndex());
+	preset.insert("imagePathFormat", ui->imageFileNameFormat->text());
+	preset.insert("jsonPathFormat", ui->jsonFileNameFormat->text());
+	preset.insert("saveJson", ui->saveJson->isChecked());
+	preset.insert("updateJson", ui->updateJson->isChecked());
+	preset.insert("jsonComments", ui->includeComments->isChecked());
+	preset.insert("jsonFavorites", ui->includeFavorites->isChecked());
+	preset.insert("limitImages", ui->limitImagesDownloadedCheck->isChecked());
+	preset.insert("svgAction", ui->buttonGroupSVGOptions->checkedId());
+
 	return preset;
 }
 
-void MainWindow::importPreset(QJsonArray preset)
+void MainWindow::importPreset(QJsonObject preset)
 {
-	ui->query->setText(preset[0].toString());
-	ui->startingPage->setValue(preset[1].toInt());
-	ui->imagesPerPage->setValue(preset[2].toInt());
-	ui->limitImagesDownloaded->setValue(preset[3].toInt());
-	ui->filter->setCurrentIndex(preset[4].toInt());
-	ui->customFilterCheck->setChecked(preset[5].toBool());
-	ui->customFilterNumber->setValue(preset[6].toInt());
-	ui->searchFormat->setCurrentIndex(preset[7].toInt());
-	ui->searchDirection->setCurrentIndex(preset[8].toInt());
-	ui->imageFileNameFormat->setText(preset[9].toString());
-	ui->jsonFileNameFormat->setText(preset[10].toString());
-	ui->saveJson->setChecked(preset[11].toBool());
-	ui->updateJson->setChecked(preset[12].toBool());
-	ui->includeComments->setChecked(preset[13].toBool());
-	ui->includeFavorites->setChecked(preset[14].toBool());
-	ui->limitImagesDownloadedCheck->setChecked(preset[15].toBool());
+	ui->query->setText(preset["query"].toString(""));
+	ui->startingPage->setValue(preset["startPage"].toInt(1));
+	ui->imagesPerPage->setValue(preset["perPage"].toInt(50));
+	ui->limitImagesDownloaded->setValue(preset["imageLimit"].toInt(1));
+	ui->filter->setCurrentIndex(preset["filter"].toInt(0));
+	ui->customFilterCheck->setChecked(preset["useCustomFilter"].toBool(false));
+	ui->customFilterNumber->setValue(preset["customFilterID"].toInt(0));
+	ui->searchFormat->setCurrentIndex(preset["searchFormat"].toInt(0));
+	ui->searchDirection->setCurrentIndex(preset["searchDirection"].toInt(0));
+	ui->imageFileNameFormat->setText(preset["imagePathFormat"].toString("Downloads/{id}.{ext}"));
+	ui->jsonFileNameFormat->setText(preset["jsonPathFormat"].toString("Json/{id}.json"));
+	ui->saveJson->setChecked(preset["saveJson"].toBool(false));
+	ui->updateJson->setChecked(preset["updateJson"].toBool(false));
+	ui->includeComments->setChecked(preset["jsonComments"].toBool(false));
+	ui->includeFavorites->setChecked(preset["jsonFavorites"].toBool(false));
+	ui->limitImagesDownloadedCheck->setChecked(preset["limitImages"].toBool(false));
+	ui->buttonGroupSVGOptions->button(preset["svgAction"].toInt(0))->setChecked(true);
 }
 
 void MainWindow::addPreset()
@@ -432,7 +441,7 @@ void MainWindow::addPreset()
 	else
 	{
 		//Save preset
-		QJsonArray preset = exportPreset();
+		QJsonObject preset = exportPreset();
 		presets[presetName] = preset;
 		ui->presetName->clear();
 		updatePresetCombobox();
@@ -470,10 +479,10 @@ void MainWindow::removeCurrentPreset()
 	}
 }
 
-QJsonArray MainWindow::getCurrentPreset()
+QJsonObject MainWindow::getCurrentPreset()
 {
 	QString presetName = ui->presetCombobox->currentText();
-	return presets[presetName].toArray();
+	return presets[presetName].toObject();
 }
 
 void MainWindow::updatePresetCombobox()
@@ -533,6 +542,32 @@ QJsonDocument MainWindow::decodeJson(QString encodedJson)
 	return QJsonDocument::fromJson(qUncompress(QByteArray::fromBase64(encodedJson.toUtf8())));
 }
 
+QJsonObject MainWindow::convertOldPresetArrayToObject(QJsonArray oldPresetArray) const
+{
+	// Used to transfer old settings that used arrays to a new format using objects
+	
+	QJsonObject newPresetObject;
+	
+	newPresetObject.insert("query", oldPresetArray[0]);
+	newPresetObject.insert("startPage", oldPresetArray[1]);
+	newPresetObject.insert("perPage", oldPresetArray[2]);
+	newPresetObject.insert("imageLimit", oldPresetArray[3]);
+	newPresetObject.insert("filter", oldPresetArray[4]);
+	newPresetObject.insert("useCustomFilter", oldPresetArray[5]);
+	newPresetObject.insert("customFilterID", oldPresetArray[6]);
+	newPresetObject.insert("searchFormat", oldPresetArray[7]);
+	newPresetObject.insert("searchDirection", oldPresetArray[8]);
+	newPresetObject.insert("imagePathFormat", oldPresetArray[9]);
+	newPresetObject.insert("jsonPathFormat", oldPresetArray[10]);
+	newPresetObject.insert("saveJson", oldPresetArray[11]);
+	newPresetObject.insert("updateJson", oldPresetArray[12]);
+	newPresetObject.insert("jsonComments", oldPresetArray[13]);
+	newPresetObject.insert("jsonFavorites", oldPresetArray[14]);
+	newPresetObject.insert("limitImages", oldPresetArray[12]);
+
+	return newPresetObject;
+}
+
 void MainWindow::reportError(QString errorMessage)
 {
 	QString time = QTime::currentTime().toString("HH:mm:ss");
@@ -546,7 +581,11 @@ void MainWindow::saveSettings()
 	settings.setValue("showAdditionalInfo", ui->showAdditionalInfo->isChecked());
 	settings.setValue("suppressWarnings", ui->suppressWarnings->isChecked());
 	settings.setValue("apiKey", apiKey);
-	settings.setValue("presets", QString(QJsonDocument(presets).toJson(QJsonDocument::Compact)));
+	
+	QJsonObject tempPresets = presets;
+	tempPresets.remove("-Default-");  // Do not save the default preset in the settings file
+	settings.setValue("presets", QString(QJsonDocument(tempPresets).toJson(QJsonDocument::Compact)));
+	
 	settings.setValue("currentPreset", ui->presetCombobox->currentIndex());
 	settings.setValue("windowGeometry", QString(saveGeometry().toBase64()));
 }
@@ -562,18 +601,57 @@ void MainWindow::loadSettings()
 		
 		QString settingCurrentOptions = settings.value("currentOptions", QString()).toString();
 		if (!settingCurrentOptions.isEmpty())
-			importPreset(QJsonDocument::fromJson(settingCurrentOptions.toUtf8()).array());
-		
+		{
+			QJsonDocument currentOptionsDoc = QJsonDocument::fromJson(settingCurrentOptions.toUtf8());
+			
+			// Convert the options to an object if the settings file is old, then import
+			if (currentOptionsDoc.isArray())
+				importPreset(convertOldPresetArrayToObject(currentOptionsDoc.array()));
+			else
+				importPreset(currentOptionsDoc.object());
+		}
+			
 		apiKey = settings.value("apiKey", QString()).toString();
 		
 		QString settingPresets = settings.value("presets", QString()).toString();
 		if (!settingPresets.isEmpty()) {
 			// Add saved presets
-			presets = QJsonDocument::fromJson(settingPresets.toUtf8()).object();
-		} else {
-			// Add default preset
-			presets["-Default-"] = decodeJson(DEFAULT_PRESET).array();
+			QJsonObject savedPresets = QJsonDocument::fromJson(settingPresets.toUtf8()).object();
+			for (QString key : savedPresets.keys()) {
+				
+				// Prevent loading the default preset from old settings files
+				if (key != "-Default-") {
+					// Convert the preset to an object if the settings file is old, then add it to the preset list
+					if (savedPresets[key].isArray())
+						presets.insert(key, convertOldPresetArrayToObject(savedPresets[key].toArray()));
+					else
+						presets.insert(key, savedPresets[key]);
+				}
+				
+			}
 		}
+		// Add default preset
+		QJsonObject defaultPreset;
+		
+		defaultPreset.insert("query", "");
+		defaultPreset.insert("startPage", 1);
+		defaultPreset.insert("perPage", 50);
+		defaultPreset.insert("imageLimit", 1);
+		defaultPreset.insert("filter", 0);
+		defaultPreset.insert("useCustomFilter", false);
+		defaultPreset.insert("customFilterID", 0);
+		defaultPreset.insert("searchFormat", 0);
+		defaultPreset.insert("searchDirection", 0);
+		defaultPreset.insert("imagePathFormat", "Downloads/{id}.{ext}");
+		defaultPreset.insert("jsonPathFormat", "Json/{id}.json");
+		defaultPreset.insert("saveJson", false);
+		defaultPreset.insert("updateJson", false);
+		defaultPreset.insert("jsonComments", false);
+		defaultPreset.insert("jsonFavorites", false);
+		defaultPreset.insert("limitImages", false);
+		defaultPreset.insert("svgAction", 0);
+		
+		presets["-Default-"] = defaultPreset;
 		
 		updatePresetCombobox();
 		
@@ -598,9 +676,15 @@ void MainWindow::loadSettings()
 			if(!settingsString.isEmpty())
 			{
 				QJsonObject settingsObj = decodeJson(settingsString).object();
-				importPreset(settingsObj["currentOptions"].toArray());
+				importPreset(convertOldPresetArrayToObject(settingsObj["currentOptions"].toArray()));
 				apiKey = settingsObj["apiKey"].toString();
-				presets = settingsObj["presets"].toObject();
+				
+				QJsonObject savedPresets = settingsObj["presets"].toObject();
+				for (QString key : savedPresets.keys()) {
+					// Convert the preset to an object and add it to the preset list. All settings in this location are old and using arrays.
+					presets.insert(key, convertOldPresetArrayToObject(savedPresets[key].toArray()));
+				}
+				
 				updatePresetCombobox();
 				ui->showAdditionalInfo->setChecked(settingsObj["showAdditional"].toBool());
 				ui->presetCombobox->setCurrentIndex(settingsObj["currentPreset"].toInt());
@@ -657,7 +741,10 @@ void MainWindow::on_importButton_clicked()
 	}
 	else
 	{
-		importPreset(json.array());
+		if (json.isArray())
+			importPreset(convertOldPresetArrayToObject(json.array()));
+		else
+			importPreset(json.object());
 		ui->exportImportCode->clear();
 	}
 }

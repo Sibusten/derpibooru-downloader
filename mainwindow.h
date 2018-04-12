@@ -80,12 +80,12 @@ private:
 	void resetInformation();
 	
 	void setHasAPIKey(bool hasKey);
-	QJsonArray exportPreset();
-	void importPreset(QJsonArray preset);
+	QJsonObject exportPreset();
+	void importPreset(QJsonObject preset);
 	
 	void addPreset();
 	void removeCurrentPreset();
-	QJsonArray getCurrentPreset();
+	QJsonObject getCurrentPreset();
 	void updatePresetCombobox();
 	
 	
@@ -93,7 +93,7 @@ private:
 	QString encodeJson(QJsonDocument doc);
 	QJsonDocument decodeJson(QString encodedJson);
 	
-	
+	QJsonObject convertOldPresetArrayToObject(QJsonArray oldPresetArray) const;
 	
 	void saveSettings();
 	void loadSettings();

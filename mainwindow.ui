@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>850</width>
-    <height>740</height>
+    <width>864</width>
+    <height>796</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -694,6 +694,48 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_18">
              <item>
+              <widget class="QGroupBox" name="groupSVGOptions">
+               <property name="title">
+                <string>For SVG Images:</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
+                <item>
+                 <widget class="QRadioButton" name="radioSaveSVG">
+                  <property name="text">
+                   <string>Save .svg</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">buttonGroupSVGOptions</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="radioSavePNG">
+                  <property name="text">
+                   <string>Save .png</string>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">buttonGroupSVGOptions</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="radioSaveBoth">
+                  <property name="text">
+                   <string>Save both</string>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">buttonGroupSVGOptions</string>
+                  </attribute>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
               <widget class="QCheckBox" name="suppressWarnings">
                <property name="toolTip">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not show confirmation for actions such as overwriting an existing preset, deleting a preset, and closing while running a download. Assumes an answer of &amp;quot;Yes&amp;quot; for any dialogs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1085,7 +1127,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>850</width>
+     <width>864</width>
      <height>21</height>
     </rect>
    </property>
@@ -1114,4 +1156,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupSVGOptions"/>
+ </buttongroups>
 </ui>
