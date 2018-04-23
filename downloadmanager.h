@@ -21,7 +21,12 @@
 class DownloadManager : public QObject
 {
 	Q_OBJECT
+private:
+	enum SVGDownloadState { notCheckingSVG, checkingSVG, checkingPNG };
+	
 public:
+	enum SVGMode { saveSVG = 0, savePNG = 1, saveSVGAndPNG = 2 };
+	
 	explicit DownloadManager(QNetworkAccessManager* netManager, QObject* parent = 0);
 	
 signals:
@@ -44,7 +49,7 @@ signals:
 	void downloaded(int id);													//Reports the last image successfully downloaded
 	
 public slots:
-	void start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages = -1, bool saveJson = false, bool updateJson = false, QString jsonFileNameFormat = "");
+	void start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages = -1, bool saveJson = false, bool updateJson = false, QString jsonFileNameFormat = "", SVGMode svgMode = saveSVG);
 	
 	void calculateTiming();
 	
@@ -94,15 +99,17 @@ private:
 	QString jsonFileNameFormat;			//The format for naming json files
 	bool saveJson;						//Whether to save json files or not
 	bool updateJson;					//Whether to overwrite json even if it exists already
+	SVGMode svgMode;					//Whether .svg files, .png files, or both are downloaded for images with SVG format.
 	
 	//Triggers
 	bool stoppingDownload;				//Whether the download is stopping
 	bool imageDownloaderStopped;		//Whether the image function has stopped. It is important that the image function finishes first as the metadata function clears the queue on stop.
 	bool downloadPaused;				//Whether the download is paused
 	bool noMoreImages;					//When the metadata downloader has no more images to add. When the queuedImages vector is empty and this is true, the download is complete.
+	SVGDownloadState svgDownloadState;	//Whether the downloader is checking the .svg or .png version of images with SVG format.
 	
 private:
-	QString parseFormat(QString format, DerpiJson* json);
+	QString parseFormat(QString format, DerpiJson* json, bool saveSVG = true);
 	int floorNumber(int number, int places);
 	int expDelay(int base, int attempts, int maxDelay);
 	

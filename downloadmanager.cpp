@@ -27,7 +27,7 @@ DownloadManager::DownloadManager(QNetworkAccessManager* netManager, QObject* par
 }
 
 //TODO possibly fix error reporting to have the manager emit instead of just forwarding signals from the downloaders.
-void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat)
+void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, SVGMode svgMode)
 {
 	this->searchSettings = searchSettings;
 	this->imageFileNameFormat = imageFileNameFormat;
@@ -35,6 +35,7 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	this->maxImagesToDownload = maxImages;
 	this->saveJson = saveJson;
 	this->updateJson = updateJson;
+	this->svgMode = svgMode;
 	
 	//Reset downloading variables
 	stoppingDownload = false;
@@ -44,6 +45,7 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	metadataWaiting = false;
 	imageWaiting = false;
 	noMoreImages = false;
+	svgDownloadState = checkingSVG;
 	metadataAttempts = 0;
 	imageAttempts = 0;
 	imagesQueued = 0;
@@ -288,6 +290,29 @@ void DownloadManager::getMetadataResults()
  */
 void DownloadManager::getImages()
 {
+	auto skipDownload = [this]() {
+		// If the current image is not an svg file, or if we are in the final stage of an SVG download (checking the png)
+		if (svgDownloadState == notCheckingSVG || svgDownloadState == checkingPNG) {
+			//If set to save json, do so now.
+			if(saveJson)
+			{
+				saveJsonToFile();
+			}
+			
+			imagesDownloaded++;
+			svgDownloadState = notCheckingSVG;
+			emit downloaded(queuedImages.at(0)->getId());
+			delete queuedImages.at(0);
+			queuedImages.remove(0);
+			emit queueSizeChanged(queuedImages.size());
+			QTimer::singleShot(0, this, SLOT(getImages()));
+		} else {
+			// We still need to check the PNG file for this SVG download
+			svgDownloadState = checkingPNG;
+			QTimer::singleShot(0, this, SLOT(getImages()));
+		}
+	};
+	
 	//Emit the total progress of the download session
 	emit totalDownloadProgress(imagesDownloaded, imagesTotal);
 	
@@ -343,27 +368,33 @@ void DownloadManager::getImages()
 		}
 	}
 	
-	//Get the url and download location for the image
-	QUrl imageUrl = queuedImages.at(0)->getImageUrl();
-	QString filePath = parseFormat(imageFileNameFormat, queuedImages.at(0));
+	// Whether this image is an svg file
+	bool isSVGFormat = queuedImages.first()->getFormat().toLower() == "svg";
 	
+	// If this is a new svg image, flag that we are currently checking the svg file
+	if (isSVGFormat && svgDownloadState == notCheckingSVG)
+		svgDownloadState = checkingSVG;
+	
+	// True if checkingSVG, false if checkingPNG
+	bool gettingSVG = svgDownloadState == checkingSVG;
+	
+	// Check if the current image should be skipped due to SVG download rules
+	if ((svgDownloadState == checkingSVG && svgMode == savePNG) || (svgDownloadState == checkingPNG && svgMode == saveSVG)) {
+		skipDownload();
+		return;
+	}
+	
+	//Get the url for the image
+	QUrl imageUrl = queuedImages.at(0)->getImageUrl(gettingSVG);
+	
+	// Get the download location for the image
+	QString filePath = parseFormat(imageFileNameFormat, queuedImages.at(0), gettingSVG);
 	QFile* imageFile = new QFile(filePath);
 	
 	//If the image already exists, skip it
 	if(imageFile->exists())
 	{
-		//If set to save json, do so now.
-		if(saveJson)
-		{
-			saveJsonToFile();
-		}
-		
-		imagesDownloaded++;
-		emit downloaded(queuedImages.at(0)->getId());
-		delete queuedImages.at(0);
-		queuedImages.remove(0);
-		emit queueSizeChanged(queuedImages.size());
-		QTimer::singleShot(0, this, SLOT(getImages()));
+		skipDownload();
 		return;
 	}
 	
@@ -431,14 +462,17 @@ void DownloadManager::getImageResults()
 	}
 	else  //If there was no error
 	{
-		//If set to save json, do so now.
-		if(saveJson)
-		{
-			saveJsonToFile();
+		// If not in the middle of an SVG download, save the json
+		if (svgDownloadState != checkingSVG) {
+			//If set to save json, do so now.
+			if(saveJson)
+			{
+				saveJsonToFile();
+			}
+			
+			//Emit successful download (Not used)
+			emit downloaded(queuedImages.at(0)->getId());
 		}
-		
-		//Emit successful download (Not used)
-		emit downloaded(queuedImages.at(0)->getId());
 	}
 	
 	//Code from here is executed on successful image download, or if an image is skipped because it can not be found on the server
@@ -446,11 +480,18 @@ void DownloadManager::getImageResults()
 	//Reset attempts after a successful download
 	imageAttempts = 0;
 	
-	//Increment number of images downloaded and remove the downloaded image from the queue
-	imagesDownloaded++;
-	delete queuedImages.at(0);
-	queuedImages.remove(0);
-	emit queueSizeChanged(queuedImages.size());
+	// If in the middle of an SVG download
+	if (svgDownloadState == checkingSVG) {
+		// Move on to check the png next
+		svgDownloadState = checkingPNG;
+	} else {
+		//Increment number of images downloaded and remove the downloaded image from the queue
+		imagesDownloaded++;
+		svgDownloadState = notCheckingSVG;
+		delete queuedImages.at(0);
+		queuedImages.remove(0);
+		emit queueSizeChanged(queuedImages.size());
+	}
 	
 	//Use Qtimer to queue calling getImages after a delay of delayBetweenImages
 	QTimer::singleShot(delayBetweenImages, this, SLOT(getImages()));
@@ -488,14 +529,25 @@ void DownloadManager::unpauseDownload()
  *								Combination of multiple tags:
  *								{######}/{####}/{id}.{ext}: 505597 -> 500000/505000/505597.jpeg
  */
-QString DownloadManager::parseFormat(QString format, DerpiJson* json)
+QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveSVG)
 {
 	QMap<QString, QString> tags;
 	tags["{id}"] = QString::number(json->getId());
 	tags["{name}"] = json->getName();
 	tags["{original_name}"] = json->getOriginalName();
 	tags["{uploader}"] = json->getUploader();
-	tags["{ext}"] = json->getFormat();
+	
+	// Set extension. Special checking for SVG files to determine whether to use svg or png as the extension.
+	QString imageFormat = json->getFormat().toLower();
+	if (imageFormat == "svg") {
+		if (saveSVG)
+			tags["{ext}"] = "svg";
+		else
+			tags["{ext}"] = "png";
+	} else {
+		 tags["{ext}"] = imageFormat;
+	}
+	
 	tags["{year}"] = QString::number(json->getYear());
 	tags["{month}"] = QString::number(json->getMonth());
 	tags["{day}"] = QString::number(json->getDay());

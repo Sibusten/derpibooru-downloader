@@ -791,7 +791,8 @@ void MainWindow::on_startButton_clicked()
 		limitImagesDownloaded = -1;
 	}
 	
-	manager->start(getSearchSetttings(), ui->imageFileNameFormat->text(), limitImagesDownloaded, ui->saveJson->isChecked(), ui->updateJson->isChecked(), ui->jsonFileNameFormat->text());
+	manager->start(getSearchSetttings(), ui->imageFileNameFormat->text(), limitImagesDownloaded, ui->saveJson->isChecked(),
+				   ui->updateJson->isChecked(), ui->jsonFileNameFormat->text(), static_cast<DownloadManager::SVGMode>(ui->buttonGroupSVGOptions->checkedId()));
 }
 
 void MainWindow::on_pauseButton_clicked()
