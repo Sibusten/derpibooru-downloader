@@ -560,6 +560,51 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 	tags["{height}"] = QString::number(json->getHeight());
 	tags["{aspect_ratio}"] = QString::number(json->getAspectRatio());
 	
+	
+	// ================
+	// Get image rating tag
+	// ----------------
+	
+	QStringList RATING_TAGS;
+	RATING_TAGS << "safe" << "suggestive" << "questionable" << "explicit" <<
+				   "semi-grimdark" << "grimdark" << "grotesque";
+	
+	qDebug() << RATING_TAGS;
+	
+	QString imageRatingString("");
+	bool onFirstRating = true;  // Keep track of whether a rating has been added
+	
+	QStringList imageTags = json->getTags();
+	
+	qDebug() << imageTags;
+	
+	// For each possible rating, add the rating to the string if it is on the image
+	for (QString testRating : RATING_TAGS)
+	{
+		if (imageTags.contains(testRating))
+		{
+			if (onFirstRating)
+			{
+				imageRatingString += testRating;
+				onFirstRating = false;
+			}
+			else
+			{
+				imageRatingString += QString("+") + testRating;
+			}
+		}
+	}
+	
+	// If no ratings were found on the image, add a placeholder tag
+	if (imageRatingString.isEmpty())
+	{
+		imageRatingString = "no_rating";
+	}
+	
+	tags["{rating}"] = imageRatingString;
+	
+	
+	// Process all basic tags, replacing them with their value
 	QMapIterator<QString, QString> i(tags);
 	while(i.hasNext())
 	{
@@ -567,9 +612,9 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 		format.replace(i.key(), i.value());
 	}
 	
-	QRegularExpression re("{#+}");
 	
 	//Find all # tag matches
+	QRegularExpression re("{#+}");
 	QRegularExpressionMatch match = re.match(format);
 	while(match.hasMatch())
 	{

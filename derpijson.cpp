@@ -203,6 +203,15 @@ int DerpiJson::getAspectRatio()
 	return json.object()["aspect_ratio"].toInt();
 }
 
+QStringList DerpiJson::getTags()
+{
+	// Get the string of comma-separated tags
+	QString tagsString = json.object()["tags"].toString();
+	
+	// Split the string and return the list
+	return tagsString.split(", ");
+}
+
 QJsonDocument DerpiJson::getJson()
 {
 	return json;

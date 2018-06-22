@@ -6,7 +6,7 @@
 
 QT       += core gui network
 
-VERSION = 1.3.6
+VERSION = 1.3.7
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

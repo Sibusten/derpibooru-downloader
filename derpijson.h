@@ -96,6 +96,8 @@ public:
 	int getHeight();
 	int getAspectRatio();
 	
+	QStringList getTags();
+	
 	QJsonDocument getJson();
 	
 	bool isRendered();
