@@ -35,15 +35,17 @@ The field "Save Images As" (as well as "Save Json As") allow for special tags to
   * The id of the image on the site
 * ```{name}``` -> 8584__safe_solo_derpy+hooves_parody_artist-colon-kloudmutt_not+a+clever+pony_buttersafe
   * The full name of the file, without extension
-* ```{original_name}``` -> 8584__safe_derpy+hooves_artist-colon-kloudmutt_not+a+clever+pony
-  * The original file name of the uploaded image, without extension. ***Note: This is not guaranteed to exist for every image, and may cause issues or crashes. Not recommended to use***
 * ```{ext}``` -> jpg
   * The extension of the image. Required if you want your downloads to be the proper file type
+* ```{rating}``` -> safe
+  * The rating (or ratings) that the image is tagged with. Multiple ratings will be joined with a ```+```.
 * ```{year}``` -> 2012, ```{month}``` -> 06, ```{day}``` -> 18
   * The year, month, and day that the image was first uploaded
 * ```{width}``` -> 700, ```{height}``` -> 700, ```{aspect_ratio}``` -> 1.0
   * Various image size properties
-* ```{score}``` -> 70, ```{upvotes}``` -> 72, ```{downvotes}``` -> 2, ```{comments}``` -> 4
+* ```{original_name}``` -> 8584__safe_derpy+hooves_artist-colon-kloudmutt_not+a+clever+pony
+  * The original file name of the uploaded image, without extension. ***Note: This is not guaranteed to exist for every image, and may cause issues or crashes. Not recommended to use***
+* ```{score}``` -> 86, ```{upvotes}``` -> 88, ```{downvotes}``` -> 2, ```{faves}``` -> 46, ```{comments}``` -> 4
   * Miscellaneous information about the image ***Note that these tags are not guaranteed to be unique for each download, and may change at any time. This will cause issues with images being downloaded multiple times as the file names will not match. Provided only to be thorough, not reccommended for use in most cases***
 * ```{#}``` -> 8584, ```{##}``` -> 8580, ```{###}``` -> 8500, ```{####)``` -> 8000, ```{#####}``` -> 0, ...
   * Any number of '#' symbols will work. Takes the image id and floors it to the specified number of places. (If four #'s are used, anything before the thousands place is ignored.) For example, if you wanted to group the results into folders based on their id, and have a max of 1000 images per folder (ids 0-999 in the first, ids 1000-1999 in the second, and so on), you could use the following: ```Downloads\{####}\{id}.{ext}``` Files could then be saved as follows:
