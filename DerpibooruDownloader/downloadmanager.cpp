@@ -26,6 +26,31 @@ DownloadManager::DownloadManager(QNetworkAccessManager* netManager, QObject* par
 	connect(&metaDownloader, SIGNAL(networkError(int,QString,QUrl)), this, SIGNAL(networkError(int,QString,QUrl)));
 }
 
+QJsonObject DownloadManager::getDefaultPreset()
+{
+	QJsonObject defaultPreset;
+	
+	defaultPreset.insert("query", "");
+	defaultPreset.insert("startPage", 1);
+	defaultPreset.insert("perPage", 50);
+	defaultPreset.insert("imageLimit", 1);
+	defaultPreset.insert("filter", 0);
+	defaultPreset.insert("useCustomFilter", false);
+	defaultPreset.insert("customFilterID", 0);
+	defaultPreset.insert("searchFormat", 0);
+	defaultPreset.insert("searchDirection", 0);
+	defaultPreset.insert("imagePathFormat", "Downloads/{id}.{ext}");
+	defaultPreset.insert("jsonPathFormat", "Json/{id}.json");
+	defaultPreset.insert("saveJson", false);
+	defaultPreset.insert("updateJson", false);
+	defaultPreset.insert("jsonComments", false);
+	defaultPreset.insert("jsonFavorites", false);
+	defaultPreset.insert("limitImages", false);
+	defaultPreset.insert("svgAction", 0);
+	
+	return defaultPreset;
+}
+
 //TODO possibly fix error reporting to have the manager emit instead of just forwarding signals from the downloaders.
 void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, SVGMode svgMode)
 {

@@ -631,27 +631,7 @@ void MainWindow::loadSettings()
 			}
 		}
 		// Add default preset
-		QJsonObject defaultPreset;
-		
-		defaultPreset.insert("query", "");
-		defaultPreset.insert("startPage", 1);
-		defaultPreset.insert("perPage", 50);
-		defaultPreset.insert("imageLimit", 1);
-		defaultPreset.insert("filter", 0);
-		defaultPreset.insert("useCustomFilter", false);
-		defaultPreset.insert("customFilterID", 0);
-		defaultPreset.insert("searchFormat", 0);
-		defaultPreset.insert("searchDirection", 0);
-		defaultPreset.insert("imagePathFormat", "Downloads/{id}.{ext}");
-		defaultPreset.insert("jsonPathFormat", "Json/{id}.json");
-		defaultPreset.insert("saveJson", false);
-		defaultPreset.insert("updateJson", false);
-		defaultPreset.insert("jsonComments", false);
-		defaultPreset.insert("jsonFavorites", false);
-		defaultPreset.insert("limitImages", false);
-		defaultPreset.insert("svgAction", 0);
-		
-		presets["-Default-"] = defaultPreset;
+		presets["-Default-"] = manager->getDefaultPreset();
 		
 		updatePresetCombobox();
 		
@@ -791,7 +771,7 @@ void MainWindow::on_startButton_clicked()
 		limitImagesDownloaded = -1;
 	}
 	
-	manager->start(getSearchSetttings(), ui->imageFileNameFormat->text(), limitImagesDownloaded, ui->saveJson->isChecked(),
+	manager->start(getSearchSettings(), ui->imageFileNameFormat->text(), limitImagesDownloaded, ui->saveJson->isChecked(),
 				   ui->updateJson->isChecked(), ui->jsonFileNameFormat->text(), static_cast<DownloadManager::SVGMode>(ui->buttonGroupSVGOptions->checkedId()));
 }
 
@@ -820,7 +800,7 @@ void MainWindow::on_stopButton_clicked()
 	ui->stopButton->setEnabled(false);
 }
 
-DerpiJson::SearchSettings MainWindow::getSearchSetttings()
+DerpiJson::SearchSettings MainWindow::getSearchSettings()
 {
 	//Get filter id
 	int filterId = 0;
