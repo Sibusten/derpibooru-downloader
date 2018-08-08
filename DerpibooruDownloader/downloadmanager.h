@@ -29,7 +29,7 @@ public:
 	
 	explicit DownloadManager(QNetworkAccessManager* netManager, QObject* parent = 0);
     
-    QJsonObject getDefaultPreset();
+    static QJsonObject getDefaultPreset();
 	
 signals:
 	void finished();															//Reports when the session is completed

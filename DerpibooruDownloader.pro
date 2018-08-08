@@ -2,4 +2,8 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     DerpibooruDownloaderGui \
-    DerpibooruDownloader
+    DerpibooruDownloader \
+    DerpibooruDownloaderCmd
+
+DerpibooruDownloaderGui.depends = DerpibooruDownloader
+DerpibooruDownloaderCmd.depends = DerpibooruDownloader
