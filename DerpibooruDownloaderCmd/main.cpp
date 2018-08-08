@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 		
 		// Check if the given preset exists
 		if (!savedPresets.contains(tempPresetName)) {
-			qDebug() << "Preset '%1' does not exist! Check that the name is spelled exactly as it was saved in the GUI app.";
+			qDebug() << QString("Preset '%1' does not exist! Check that the name is spelled exactly as it was saved in the GUI app.").arg(tempPresetName);
 			exit(1);
 		}
 		
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 		int searchFormat = searchFormats.indexOf(parser.value("search-format").toLower());
 		
 		if (searchFormat == -1) {
-			qDebug() << QString("Invalid search-format: '%1'").arg(parser.value("searchformat"));
+			qDebug() << QString("Invalid search-format: '%1'").arg(parser.value("search-format"));
 			exit(1);
 		}
 		
