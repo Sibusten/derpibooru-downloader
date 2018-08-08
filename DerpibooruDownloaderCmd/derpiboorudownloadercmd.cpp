@@ -32,12 +32,12 @@ void DerpibooruDownloaderCmd::start(DerpiJson::SearchSettings searchSettings, QS
 
 void DerpibooruDownloaderCmd::refreshOutput()
 {
-	qDebug() << QString::number(imagesDownloaded + 1) + "/" + QString::number(imagesTotal) + " - " + QString::number(currentlyDownloadingID);
+	QTextStream(stdout) << QString::number(imagesDownloaded + 1) + "/" + QString::number(imagesTotal) + " - " + QString::number(currentlyDownloadingID) << endl;
 }
 
 void DerpibooruDownloaderCmd::finished()
 {
-	qDebug() << "Finished";
+	QTextStream(stdout) << "Finished";
 	QCoreApplication::quit();
 }
 
@@ -51,6 +51,7 @@ void DerpibooruDownloaderCmd::setTotalDownloadProgress(qint64 imagesDownloaded, 
 {
 	this->imagesDownloaded = imagesDownloaded;
 	this->imagesTotal = imagesTotal;
+	refreshOutput();
 }
 
 void DerpibooruDownloaderCmd::networkError(int errorCode, QString errorDesc, QUrl url)
@@ -93,5 +94,4 @@ void DerpibooruDownloaderCmd::setQueueSize(int size)
 void DerpibooruDownloaderCmd::setCurrentlyDownloading(int id)
 {
 	this->currentlyDownloadingID = id;
-	refreshOutput();
 }

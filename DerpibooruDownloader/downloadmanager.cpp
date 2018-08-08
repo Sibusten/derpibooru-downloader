@@ -70,7 +70,7 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	metadataWaiting = false;
 	imageWaiting = false;
 	noMoreImages = false;
-	svgDownloadState = checkingSVG;
+	svgDownloadState = notCheckingSVG;
 	metadataAttempts = 0;
 	imageAttempts = 0;
 	imagesQueued = 0;
@@ -315,6 +315,7 @@ void DownloadManager::getMetadataResults()
  */
 void DownloadManager::getImages()
 {
+	qDebug() << "Get Images";
 	auto skipDownload = [this]() {
 		// If the current image is not an svg file, or if we are in the final stage of an SVG download (checking the png)
 		if (svgDownloadState == notCheckingSVG || svgDownloadState == checkingPNG) {
@@ -337,9 +338,6 @@ void DownloadManager::getImages()
 			QTimer::singleShot(0, this, SLOT(getImages()));
 		}
 	};
-	
-	//Emit the total progress of the download session
-	emit totalDownloadProgress(imagesDownloaded, imagesTotal);
 	
 	//Check if stopping
 	if(stoppingDownload)
@@ -377,21 +375,28 @@ void DownloadManager::getImages()
 	//If there are no images in the queue
 	if(queuedImages.isEmpty())
 	{
+		qDebug() << "Queue empty";
 		//If there are no more images left to get
 		if(noMoreImages)
 		{
 			//The session is complete
+			emit totalDownloadProgress(imagesTotal, imagesTotal);
 			stoppingDownload = true;
 			imageDownloaderStopped = true;
 			return;
 		}
 		else
 		{
+			qDebug() << "Waiting for images";
 			//Wait for more images
 			QTimer::singleShot(delayWaitingForImages, this, SLOT(getImages()));
 			return;
 		}
 	}
+	
+	//Emit the total progress of the download session
+	emit currentlyDownloading(queuedImages.at(0)->getId());
+	emit totalDownloadProgress(imagesDownloaded, imagesTotal);
 	
 	// Whether this image is an svg file
 	bool isSVGFormat = queuedImages.first()->getFormat().toLower() == "svg";
@@ -405,6 +410,7 @@ void DownloadManager::getImages()
 	
 	// Check if the current image should be skipped due to SVG download rules
 	if ((svgDownloadState == checkingSVG && svgMode == savePNG) || (svgDownloadState == checkingPNG && svgMode == saveSVG)) {
+		qDebug() << "Skipping from svg download rules";
 		skipDownload();
 		return;
 	}
@@ -419,6 +425,7 @@ void DownloadManager::getImages()
 	//If the image already exists, skip it
 	if(imageFile->exists())
 	{
+		qDebug() << "Image exists, skipping";
 		skipDownload();
 		return;
 	}
@@ -442,7 +449,7 @@ void DownloadManager::getImages()
 	
 	//Download the first image in the queue
 	//This will automatically call getImageResults when it is finished.
-	emit currentlyDownloading(queuedImages.at(0)->getId());
+	qDebug() << "Downloading image";
 	imageDownloader.download(imageUrl, true, imageFile);
 }
 

@@ -3,6 +3,7 @@
 # Project created by QtCreator 2018-08-04T14:42:40
 #
 #-------------------------------------------------
+include("../DerpibooruDownloaderConfig.pri")
 
 QT       -= gui
 QT       += network

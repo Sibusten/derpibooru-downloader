@@ -1,7 +1,5 @@
 #include "derpijson.h"
 
-#include <QDebug>
-
 QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray)
 {
 	QVector<DerpiJson*> images;

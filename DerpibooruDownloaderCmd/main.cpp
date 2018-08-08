@@ -1,5 +1,4 @@
 #include <QCoreApplication>
-#include <QDebug>
 #include <QCommandLineParser>
 #include <QNetworkAccessManager>
 #include <QSettings>
@@ -18,7 +17,7 @@ int convertToInt(QString value, QString name)
 	bool conversionCheck;
 	int intVal = value.toInt(&conversionCheck);
 	if (!conversionCheck) {
-		qDebug() << QString("Could not convert value for %1 to an int! Value was '%2'").arg(name, value);
+		QTextStream(stderr) << QString("Could not convert value for %1 to an int! Value was '%2'").arg(name, value) << endl;
 		exit(1);
 	}
 	
@@ -27,6 +26,9 @@ int convertToInt(QString value, QString name)
 
 int main(int argc, char *argv[])
 {
+	QTextStream qStdOut(stdout);
+	QTextStream qStdErr(stderr);
+	
 	QCoreApplication a(argc, argv);
 	a.setApplicationName("Derpibooru Downloader");
 	a.setApplicationVersion(APP_VERSION);
@@ -115,7 +117,7 @@ int main(int argc, char *argv[])
 	
 	// If there are no settings stored in the .ini file
 	if (!settings.contains("windowGeometry")) { // TODO generate settings in the cmd version as well. Also change this check because window geometry is only relevant to the gui version
-		qDebug() << "The settings file appears to be empty! Please run the gui version of the program to generate the settings";
+		qStdErr << "The settings file appears to be empty! Please run the gui version of the program to generate the settings" << endl;
 		exit(1);
 	}
 	
@@ -124,12 +126,12 @@ int main(int argc, char *argv[])
 	if (parser.isSet("use-saved-api-key")) {
 		apiKey = settings.value("apiKey", QString()).toString();
 		if (apiKey.isEmpty()) {
-			qDebug() << "Warning: No API key is saved!";
+			qStdOut << "Warning: No API key is saved!" << endl;
 		}
 	} else if (parser.isSet("api-key")) {
 		QString tempApiKey = parser.value("api-key");
 		if (!(tempApiKey.length() == 20)) {
-			qDebug() << QString("API Key length invalid. Expected 20, got (") + QString::number(tempApiKey.length()) + ")";
+			qStdErr << QString("API Key length invalid. Expected 20, got (") + QString::number(tempApiKey.length()) + ")" << endl;
 			exit(1);
 		} else {
 			apiKey = tempApiKey;
@@ -144,14 +146,14 @@ int main(int argc, char *argv[])
 		// Get saved presets
 		QString settingPresets = settings.value("presets", QString()).toString();
 		if (settingPresets.isEmpty()) {
-			qDebug() << "Error loading presets from the settings file!";
+			qStdErr << "Error loading presets from the settings file!" << endl;
 			exit(1);
 		}
 		QJsonObject savedPresets = QJsonDocument::fromJson(settingPresets.toUtf8()).object();
 		
 		// Check if the given preset exists
 		if (!savedPresets.contains(tempPresetName)) {
-			qDebug() << QString("Preset '%1' does not exist! Check that the name is spelled exactly as it was saved in the GUI app.").arg(tempPresetName);
+			qStdErr << QString("Preset '%1' does not exist! Check that the name is spelled exactly as it was saved in the GUI app.").arg(tempPresetName) << endl;
 			exit(1);
 		}
 		
@@ -168,7 +170,7 @@ int main(int argc, char *argv[])
 		if (QStringList({"silent", "normal", "verbose"}).contains(tempLogLevel)) {
 			logLevel = tempLogLevel;
 		} else {
-			qDebug() << QString("Invalid log-level given (%1)").arg(tempLogLevel);
+			qStdErr << QString("Invalid log-level given (%1)").arg(tempLogLevel) << endl;
 			exit(1);
 		}
 	}
@@ -195,7 +197,7 @@ int main(int argc, char *argv[])
 		int searchFormat = searchFormats.indexOf(parser.value("search-format").toLower());
 		
 		if (searchFormat == -1) {
-			qDebug() << QString("Invalid search-format: '%1'").arg(parser.value("search-format"));
+			qStdErr << QString("Invalid search-format: '%1'").arg(parser.value("search-format")) << endl;
 			exit(1);
 		}
 		
@@ -206,7 +208,7 @@ int main(int argc, char *argv[])
 		int searchDirection = searchDirections.indexOf(parser.value("search-direction").toLower());
 		
 		if (searchDirection == -1) {
-			qDebug() << QString("Invalid search-direction: '%1'").arg(parser.value("search-direction"));
+			qStdErr << QString("Invalid search-direction: '%1'").arg(parser.value("search-direction")) << endl;
 			exit(1);
 		}
 		
@@ -235,7 +237,7 @@ int main(int argc, char *argv[])
 		int svgMode = svgModes.indexOf(parser.value("svg-mode").toLower());
 		
 		if (svgMode == -1) {
-			qDebug() << QString("Invalid svg-mode: '%1'").arg(parser.value("svg-mode"));
+			qStdErr << QString("Invalid svg-mode: '%1'").arg(parser.value("svg-mode")) << endl;
 			exit(1);
 		}
 		
