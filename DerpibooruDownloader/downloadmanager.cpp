@@ -114,7 +114,7 @@ void DownloadManager::calculateTiming()
  */
 void DownloadManager::getMetadata()
 {
-	qDebug() << "Get Metadata called";
+	// qDebug() << "Get Metadata called";
 	//Check if stopping
 	if(stoppingDownload && imageDownloaderStopped)
 	{
@@ -594,14 +594,14 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 	RATING_TAGS << "safe" << "suggestive" << "questionable" << "explicit" <<
 				   "semi-grimdark" << "grimdark" << "grotesque";
 	
-	qDebug() << RATING_TAGS;
+	// qDebug() << RATING_TAGS;
 	
 	QString imageRatingString("");
 	bool onFirstRating = true;  // Keep track of whether a rating has been added
 	
 	QStringList imageTags = json->getTags();
 	
-	qDebug() << imageTags;
+	// qDebug() << imageTags;
 	
 	// For each possible rating, add the rating to the string if it is on the image
 	for (QString testRating : RATING_TAGS)
@@ -655,7 +655,7 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 		match = re.match(format);
 	}
 	
-	qDebug() << format;
+	// qDebug() << format;
 	return format;
 }
 
