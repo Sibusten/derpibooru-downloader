@@ -39,11 +39,11 @@ int main(int argc, char *argv[])
 	parser.addVersionOption();
 	
 	parser.addOptions({
-						  {
+						  /*{
 							  {"O", "log-level"},
 							  QCoreApplication::translate("main", "How much information to log to console. One of (silent, normal, verbose)"),
 							  "log-level"
-						  }, {
+						  }, */{
 							  {"p", "preset"},
 							  QCoreApplication::translate("main", "What preset to use as a base for this search. Must be the exact name of a preset defined in the GUI app. "
 							  "If no preset is given, the default preset will be used. All other arguments will override the settings in the given preset."),
@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
 		basePreset = DownloadManager::getDefaultPreset();
 	}
 	
+	/*
 	QString logLevel = "normal";
 	if (parser.isSet("log-level")) {
 		QString tempLogLevel = parser.value("log-level").toLower();
@@ -174,6 +175,7 @@ int main(int argc, char *argv[])
 			exit(1);
 		}
 	}
+	*/
 	
 	if (parser.isSet("query")) {
 		basePreset.insert("query", parser.value("query"));
