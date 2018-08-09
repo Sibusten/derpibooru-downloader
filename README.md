@@ -26,7 +26,7 @@ Downloads images from derpibooru.org using a variety of options
 ## Installation
 Head over to the [Releases](../../releases) page to download the compiled binary (Windows only), or build it yourself by downloading the source or cloning with git.
 
-The binary was built using Qt 5.3.0, and MinGW 4.8.2 32bit
+The binary was built using Qt 5.10.0 and MSVC 15.0 64bit
 
 ## File Naming Tags
 The field "Save Images As" (as well as "Save Json As") allow for special tags to be used that will be filled with information unique to each image. The image [derpibooru.org/8584](https://derpibooru.org/8584) will be used as a reference
@@ -52,3 +52,8 @@ The field "Save Images As" (as well as "Save Json As") allow for special tags to
     * ```Downloads\0\100.jpg```
     * ```Downloads\1000\1234.png```
     * ```Downloads\8000\8584.jpg```
+
+## Tips
+* Be careful of filters when using an API key. The filter you have set on your account is the one that will be used by the program to download with!
+* To download a gallery, use this search term: ```gallery_id:{ID}```. The gallery's ID is the number at the end of the gallery url. You can add other terms to download only part of a gallery.<br>
+Example: ```gallery_id:1```
