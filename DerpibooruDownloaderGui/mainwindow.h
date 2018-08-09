@@ -75,7 +75,7 @@ private:
 	bool isRunning;
 	bool isPaused;
 	
-	DerpiJson::SearchSettings getSearchSetttings();
+	DerpiJson::SearchSettings getSearchSettings();
 	
 	void resetInformation();
 	

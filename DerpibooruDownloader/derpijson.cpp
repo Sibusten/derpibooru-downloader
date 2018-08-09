@@ -1,7 +1,5 @@
 #include "derpijson.h"
 
-#include <QDebug>
-
 QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray)
 {
 	QVector<DerpiJson*> images;
@@ -64,7 +62,7 @@ QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComm
 	
 	if(filterId != -1) temp += "&filter_id=" + QString::number(filterId);
 	
-	qDebug() << temp;
+	// qDebug() << temp;
 	
 	return temp;
 }

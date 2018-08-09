@@ -26,6 +26,31 @@ DownloadManager::DownloadManager(QNetworkAccessManager* netManager, QObject* par
 	connect(&metaDownloader, SIGNAL(networkError(int,QString,QUrl)), this, SIGNAL(networkError(int,QString,QUrl)));
 }
 
+QJsonObject DownloadManager::getDefaultPreset()
+{
+	QJsonObject defaultPreset;
+	
+	defaultPreset.insert("query", "");
+	defaultPreset.insert("startPage", 1);
+	defaultPreset.insert("perPage", 50);
+	defaultPreset.insert("imageLimit", 1);
+	defaultPreset.insert("filter", 0);
+	defaultPreset.insert("useCustomFilter", false);
+	defaultPreset.insert("customFilterID", 0);
+	defaultPreset.insert("searchFormat", 0);
+	defaultPreset.insert("searchDirection", 0);
+	defaultPreset.insert("imagePathFormat", "Downloads/{id}.{ext}");
+	defaultPreset.insert("jsonPathFormat", "Json/{id}.json");
+	defaultPreset.insert("saveJson", false);
+	defaultPreset.insert("updateJson", false);
+	defaultPreset.insert("jsonComments", false);
+	defaultPreset.insert("jsonFavorites", false);
+	defaultPreset.insert("limitImages", false);
+	defaultPreset.insert("svgAction", 0);
+	
+	return defaultPreset;
+}
+
 //TODO possibly fix error reporting to have the manager emit instead of just forwarding signals from the downloaders.
 void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, SVGMode svgMode)
 {
@@ -45,7 +70,7 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	metadataWaiting = false;
 	imageWaiting = false;
 	noMoreImages = false;
-	svgDownloadState = checkingSVG;
+	svgDownloadState = notCheckingSVG;
 	metadataAttempts = 0;
 	imageAttempts = 0;
 	imagesQueued = 0;
@@ -55,9 +80,9 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	
 	//QTimer is used as a way to call a slot after a set amount of time. This allows control to return to the event loop, and prevents the gui from locking.
 	//Slots will be called after all other tasks in the event loop are done.
+	QTimer::singleShot(0, this, SLOT(calculateTiming()));
 	QTimer::singleShot(0, this, SLOT(getMetadata()));
 	QTimer::singleShot(1000, this, SLOT(getImages()));
-	QTimer::singleShot(1000, this, SLOT(calculateTiming()));
 }
 
 void DownloadManager::calculateTiming()
@@ -89,7 +114,7 @@ void DownloadManager::calculateTiming()
  */
 void DownloadManager::getMetadata()
 {
-	qDebug() << "Get Metadata called";
+	// qDebug() << "Get Metadata called";
 	//Check if stopping
 	if(stoppingDownload && imageDownloaderStopped)
 	{
@@ -290,6 +315,7 @@ void DownloadManager::getMetadataResults()
  */
 void DownloadManager::getImages()
 {
+	qDebug() << "Get Images";
 	auto skipDownload = [this]() {
 		// If the current image is not an svg file, or if we are in the final stage of an SVG download (checking the png)
 		if (svgDownloadState == notCheckingSVG || svgDownloadState == checkingPNG) {
@@ -312,9 +338,6 @@ void DownloadManager::getImages()
 			QTimer::singleShot(0, this, SLOT(getImages()));
 		}
 	};
-	
-	//Emit the total progress of the download session
-	emit totalDownloadProgress(imagesDownloaded, imagesTotal);
 	
 	//Check if stopping
 	if(stoppingDownload)
@@ -352,21 +375,28 @@ void DownloadManager::getImages()
 	//If there are no images in the queue
 	if(queuedImages.isEmpty())
 	{
+		qDebug() << "Queue empty";
 		//If there are no more images left to get
 		if(noMoreImages)
 		{
 			//The session is complete
+			emit totalDownloadProgress(imagesTotal, imagesTotal);
 			stoppingDownload = true;
 			imageDownloaderStopped = true;
 			return;
 		}
 		else
 		{
+			qDebug() << "Waiting for images";
 			//Wait for more images
 			QTimer::singleShot(delayWaitingForImages, this, SLOT(getImages()));
 			return;
 		}
 	}
+	
+	//Emit the total progress of the download session
+	emit currentlyDownloading(queuedImages.at(0)->getId());
+	emit totalDownloadProgress(imagesDownloaded, imagesTotal);
 	
 	// Whether this image is an svg file
 	bool isSVGFormat = queuedImages.first()->getFormat().toLower() == "svg";
@@ -380,6 +410,7 @@ void DownloadManager::getImages()
 	
 	// Check if the current image should be skipped due to SVG download rules
 	if ((svgDownloadState == checkingSVG && svgMode == savePNG) || (svgDownloadState == checkingPNG && svgMode == saveSVG)) {
+		qDebug() << "Skipping from svg download rules";
 		skipDownload();
 		return;
 	}
@@ -394,6 +425,7 @@ void DownloadManager::getImages()
 	//If the image already exists, skip it
 	if(imageFile->exists())
 	{
+		qDebug() << "Image exists, skipping";
 		skipDownload();
 		return;
 	}
@@ -417,7 +449,7 @@ void DownloadManager::getImages()
 	
 	//Download the first image in the queue
 	//This will automatically call getImageResults when it is finished.
-	emit currentlyDownloading(queuedImages.at(0)->getId());
+	qDebug() << "Downloading image";
 	imageDownloader.download(imageUrl, true, imageFile);
 }
 
@@ -569,14 +601,14 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 	RATING_TAGS << "safe" << "suggestive" << "questionable" << "explicit" <<
 				   "semi-grimdark" << "grimdark" << "grotesque";
 	
-	qDebug() << RATING_TAGS;
+	// qDebug() << RATING_TAGS;
 	
 	QString imageRatingString("");
 	bool onFirstRating = true;  // Keep track of whether a rating has been added
 	
 	QStringList imageTags = json->getTags();
 	
-	qDebug() << imageTags;
+	// qDebug() << imageTags;
 	
 	// For each possible rating, add the rating to the string if it is on the image
 	for (QString testRating : RATING_TAGS)
@@ -630,7 +662,7 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 		match = re.match(format);
 	}
 	
-	qDebug() << format;
+	// qDebug() << format;
 	return format;
 }
 
