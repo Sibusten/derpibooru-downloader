@@ -80,9 +80,9 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	
 	//QTimer is used as a way to call a slot after a set amount of time. This allows control to return to the event loop, and prevents the gui from locking.
 	//Slots will be called after all other tasks in the event loop are done.
+	QTimer::singleShot(0, this, SLOT(calculateTiming()));
 	QTimer::singleShot(0, this, SLOT(getMetadata()));
 	QTimer::singleShot(1000, this, SLOT(getImages()));
-	QTimer::singleShot(1000, this, SLOT(calculateTiming()));
 }
 
 void DownloadManager::calculateTiming()
