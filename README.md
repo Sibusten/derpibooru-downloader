@@ -57,3 +57,18 @@ The field "Save Images As" (as well as "Save Json As") allow for special tags to
 * Be careful of filters when using an API key. The filter you have set on your account is the one that will be used by the program to download with!
 * To download a gallery, use this search term: ```gallery_id:{ID}```. The gallery's ID is the number at the end of the gallery url. You can add other terms to download only part of a gallery.<br>
 Example: ```gallery_id:1```
+
+## Command Line
+The command line version of the program can be used to make any search that can be made with the gui version. It can also be used to schedule automatic downloads with an external program, such as Task Scheduler on Windows.
+
+### Some important things to note:
+* The gui version must be run first in order to generate the settings file
+* Relative save locations, such as the default `Downloads/{id}.{ext}`, use the working directory to determine where to save. Be sure to be in the correct folder when starting downloads using relative paths.
+  * If a task scheduler is being used to automate downloads, make sure that it is setting the correct working directory. In Windows Task Scheduler, this is listed as `Start in` when adding an action.
+  * Alternatively, an absolute path can be used to set the exact folder for the download, such as `C:\\Derpibooru\Downloads\{id}.{ext}`. The working directory will have no effect on absolute paths.
+* To use a saved preset, add the argument `--preset PresetName`
+  * The preset name must be typed _exactly_ as it was when saved. It is case sensitive.
+  * If no preset is given, the default preset is used
+  * Other options, such as `--query` and `--limit`, will override the preset's values for the current search. This allows you to, for example, set a different query or image limit for a specific download without needing to make a copy of the preset for it.
+* To used a saved api key, add the argument `--use-saved-api-key`
+* Use `--help` to see a full list of arguments.
