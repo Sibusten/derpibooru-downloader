@@ -316,11 +316,11 @@ void DownloadManager::getMetadataResults()
 void DownloadManager::getImages()
 {
 	qDebug() << "Get Images";
-	auto skipDownload = [this]() {
+	auto skipDownload = [this](bool skipJson) {
 		// If the current image is not an svg file, or if we are in the final stage of an SVG download (checking the png)
 		if (svgDownloadState == notCheckingSVG || svgDownloadState == checkingPNG) {
 			//If set to save json, do so now.
-			if(saveJson)
+			if(!skipJson && saveJson)
 			{
 				saveJsonToFile();
 			}
@@ -398,6 +398,14 @@ void DownloadManager::getImages()
 	emit currentlyDownloading(queuedImages.at(0)->getId());
 	emit totalDownloadProgress(imagesDownloaded, imagesTotal);
 	
+	// Skip this image if it is not yet rendered on the server
+	if (!queuedImages.first()->isRendered())
+	{
+		qDebug() << "Skipping unrendered image";
+		skipDownload(true);
+		return;
+	}
+	
 	// Whether this image is an svg file
 	bool isSVGFormat = queuedImages.first()->getFormat().toLower() == "svg";
 	
@@ -411,7 +419,7 @@ void DownloadManager::getImages()
 	// Check if the current image should be skipped due to SVG download rules
 	if ((svgDownloadState == checkingSVG && svgMode == savePNG) || (svgDownloadState == checkingPNG && svgMode == saveSVG)) {
 		qDebug() << "Skipping from svg download rules";
-		skipDownload();
+		skipDownload(false);
 		return;
 	}
 	
@@ -426,7 +434,7 @@ void DownloadManager::getImages()
 	if(imageFile->exists())
 	{
 		qDebug() << "Image exists, skipping";
-		skipDownload();
+		skipDownload(false);
 		return;
 	}
 	
