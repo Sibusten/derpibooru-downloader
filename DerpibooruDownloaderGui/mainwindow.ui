@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>864</width>
-    <height>796</height>
+    <height>819</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -784,6 +784,16 @@
                  <widget class="QCheckBox" name="updateJson">
                   <property name="text">
                    <string>Update Json</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="jsonOnly">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disables downloading of images. Only json files will be saved if set to do so.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Save Only Json</string>
                   </property>
                  </widget>
                 </item>

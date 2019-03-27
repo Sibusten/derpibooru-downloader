@@ -43,6 +43,7 @@ QJsonObject DownloadManager::getDefaultPreset()
 	defaultPreset.insert("jsonPathFormat", "Json/{id}.json");
 	defaultPreset.insert("saveJson", false);
 	defaultPreset.insert("updateJson", false);
+  defaultPreset.insert("jsonOnly", false);
 	defaultPreset.insert("jsonComments", false);
 	defaultPreset.insert("jsonFavorites", false);
 	defaultPreset.insert("limitImages", false);
@@ -52,7 +53,7 @@ QJsonObject DownloadManager::getDefaultPreset()
 }
 
 //TODO possibly fix error reporting to have the manager emit instead of just forwarding signals from the downloaders.
-void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, SVGMode svgMode)
+void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, SVGMode svgMode, bool jsonOnly)
 {
 	this->searchSettings = searchSettings;
 	this->imageFileNameFormat = imageFileNameFormat;
@@ -61,6 +62,7 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	this->saveJson = saveJson;
 	this->updateJson = updateJson;
 	this->svgMode = svgMode;
+  this->jsonOnly = jsonOnly;
 	
 	//Reset downloading variables
 	stoppingDownload = false;
@@ -405,6 +407,13 @@ void DownloadManager::getImages()
 		skipDownload(true);
 		return;
 	}
+
+  // Save json and exit early if set to only save json
+  if (jsonOnly)
+  {
+    skipDownload(false);
+    return;
+  }
 	
 	// Whether this image is an svg file
 	bool isSVGFormat = queuedImages.first()->getFormat().toLower() == "svg";

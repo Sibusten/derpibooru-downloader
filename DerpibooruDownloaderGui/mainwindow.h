@@ -63,6 +63,8 @@ private slots:
 	void on_pauseButton_clicked();
 	void on_stopButton_clicked();
 	
+  void on_jsonOnly_toggled(bool checked);
+
 private:
 	Ui::MainWindow* ui;
 	DownloadManager* manager;

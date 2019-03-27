@@ -25,9 +25,9 @@ DerpibooruDownloaderCmd::DerpibooruDownloaderCmd(DownloadManager* manager, QObje
 	connect(manager, SIGNAL(currentlyDownloading(int)), this, SLOT(setCurrentlyDownloading(int)));
 }
 
-void DerpibooruDownloaderCmd::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, DownloadManager::SVGMode svgMode)
+void DerpibooruDownloaderCmd::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, DownloadManager::SVGMode svgMode, bool jsonOnly)
 {
-	manager->start(searchSettings, imageFileNameFormat, maxImages, saveJson, updateJson, jsonFileNameFormat, svgMode);
+  manager->start(searchSettings, imageFileNameFormat, maxImages, saveJson, updateJson, jsonFileNameFormat, svgMode, jsonOnly);
 }
 
 void DerpibooruDownloaderCmd::refreshOutput()

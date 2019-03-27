@@ -51,7 +51,7 @@ signals:
 	void downloaded(int id);													//Reports the last image successfully downloaded
 	
 public slots:
-	void start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages = -1, bool saveJson = false, bool updateJson = false, QString jsonFileNameFormat = "", SVGMode svgMode = saveSVG);
+  void start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages = -1, bool saveJson = false, bool updateJson = false, QString jsonFileNameFormat = "", SVGMode svgMode = saveSVG, bool jsonOnly = false);
 	
 	void calculateTiming();
 	
@@ -102,6 +102,7 @@ private:
 	bool saveJson;						//Whether to save json files or not
 	bool updateJson;					//Whether to overwrite json even if it exists already
 	SVGMode svgMode;					//Whether .svg files, .png files, or both are downloaded for images with SVG format.
+  bool jsonOnly;            //Whether to only save json files and skip all image files
 	
 	//Triggers
 	bool stoppingDownload;				//Whether the download is stopping

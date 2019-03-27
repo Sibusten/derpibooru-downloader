@@ -90,7 +90,10 @@ int main(int argc, char *argv[])
 						  }, {
 							  {"u", "update-json"},
 							  QCoreApplication::translate("main", "Enables overwritting old json files with new data.")
-						  }, {
+              }, {
+                {"x", "json-only"},
+                QCoreApplication::translate("main", "Disables image downloading. Only json will be saved if set to do so.")
+              }, {
 							  {"C", "json-comments"},
 							  QCoreApplication::translate("main", "Enables fetching comments in the json data.")
 						  }, {
@@ -228,6 +231,9 @@ int main(int argc, char *argv[])
 	if (parser.isSet("update-json")) {
 		basePreset.insert("updateJson", true);
 	}
+  if (parser.isSet("json-only")) {
+    basePreset.insert("jsonOnly", true);
+  }
 	if (parser.isSet("json-comments")) {
 		basePreset.insert("jsonComments", true);
 	}
@@ -284,7 +290,8 @@ int main(int argc, char *argv[])
 											 qrand());
 	dlcmd.start(searchSettings, basePreset.value("imagePathFormat").toString(), basePreset.value("imageLimit").toInt(),
 				basePreset.value("saveJson").toBool(), basePreset.value("updateJson").toBool(),
-				basePreset.value("jsonPathFormat").toString(), static_cast<DownloadManager::SVGMode>(basePreset.value("svgAction").toInt()));
+        basePreset.value("jsonPathFormat").toString(), static_cast<DownloadManager::SVGMode>(basePreset.value("svgAction").toInt()),
+        basePreset.value("jsonOnly").toBool());
 	
 	return a.exec();
 }

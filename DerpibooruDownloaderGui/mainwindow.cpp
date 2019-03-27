@@ -299,18 +299,18 @@ void MainWindow::showAbout()
 
 void MainWindow::on_saveJson_toggled(bool checked)
 {
-    ui->frameSaveJson->setVisible(checked);
+  ui->frameSaveJson->setVisible(checked);
 	ui->frameJsonOptions->setVisible(checked);
 }
 
 void MainWindow::on_limitImagesDownloadedCheck_toggled(bool checked)
 {
-    ui->limitImagesDownloaded->setEnabled(checked);
+  ui->limitImagesDownloaded->setEnabled(checked);
 }
 
 void MainWindow::on_customFilterCheck_toggled(bool checked)
 {
-    ui->customFilterNumber->setEnabled(checked);
+  ui->customFilterNumber->setEnabled(checked);
 	ui->filter->setEnabled(!checked);
 	ui->filterLabel->setEnabled(!checked);
 }
@@ -373,6 +373,7 @@ QJsonObject MainWindow::exportPreset()
 	preset.insert("jsonPathFormat", ui->jsonFileNameFormat->text());
 	preset.insert("saveJson", ui->saveJson->isChecked());
 	preset.insert("updateJson", ui->updateJson->isChecked());
+  preset.insert("jsonOnly", ui->jsonOnly->isChecked());
 	preset.insert("jsonComments", ui->includeComments->isChecked());
 	preset.insert("jsonFavorites", ui->includeFavorites->isChecked());
 	preset.insert("limitImages", ui->limitImagesDownloadedCheck->isChecked());
@@ -396,6 +397,7 @@ void MainWindow::importPreset(QJsonObject preset)
 	ui->jsonFileNameFormat->setText(preset["jsonPathFormat"].toString("Json/{id}.json"));
 	ui->saveJson->setChecked(preset["saveJson"].toBool(false));
 	ui->updateJson->setChecked(preset["updateJson"].toBool(false));
+  ui->jsonOnly->setChecked(preset["jsonOnly"].toBool(false));
 	ui->includeComments->setChecked(preset["jsonComments"].toBool(false));
 	ui->includeFavorites->setChecked(preset["jsonFavorites"].toBool(false));
 	ui->limitImagesDownloadedCheck->setChecked(preset["limitImages"].toBool(false));
@@ -772,7 +774,8 @@ void MainWindow::on_startButton_clicked()
 	}
 	
 	manager->start(getSearchSettings(), ui->imageFileNameFormat->text(), limitImagesDownloaded, ui->saveJson->isChecked(),
-				   ui->updateJson->isChecked(), ui->jsonFileNameFormat->text(), static_cast<DownloadManager::SVGMode>(ui->buttonGroupSVGOptions->checkedId()));
+           ui->updateJson->isChecked(), ui->jsonFileNameFormat->text(), static_cast<DownloadManager::SVGMode>(ui->buttonGroupSVGOptions->checkedId()),
+           ui->jsonOnly->isChecked());
 }
 
 void MainWindow::on_pauseButton_clicked()
@@ -793,7 +796,7 @@ void MainWindow::on_pauseButton_clicked()
 
 void MainWindow::on_stopButton_clicked()
 {
-    manager->stopDownload();
+  manager->stopDownload();
 	manager->unpauseDownload();
 	ui->pauseButton->setText("Pause");
 	ui->pauseButton->setEnabled(false);
@@ -839,4 +842,9 @@ void MainWindow::resetInformation()
 	ui->imagesPerMinute->setText("---");
 	
 	ui->queueSize->setText("---");
+}
+
+void MainWindow::on_jsonOnly_toggled(bool checked)
+{
+  ui->imageFileNameFormat->setEnabled(!checked);
 }

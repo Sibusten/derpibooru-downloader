@@ -11,7 +11,7 @@ class DerpibooruDownloaderCmd : public QObject
 public:
 	explicit DerpibooruDownloaderCmd(DownloadManager *manager, QObject *parent = nullptr);
 	
-	void start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, DownloadManager::SVGMode svgMode);
+  void start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, DownloadManager::SVGMode svgMode, bool jsonOnly);
 	
 signals:
 	
