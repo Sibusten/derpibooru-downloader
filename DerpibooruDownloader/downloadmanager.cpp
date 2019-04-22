@@ -598,8 +598,8 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 	}
 	
 	tags["{year}"] = QString::number(json->getYear());
-	tags["{month}"] = QString::number(json->getMonth());
-	tags["{day}"] = QString::number(json->getDay());
+  tags["{month}"] = QString::number(json->getMonth()).rightJustified(2, QChar('0'));
+  tags["{day}"] = QString::number(json->getDay()).rightJustified(2, QChar('0'));
 	tags["{score}"] = QString::number(json->getScore());
 	tags["{upvotes}"] = QString::number(json->getUpvotes());
 	tags["{downvotes}"] = QString::number(json->getDownvotes());
