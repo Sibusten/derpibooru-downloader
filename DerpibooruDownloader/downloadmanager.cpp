@@ -9,6 +9,8 @@
 
 #include <QDir>
 
+const QString DownloadManager::TEMP_EXT = ".temp";
+
 DownloadManager::DownloadManager(QNetworkAccessManager* netManager, QObject* parent) : QObject(parent), imagesToBuffer(8000), delayBetweenImages(200), delayBetweenMetadata(200), delayWaitingForImages(200), delayWhilePaused(500),
 	metaDownloader(netManager), imageDownloader(netManager), searchSettings("*"), timeHelper(10, TimeHelper::Difference)
 {
@@ -437,37 +439,41 @@ void DownloadManager::getImages()
 	
 	// Get the download location for the image
 	QString filePath = parseFormat(imageFileNameFormat, queuedImages.at(0), gettingSVG);
-	QFile* imageFile = new QFile(filePath);
+  QFile imageFile(filePath);
 	
 	//If the image already exists, skip it
-	if(imageFile->exists())
+  if(imageFile.exists())
 	{
 		qDebug() << "Image exists, skipping";
 		skipDownload(false);
 		return;
 	}
+
+  QFile* tempImageFile = new QFile(filePath + TEMP_EXT);
 	
 	//Try to create the path and open the file for writing
 	try
 	{
 		//Get the absolute path
-		QDir directoryPath = QFileInfo(*imageFile).absoluteDir();
+    QDir directoryPath = QFileInfo(*tempImageFile).absoluteDir();
 		//Create all directories leading up to the current one.
 		directoryPath.mkpath(".");
 		//Open the image file for writing
-		imageFile->open(QFile::WriteOnly);
+    tempImageFile->open(QFile::WriteOnly);
 	}
 	catch(...) //If there's a problem
 	{
 		//Stop the download
 		stoppingDownload = true;
+
+    tempImageFile->deleteLater();
 		return;
-	}
+  }
 	
 	//Download the first image in the queue
 	//This will automatically call getImageResults when it is finished.
 	qDebug() << "Downloading image";
-	imageDownloader.download(imageUrl, true, imageFile);
+  imageDownloader.download(imageUrl, true, tempImageFile);
 }
 
 void DownloadManager::getImageResults()
@@ -477,11 +483,13 @@ void DownloadManager::getImageResults()
 	
 	//No longer downloading anything
 	emit currentlyDownloading(-1);
+
+  bool retryDownload = false;
 	
 	//Check if there was an error
 	if(imageDownloader.hasError())
 	{
-		//Delete the image to prevent corruption
+    //Delete the temp image
 		imageDownloader.getFile()->remove();
 		
 		//If it was a file error
@@ -493,39 +501,50 @@ void DownloadManager::getImageResults()
 		}
 		else //If it was a network error
 		{
-			//If the server says that the image is not available, skip it
-			if(imageDownloader.getErrorCode() == QNetworkReply::ContentNotFoundError)
+      // Try again, unless the server says the file does not exist
+      if(imageDownloader.getErrorCode() != QNetworkReply::ContentNotFoundError)
 			{
-				//Execution will move from here to down below, and queue up the next image to download
-			}
-			else
-			{
-				//Increment attempts and try again
-				imageAttempts++;
-				imageTimeout = expDelay(1, imageAttempts, 32);
-				imageWaiting = true;
-				QTimer::singleShot(0, this, SLOT(getImages()));
-				return;
+        retryDownload = true;
 			}
 		}
 	}
-	else  //If there was no error
-	{
-		// If not in the middle of an SVG download, save the json
-		if (svgDownloadState != checkingSVG) {
-			//If set to save json, do so now.
-			if(saveJson)
-			{
-				saveJsonToFile();
-			}
-			
-			//Emit successful download (Not used)
-			emit downloaded(queuedImages.at(0)->getId());
-		}
-	}
-	
-	//Code from here is executed on successful image download, or if an image is skipped because it can not be found on the server
-	
+
+  // Check the image hash to make sure there was no corruption
+  // Currently disabled until Derpibooru fixes image hashes
+//  if (queuedImages.at(0)->getSha512Hash() != imageDownloader.getHash())
+//  {
+//    //Delete the temp image and try again
+//    imageDownloader.getFile()->remove();
+//    retryDownload = true;
+//  }
+
+  if (retryDownload)
+  {
+    //Increment attempts and try again
+    imageAttempts++;
+    imageTimeout = expDelay(1, imageAttempts, 32);
+    imageWaiting = true;
+    QTimer::singleShot(0, this, SLOT(getImages()));
+    return;
+  }
+
+  // Rename temp image file to correct name
+  QString fileName = imageDownloader.getFile()->fileName();
+  fileName = fileName.left(fileName.length() - TEMP_EXT.length());
+  imageDownloader.getFile()->rename(fileName);
+
+  // If not in the middle of an SVG download, save the json
+  if (svgDownloadState != checkingSVG) {
+    //If set to save json, do so now.
+    if(saveJson)
+    {
+      saveJsonToFile();
+    }
+
+    //Emit successful download (Not used)
+    emit downloaded(queuedImages.at(0)->getId());
+  }
+
 	//Reset attempts after a successful download
 	imageAttempts = 0;
 	

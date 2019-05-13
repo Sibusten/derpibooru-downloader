@@ -1,6 +1,6 @@
 #include "downloader.h"
 
-Downloader::Downloader(QNetworkAccessManager* netManager, QObject* parent) : QObject(parent)
+Downloader::Downloader(QNetworkAccessManager* netManager, QObject* parent) : QObject(parent), sha512Hash(QCryptographicHash::Sha512)
 {
 	this->netManager = netManager;
 //	this->defaultBufferSize = defaultBufferSize;
@@ -38,13 +38,19 @@ QString Downloader::getErrorDesc()
 
 QFile*Downloader::getFile()
 {
-	return file;
+  return file;
+}
+
+QString Downloader::getHash()
+{
+  return sha512Hash.result().toHex();
 }
 
 void Downloader::download(const QUrl url, bool streamToFile, QFile* file)
 {
 	//Empty any previous data
 	downloadedData.clear();
+  sha512Hash.reset();
 	_hasError = false;
 	errorType = NoError;
 	errorCode = -1;
@@ -133,6 +139,9 @@ void Downloader::processData(QNetworkReply* reply)
 {
 	//Collect available data from the reply
 	QByteArray data = reply->readAll();
+
+  // Update hash
+  this->sha512Hash.addData(data);
 	
 	//If the data should be streamed to a file
 	if(streamToFile)

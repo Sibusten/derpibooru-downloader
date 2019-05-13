@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include <QByteArray>
+#include <QCryptographicHash>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -36,6 +37,7 @@ public:
 	QString getErrorDesc();
 	
 	QFile* getFile();
+  QString getHash();
 	
 signals:
 	void networkError(int errorCode, QString errorDesc, QUrl url);
@@ -58,6 +60,7 @@ private:
 	bool streamToFile;
 	QFile* file;
 	QByteArray downloadedData;
+  QCryptographicHash sha512Hash;
 	
 	bool _hasError;
 	ErrorType errorType;

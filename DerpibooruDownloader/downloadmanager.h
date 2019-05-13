@@ -23,13 +23,14 @@ class DownloadManager : public QObject
 	Q_OBJECT
 private:
 	enum SVGDownloadState { notCheckingSVG, checkingSVG, checkingPNG };
+  static const QString TEMP_EXT;
 	
 public:
 	enum SVGMode { saveSVG = 0, savePNG = 1, saveSVGAndPNG = 2 };
 	
 	explicit DownloadManager(QNetworkAccessManager* netManager, QObject* parent = 0);
     
-    static QJsonObject getDefaultPreset();
+  static QJsonObject getDefaultPreset();
 	
 signals:
 	void finished();															//Reports when the session is completed
