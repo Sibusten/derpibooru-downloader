@@ -30,51 +30,53 @@ QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray)
  * 
  * NOTE: as of February 2017, search by faves/upvotes/uploads/watched, and other options are only done from the search query, not by individual html parameters.
  */
-QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComments, bool showFavorites, 
-							 int searchFormat, int searchDirection, QString apiKey, int filterId, int random_seed)
+QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
 {
 	//Convenience arrays to convert enums into their proper string codes
 	QString searchFormats[] = {"created_at", "score", "relevance", "width", "height", "comments", "random"};
 	QString searchDirections[] = {"desc", "asc"};
 	
 	//Spaces are replaced with + in search string
-	QString temp = query.replace(" ", "+");
+  QString temp = settings.query.replace(" ", "+");
 	
-    temp = "https://www.derpibooru.org/search.json?q=" + temp;
-	temp += "&page=" + QString::number(page);
-	temp += "&perpage=" + QString::number(perPage);
-	if(showComments) temp += "&comments=";
-	if(showFavorites) temp += "&fav=";
-	temp += "&sf=" + searchFormats[searchFormat];
+  temp = "https://www.derpibooru.org/search.json?q=" + temp;
+
+  // Prefer to use id constraints over paging when possible
+  if (settings.searchFormat == SearchFormat::CreationDate && settings.lastIdFound != -1)
+  {
+    // Use less than for descending order, and greater than for ascending order
+    QString comparisonString = (settings.searchDirection == SearchDirection::Desc ? "lt" : "gt");
+
+    temp += QString(",id.%1:%2").arg(comparisonString, QString::number(settings.lastIdFound));
+  }
+  else
+  {
+      temp += "&page=" + QString::number(settings.page);
+  }
+
+  temp += "&perpage=" + QString::number(settings.perPage);
+  if(settings.showComments) temp += "&comments=";
+  if(settings.showFavorites) temp += "&fav=";
+  temp += "&sf=" + searchFormats[settings.searchFormat];
 	
 	// If random order is chosen, add the provided random seed to the search.
 	// This will allow multiple pages of random images to be downloaded without fear of duplicates.
-	if(searchFormat == Random)
+  if(settings.searchFormat == Random)
 	{
-		temp += ":" + QString::number(random_seed);
+    temp += ":" + QString::number(settings.random_seed);
 	}
 	
-	temp += "&sd=" + searchDirections[searchDirection];
-	if(!apiKey.isEmpty())
+  temp += "&sd=" + searchDirections[settings.searchDirection];
+  if(!settings.apiKey.isEmpty())
 	{
-		temp += "&key=" + apiKey;
+    temp += "&key=" + settings.apiKey;
 	}
 	
-	if(filterId != -1) temp += "&filter_id=" + QString::number(filterId);
+  if(settings.filterId != -1) temp += "&filter_id=" + QString::number(settings.filterId);
 	
 	// qDebug() << temp;
 	
 	return temp;
-}
-
-/*
- * Convenience function that uses the settings object to generate a url
- * 
- */
-QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
-{
-	return getSearchUrl(settings.query, settings.page, settings.perPage, settings.showComments, settings.showFavorites, 
-						settings.searchFormat, settings.searchDirection, settings.apiKey, settings.filterId, settings.random_seed);
 }
 
 DerpiJson::DerpiJson(QByteArray jsonData, QObject *parent) : QObject(parent)
@@ -226,7 +228,7 @@ bool DerpiJson::isOptimized()
 }
 
 DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, bool showComments, bool showFavorites,
-										  int searchFormat, int searchDirection, QString apiKey, int filterId, int random_seed)
+                      int searchFormat, int searchDirection, QString apiKey, int filterId, int random_seed, int lastIdDownloaded)
 {
 	this->query = query;
 	this->page = page;
@@ -238,4 +240,5 @@ DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, 
 	this->apiKey = apiKey;
 	this->filterId = filterId;
 	this->random_seed = random_seed;
+  this->lastIdFound = lastIdDownloaded;
 }

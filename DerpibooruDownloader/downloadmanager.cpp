@@ -256,8 +256,7 @@ void DownloadManager::getMetadataResults()
 	//Loop over every image in the vector
 	for(int i = 0; i < newImages.size(); i++)
 	{
-		//Check every image and see if its id is in lastPageIds. If so, delete the object and remove it from the vector.
-		int id = newImages.at(i)->getId();
+    int id = newImages.at(i)->getId();
 		
 		if (id == -1) {
 			// ID could not be found, skip this image and report the error
@@ -272,6 +271,7 @@ void DownloadManager::getMetadataResults()
 			continue;
 		}
 		
+    //Check every image and see if its id is in lastPageIds. If so, delete the object and remove it from the vector.
 		newIds.append(id);
 		if(lastPageIds.contains(id))
 		{
@@ -308,6 +308,9 @@ void DownloadManager::getMetadataResults()
 	
 	//Increment page by 1 in the searchSettings
 	searchSettings.page++;
+
+  // Update the last id found
+  searchSettings.lastIdFound = newImages.last()->getId();
 	
 	//Use Qtimer to queue calling getMetadata after a delay of delayBetweenMetadata
 	QTimer::singleShot(delayBetweenMetadata, this, SLOT(getMetadata()));
