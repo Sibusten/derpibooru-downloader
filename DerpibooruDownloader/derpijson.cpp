@@ -40,7 +40,7 @@ QUrl DerpiJson::getSearchUrl(QString query, int page, int perPage, bool showComm
 	//Spaces are replaced with + in search string
 	QString temp = query.replace(" ", "+");
 	
-	temp = "https://derpibooru.org/search.json?q=" + temp;
+    temp = "https://www.derpibooru.org/search.json?q=" + temp;
 	temp += "&page=" + QString::number(page);
 	temp += "&perpage=" + QString::number(perPage);
 	if(showComments) temp += "&comments=";
