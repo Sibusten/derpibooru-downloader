@@ -33,13 +33,13 @@ QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray)
 QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
 {
 	//Convenience arrays to convert enums into their proper string codes
-  QString searchFormats[] = {"created_at", "score", "_score", "width", "height", "comments", "random"};
+  QString searchFormats[] = {"created_at", "score", "_score", "width", "height", "comment_count", "random"};
 	QString searchDirections[] = {"desc", "asc"};
 	
 	//Spaces are replaced with + in search string
   QString temp = settings.query.replace(" ", "+");
 	
-  temp = "https://www.derpibooru.org/search.json?q=" + temp;
+  temp = "https://www.derpibooru.org/api/v1/json/search/images?q=" + temp;
 
   // Prefer to use id constraints over paging when possible
   if (settings.searchFormat == SearchFormat::CreationDate && settings.lastIdFound != -1)
@@ -54,7 +54,7 @@ QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
       temp += "&page=" + QString::number(settings.page);
   }
 
-  temp += "&perpage=" + QString::number(settings.perPage);
+  temp += "&per_page=" + QString::number(settings.perPage);
   if(settings.showComments) temp += "&comments=";
   if(settings.showFavorites) temp += "&fav=";
   temp += "&sf=" + searchFormats[settings.searchFormat];
@@ -102,9 +102,9 @@ int DerpiJson::getId()
 		return -1;  // Something went wrong, and the ID can't be identified
 }
 
-QUrl DerpiJson::getImageUrl(bool getSVG)
+QUrl DerpiJson::getDownloadUrl(bool getSVG)
 {
-	QString url_string = QString("https:") + json.object()["image"].toString();  // image link begins with '//'
+  QString url_string = json.object()["representations"].toObject()["full"].toString();
 	
 	// If this image is an SVG, and the .svg file is requested
 	if (getSVG && getFormat() == "svg") {
@@ -115,15 +115,20 @@ QUrl DerpiJson::getImageUrl(bool getSVG)
 	return QUrl(url_string);
 }
 
+QUrl DerpiJson::getViewUrl()
+{
+  return QUrl(json.object()["view_url"].toString());
+}
+
 QString DerpiJson::getName()
 {
-	QString name = getImageUrl().fileName();
+  QString name = getViewUrl().fileName();
 	return name.left(name.lastIndexOf("."));
 }
 
 QString DerpiJson::getOriginalName()
 {
-	QString name = json.object()["file_name"].toString();
+  QString name = json.object()["name"].toString();
 	return name.left(name.lastIndexOf("."));
 }
 
@@ -134,7 +139,7 @@ QString DerpiJson::getUploader()
 
 QString DerpiJson::getFormat()
 {
-	return json.object()["original_format"].toString();
+  return json.object()["format"].toString();
 }
 
 QString DerpiJson::getSha512Hash()
@@ -185,7 +190,7 @@ int DerpiJson::getFaves()
 
 int DerpiJson::getComments()
 {
-	return json.object()["comments"].toInt();
+  return json.object()["comment_count"].toInt();
 }
 
 int DerpiJson::getWidth()
@@ -198,18 +203,24 @@ int DerpiJson::getHeight()
 	return json.object()["height"].toInt();
 }
 
-int DerpiJson::getAspectRatio()
+double DerpiJson::getAspectRatio()
 {
-	return json.object()["aspect_ratio"].toInt();
+  return json.object()["aspect_ratio"].toDouble();
 }
 
 QStringList DerpiJson::getTags()
 {
-	// Get the string of comma-separated tags
-	QString tagsString = json.object()["tags"].toString();
-	
-	// Split the string and return the list
-	return tagsString.split(", ");
+  QStringList tags;
+
+  QJsonArray tagsJsonArray = json.object()["tags"].toArray();
+
+  // Convert all tag json values to strings
+  for (QJsonValue tagVal : tagsJsonArray)
+  {
+    tags.append(tagVal.toString());
+  }
+
+  return tags;
 }
 
 QJsonDocument DerpiJson::getJson()
@@ -219,12 +230,12 @@ QJsonDocument DerpiJson::getJson()
 
 bool DerpiJson::isRendered()
 {
-	return json.object()["is_rendered"].toBool();
+  return json.object()["thumbnails_generated"].toBool();
 }
 
 bool DerpiJson::isOptimized()
 {
-	return json.object()["is_optimized"].toBool();
+  return json.object()["processed"].toBool();
 }
 
 DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, bool showComments, bool showFavorites,

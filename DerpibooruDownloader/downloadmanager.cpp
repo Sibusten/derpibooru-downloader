@@ -237,7 +237,7 @@ void DownloadManager::getMetadataResults()
 	}
 	
 	//Get the QJsonArray "search" and pass it to DerpiJson::splitArray to get a QVector of the image json files.
-	QVector<DerpiJson*> newImages = DerpiJson::splitArray(json.object()["search"].toArray());
+  QVector<DerpiJson*> newImages = DerpiJson::splitArray(json.object()["images"].toArray());
 	
 	//If the vector is empty, set noMoreImages to true and return
 	if(newImages.size() == 0)
@@ -438,7 +438,7 @@ void DownloadManager::getImages()
 	}
 	
 	//Get the url for the image
-	QUrl imageUrl = queuedImages.at(0)->getImageUrl(gettingSVG);
+  QUrl imageUrl = queuedImages.at(0)->getDownloadUrl(gettingSVG);
 	
 	// Get the download location for the image
 	QString filePath = parseFormat(imageFileNameFormat, queuedImages.at(0), gettingSVG);

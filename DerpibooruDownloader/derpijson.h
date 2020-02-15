@@ -75,7 +75,8 @@ public:
 	explicit DerpiJson(QJsonObject jsonObject, QObject *parent = 0);
 	
 	int getId();
-	QUrl getImageUrl(bool getSVG = true);
+	QUrl getDownloadUrl(bool getSVG = true);
+  QUrl getViewUrl();
 	QString getName();
 	QString getOriginalName();
 	QString getUploader();
@@ -95,7 +96,7 @@ public:
 	
 	int getWidth();
 	int getHeight();
-	int getAspectRatio();
+  double getAspectRatio();
 	
 	QStringList getTags();
 	
