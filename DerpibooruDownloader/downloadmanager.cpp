@@ -306,12 +306,14 @@ void DownloadManager::getMetadataResults()
 	
 	emit queueSizeChanged(queuedImages.size());
 	
-	//Increment page by 1 in the searchSettings
-	searchSettings.page++;
+	if (!noMoreImages) {
+		//Increment page by 1 in the searchSettings
+		searchSettings.page++;
 
-  // Update the last id found
-  searchSettings.lastIdFound = newImages.last()->getId();
-	
+		// Update the last id found
+		searchSettings.lastIdFound = newImages.last()->getId();
+	}
+
 	//Use Qtimer to queue calling getMetadata after a delay of delayBetweenMetadata
 	QTimer::singleShot(delayBetweenMetadata, this, SLOT(getMetadata()));
 }
