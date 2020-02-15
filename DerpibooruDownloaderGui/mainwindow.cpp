@@ -335,10 +335,6 @@ void MainWindow::setHasAPIKey(bool hasKey)
 	ui->apiKey->setDisabled(hasKey);
 	ui->enterAPIKeyButton->setDisabled(hasKey);
 	
-	//Disable filter selection if an api key is given.
-	//As of Feb 13, 2017, The site will *always* use your selected filter on the site, and ignore the custom one sent with the search query.
-	ui->filterFrame->setEnabled(!hasKey);
-	
 	//Set text to show if a key is given
 	if(hasKey)
 	{
