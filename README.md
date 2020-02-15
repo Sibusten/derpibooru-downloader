@@ -54,7 +54,6 @@ The field "Save Images As" (as well as "Save Json As") allow for special tags to
     * ```Downloads\8000\8584.jpg```
 
 ## Tips
-* Be careful of filters when using an API key. The filter you have set on your account is the one that will be used by the program to download with!
 * To download a gallery, use this search term: ```gallery_id:{ID}```. The gallery's ID is the number at the end of the gallery url. You can add other terms to download only part of a gallery.<br>
 Example: ```gallery_id:1```
 
