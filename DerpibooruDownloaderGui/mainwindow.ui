@@ -197,7 +197,7 @@
                     <item row="1" column="0">
                      <widget class="QComboBox" name="filter">
                       <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which standard filter should be used.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: Filter options are disabled if you provide an api key, as the site will force the filter you have selected on your account over the one provided here. If you wish to use a different filter, you will need to log onto the site and change it there before downloading.&lt;/span&gt; (As of Feb 13, 2017)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which standard filter should be used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="currentIndex">
                        <number>0</number>
