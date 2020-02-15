@@ -33,7 +33,7 @@ QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray)
 QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
 {
 	//Convenience arrays to convert enums into their proper string codes
-	QString searchFormats[] = {"created_at", "score", "relevance", "width", "height", "comments", "random"};
+  QString searchFormats[] = {"created_at", "score", "_score", "width", "height", "comments", "random"};
 	QString searchDirections[] = {"desc", "asc"};
 	
 	//Spaces are replaced with + in search string
