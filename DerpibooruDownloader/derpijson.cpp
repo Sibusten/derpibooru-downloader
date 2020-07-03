@@ -38,8 +38,6 @@ QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
 	
 	//Spaces are replaced with + in search string
   QString temp = settings.query.replace(" ", "+");
-	
-  temp = "https://www.derpibooru.org/api/v1/json/search/images?q=" + temp;
 
   // Prefer to use id constraints over paging when possible
   if (settings.searchFormat == SearchFormat::CreationDate && settings.lastIdFound != -1)
@@ -47,12 +45,14 @@ QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings)
     // Use less than for descending order, and greater than for ascending order
     QString comparisonString = (settings.searchDirection == SearchDirection::Desc ? "lt" : "gt");
 
-    temp += QString(",id.%1:%2").arg(comparisonString, QString::number(settings.lastIdFound));
+    temp = QString("(%1),id.%2:%3").arg(temp, comparisonString, QString::number(settings.lastIdFound));
   }
   else
   {
       temp += "&page=" + QString::number(settings.page);
   }
+
+  temp = "https://www.derpibooru.org/api/v1/json/search/images?q=" + temp;
 
   temp += "&per_page=" + QString::number(settings.perPage);
   if(settings.showComments) temp += "&comments=";
