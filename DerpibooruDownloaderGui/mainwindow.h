@@ -12,39 +12,38 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
 	Q_OBJECT
-	
+
 public:
 	explicit MainWindow(DownloadManager* manager, QWidget *parent = 0);
 	~MainWindow();
-	
+
 protected:
 	void closeEvent(QCloseEvent* event);
-	
+
 private slots:
 	void finished();
-	
+
 	void setCurrentDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 	void setTotalDownloadProgress(qint64 imagesDownloaded, qint64 imagesTotal);
-	
+
 	void networkError(int errorCode, QString errorDesc, QUrl url);
 	void fileError(int errorCode, QString errorDesc, QFile* file);
 	void reportError(QString errorMessage);
-	
+
 	void setMetadataTimeoutReading(int time);
 	void setImageTimeoutReading(int time);
 	void setTimingInformation(QString elapsed, QString eta, int imagesPerMinute);
 	void setQueueSize(int size);
 	void setCurrentlyDownloading(int id);
-	
+
 	void confirmAddPreset(QAbstractButton* button);
 	void confirmRemoveCurrentPreset(QAbstractButton* button);
 	void confirmCloseWhileRunning(QAbstractButton* button);
-	
+
 	void showAbout();
-	
+
 	void on_saveJson_toggled(bool checked);
 	void on_limitImagesDownloadedCheck_toggled(bool checked);
 	void on_customFilterCheck_toggled(bool checked);
@@ -62,41 +61,39 @@ private slots:
 	void on_startButton_clicked();
 	void on_pauseButton_clicked();
 	void on_stopButton_clicked();
-	
-  void on_jsonOnly_toggled(bool checked);
+
+	void on_jsonOnly_toggled(bool checked);
 
 private:
 	Ui::MainWindow* ui;
 	DownloadManager* manager;
-	
+
 	const QString VERSION;
 	const QString DEFAULT_PRESET;
-	
+
 	QString apiKey;
 	QJsonObject presets;
 	bool isRunning;
 	bool isPaused;
-	
+
 	DerpiJson::SearchSettings getSearchSettings();
-	
+
 	void resetInformation();
-	
+
 	void setHasAPIKey(bool hasKey);
 	QJsonObject exportPreset();
 	void importPreset(QJsonObject preset);
-	
+
 	void addPreset();
 	void removeCurrentPreset();
 	QJsonObject getCurrentPreset();
 	void updatePresetCombobox();
-	
-	
-	
+
 	QString encodeJson(QJsonDocument doc);
 	QJsonDocument decodeJson(QString encodedJson);
-	
+
 	QJsonObject convertOldPresetArrayToObject(QJsonArray oldPresetArray) const;
-	
+
 	void saveSettings();
 	void loadSettings();
 };
