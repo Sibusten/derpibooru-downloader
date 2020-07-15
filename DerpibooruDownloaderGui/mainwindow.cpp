@@ -12,7 +12,8 @@ MainWindow::MainWindow(DownloadManager* manager, QWidget *parent) :
         VERSION(QApplication::applicationVersion()),
         DEFAULT_PRESET("AAAAUXici1ZS0jHUMTUAEgY6aYk5xalAGgSVXPLL83LyE1OK9aszU2r1qlMrSmqVdIDKIapwkLEAxtsZ+A=="),  // TODO remove this, and remove export/import presets
         isRunning(false),
-        isPaused(false) {
+        isPaused(false),
+        booruUrl(DerpiJson::DEFAULT_BOORU) {
     ui->setupUi(this);
 
     setWindowTitle("Derpibooru Downloader v" + VERSION);
@@ -506,6 +507,7 @@ void MainWindow::saveSettings() {
     settings.setValue("showAdditionalInfo", ui->showAdditionalInfo->isChecked());
     settings.setValue("suppressWarnings", ui->suppressWarnings->isChecked());
     settings.setValue("apiKey", apiKey);
+    settings.setValue("booruUrl", booruUrl);
 
     QJsonObject tempPresets = presets;
     tempPresets.remove("-Default-");  // Do not save the default preset in the settings file
@@ -537,6 +539,7 @@ void MainWindow::loadSettings() {
         }
 
         apiKey = settings.value("apiKey", QString()).toString();
+        booruUrl = settings.value("booruUrl", DerpiJson::DEFAULT_BOORU).toString();
 
         QString settingPresets = settings.value("presets", QString()).toString();
         if (!settingPresets.isEmpty()) {
