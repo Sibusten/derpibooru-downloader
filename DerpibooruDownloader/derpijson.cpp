@@ -1,6 +1,6 @@
 #include "derpijson.h"
 
-const QString DerpiJson::DEFAULT_BOORU("https://derpibooru.org/");
+const QString DerpiJson::DEFAULT_BOORU("https://www.derpibooru.org/");
 
 QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray) {
     QVector<DerpiJson*> images;
