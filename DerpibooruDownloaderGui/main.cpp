@@ -7,13 +7,13 @@
 #include "downloadmanager.h"
 
 int main(int argc, char *argv[]) {
-	QApplication a(argc, argv);
-	a.setApplicationVersion(APP_VERSION);
-	QNetworkAccessManager* netManager = new QNetworkAccessManager();
-	DownloadManager manager(netManager);
+    QApplication a(argc, argv);
+    a.setApplicationVersion(APP_VERSION);
+    QNetworkAccessManager* netManager = new QNetworkAccessManager();
+    DownloadManager manager(netManager);
 
-	MainWindow w(&manager);
-	w.show();
+    MainWindow w(&manager);
+    w.show();
 
-	return a.exec();
+    return a.exec();
 }
