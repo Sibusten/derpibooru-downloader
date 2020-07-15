@@ -721,8 +721,7 @@ void MainWindow::on_stopButton_clicked() {
     ui->stopButton->setEnabled(false);
 }
 
-DerpiJson::SearchSettings MainWindow::getSearchSettings()
-{
+DerpiJson::SearchSettings MainWindow::getSearchSettings() {
     // Get filter id
     int filterId = 0;
     if (ui->customFilterCheck->isChecked()) {
@@ -750,7 +749,8 @@ DerpiJson::SearchSettings MainWindow::getSearchSettings()
         ui->searchDirection->currentIndex(),
         apiKey,
         filterId,
-        qrand()
+        qrand(),
+        booruUrl
     );
 }
 
