@@ -72,7 +72,6 @@ private:
     const QString DEFAULT_PRESET;
 
     QString apiKey;
-    QString booruUrl;
     QJsonObject presets;
     bool isRunning;
     bool isPaused;
