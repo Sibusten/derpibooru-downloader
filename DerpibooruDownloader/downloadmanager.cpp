@@ -11,27 +11,33 @@
 
 const QString DownloadManager::TEMP_EXT = ".temp";
 
-DownloadManager::DownloadManager(QNetworkAccessManager* netManager, QObject* parent) : QObject(parent), imagesToBuffer(8000), delayBetweenImages(200), delayBetweenMetadata(200), delayWaitingForImages(200), delayWhilePaused(500),
-	metaDownloader(netManager), imageDownloader(netManager), searchSettings("*"), timeHelper(10, TimeHelper::Difference)
-{
-	//Connect downloaders to their result slots
+DownloadManager::DownloadManager(QNetworkAccessManager* netManager, QObject* parent) : QObject(parent),
+		imagesToBuffer(8000),
+		delayBetweenImages(200),
+		delayBetweenMetadata(200),
+		delayWaitingForImages(200),
+		delayWhilePaused(500),
+		metaDownloader(netManager),
+		imageDownloader(netManager),
+		searchSettings("*"),
+		timeHelper(10, TimeHelper::Difference) {
+	// Connect downloaders to their result slots
 	connect(&metaDownloader, SIGNAL(finished()), this, SLOT(getMetadataResults()));
 	connect(&imageDownloader, SIGNAL(finished()), this, SLOT(getImageResults()));
-	
-	//Forward downloadProgress of the image downloader to track progress of individual images.
+
+	// Forward downloadProgress of the image downloader to track progress of individual images.
 	connect(&imageDownloader, SIGNAL(downloadProgress(qint64,qint64)), this, SIGNAL(currentDownloadProgress(qint64,qint64)));
-	
-	//Forward error signals
+
+	// Forward error signals
 	connect(&imageDownloader, SIGNAL(fileError(int,QString,QFile*)), this, SIGNAL(fileError(int,QString,QFile*)));
 	connect(&imageDownloader, SIGNAL(networkError(int,QString,QUrl)), this, SIGNAL(networkError(int,QString,QUrl)));
 	connect(&metaDownloader, SIGNAL(fileError(int,QString,QFile*)), this, SIGNAL(fileError(int,QString,QFile*)));
 	connect(&metaDownloader, SIGNAL(networkError(int,QString,QUrl)), this, SIGNAL(networkError(int,QString,QUrl)));
 }
 
-QJsonObject DownloadManager::getDefaultPreset()
-{
+QJsonObject DownloadManager::getDefaultPreset() {
 	QJsonObject defaultPreset;
-	
+
 	defaultPreset.insert("query", "");
 	defaultPreset.insert("startPage", 1);
 	defaultPreset.insert("perPage", 50);
@@ -45,18 +51,17 @@ QJsonObject DownloadManager::getDefaultPreset()
 	defaultPreset.insert("jsonPathFormat", "Json/{id}.json");
 	defaultPreset.insert("saveJson", false);
 	defaultPreset.insert("updateJson", false);
-  defaultPreset.insert("jsonOnly", false);
+	defaultPreset.insert("jsonOnly", false);
 	defaultPreset.insert("jsonComments", false);
 	defaultPreset.insert("jsonFavorites", false);
 	defaultPreset.insert("limitImages", false);
 	defaultPreset.insert("svgAction", 0);
-	
+
 	return defaultPreset;
 }
 
-//TODO possibly fix error reporting to have the manager emit instead of just forwarding signals from the downloaders.
-void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, SVGMode svgMode, bool jsonOnly)
-{
+// TODO possibly fix error reporting to have the manager emit instead of just forwarding signals from the downloaders.
+void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString imageFileNameFormat, int maxImages, bool saveJson, bool updateJson, QString jsonFileNameFormat, SVGMode svgMode, bool jsonOnly) {
 	this->searchSettings = searchSettings;
 	this->imageFileNameFormat = imageFileNameFormat;
 	this->jsonFileNameFormat = jsonFileNameFormat;
@@ -64,9 +69,9 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	this->saveJson = saveJson;
 	this->updateJson = updateJson;
 	this->svgMode = svgMode;
-  this->jsonOnly = jsonOnly;
-	
-	//Reset downloading variables
+	this->jsonOnly = jsonOnly;
+
+	// Reset downloading variables
 	stoppingDownload = false;
 	imageDownloaderStopped = false;
 	downloadPaused = false;
@@ -81,50 +86,43 @@ void DownloadManager::start(DerpiJson::SearchSettings searchSettings, QString im
 	imagesDownloaded = 0;
 	imagesTotal = 0;
 	timeHelper.restart();
-	
-	//QTimer is used as a way to call a slot after a set amount of time. This allows control to return to the event loop, and prevents the gui from locking.
-	//Slots will be called after all other tasks in the event loop are done.
+
+	// QTimer is used as a way to call a slot after a set amount of time. This allows control to return to the event loop, and prevents the gui from locking.
+	// Slots will be called after all other tasks in the event loop are done.
 	QTimer::singleShot(0, this, SLOT(calculateTiming()));
 	QTimer::singleShot(0, this, SLOT(getMetadata()));
 	QTimer::singleShot(1000, this, SLOT(getImages()));
 }
 
-void DownloadManager::calculateTiming()
-{
-	//Check if stopping
-	if(stoppingDownload && imageDownloaderStopped)
-	{
-		//TODO cleanup with signals that could be emitted?
+void DownloadManager::calculateTiming() {
+	// Check if stopping
+	if (stoppingDownload && imageDownloaderStopped) {
+		// TODO cleanup with signals that could be emitted?
 		return;
 	}
-	
+
 	timeHelper.update(imagesDownloaded);
-	if(timeHelper.hasReading(5))
-	{
+	if (timeHelper.hasReading(5)) {
 		emit timingUpdate(timeHelper.getElapsedTimeFormatted(), timeHelper.getETAFormatted(imagesTotal - imagesDownloaded), timeHelper.getPerMinute());
 	}
-	else
-	{
+	else {
 		emit timingUpdate(timeHelper.getElapsedTimeFormatted(), "---", -1);
 	}
-	
+
 	//Trigger every second
 	QTimer::singleShot(1000, this, SLOT(calculateTiming()));
 }
 
 /*
  * Handles queuing metadata downloads //and keeping the image function supplied with images to download
- * 
+ *
  */
-void DownloadManager::getMetadata()
-{
+void DownloadManager::getMetadata() {
 	// qDebug() << "Get Metadata called";
 	//Check if stopping
-	if(stoppingDownload && imageDownloaderStopped)
-	{
+	if (stoppingDownload && imageDownloaderStopped) {
 		//Clear the queued list and delete the objects.
-		while(!queuedImages.isEmpty())
-		{
+		while (!queuedImages.isEmpty()) {
 			delete queuedImages.at(0);
 			queuedImages.remove(0);
 		}
@@ -132,67 +130,57 @@ void DownloadManager::getMetadata()
 		emit finished();
 		return;
 	}
-	
-	//Check if finished. Function will continue to be called to allow it to stop properly if needed.
-	if(noMoreImages)
-	{
+
+	// Check if finished. Function will continue to be called to allow it to stop properly if needed.
+	if (noMoreImages) {
 		QTimer::singleShot(200, this, SLOT(getMetadata()));
 		return;
 	}
-	
-	//Check if paused
-	if(downloadPaused)
-	{
+
+	// Check if paused
+	if (downloadPaused) {
 		QTimer::singleShot(delayWhilePaused, this, SLOT(getMetadata()));
 		return;
 	}
-	
-	//Check if waiting due to a network error
-	if(metadataWaiting)
-	{
+
+	// Check if waiting due to a network error
+	if (metadataWaiting) {
 		emit metadataTimeoutRemaining(metadataTimeout);
-		
-		//If there is time left to wait
-		if(metadataTimeout > 0)
-		{
+
+		// If there is time left to wait
+		if (metadataTimeout > 0) {
 			QTimer::singleShot(1000, this, SLOT(getMetadata()));
 			metadataTimeout--;
 			return;
 		}
-		else
-		{
+		else {
 			//Stop waiting and try again
 			metadataWaiting = false;
 		}
 	}
-	
+
 	//Check if there are enough images already
-	if(queuedImages.size() >= imagesToBuffer)
-	{
+	if (queuedImages.size() >= imagesToBuffer) {
 		QTimer::singleShot(delayBetweenMetadata, this, SLOT(getMetadata()));
 		return;
 	}
-	
-	//Download more if needed
-	//This will automatically call getMetadataResults when it is finished.
+
+	// Download more if needed
+	// This will automatically call getMetadataResults when it is finished.
 	QUrl searchUrl = DerpiJson::getSearchUrl(searchSettings);
 	metaDownloader.download(searchUrl);
 }
 
-void DownloadManager::getMetadataResults()
-{
-	//Check if there was an error
-	if(metaDownloader.hasError())
-	{
-		//If it was a file error
-		if(metaDownloader.getErrorType() == Downloader::FileError)
-		{
-			//Stop the download
+void DownloadManager::getMetadataResults() {
+	// Check if there was an error
+	if (metaDownloader.hasError()) {
+		// If it was a file error
+		if (metaDownloader.getErrorType() == Downloader::FileError) {
+			// Stop the download
 			stoppingDownload = true;
 			return;
 		}
-		else //If it was a network error
-		{
+		else {  //If it was a network error
 			metadataAttempts++;
 			metadataTimeout = expDelay(1, metadataAttempts, 32);
 			metadataWaiting = true;
@@ -200,112 +188,101 @@ void DownloadManager::getMetadataResults()
 			return;
 		}
 	}
-	
-	//Reset attempts after a successful download
+
+	// Reset attempts after a successful download
 	metadataAttempts = 0;
-	
-	//Get downloaded data and convert it to a QJsonDocument.
+
+	// Get downloaded data and convert it to a QJsonDocument.
 	QJsonDocument json = QJsonDocument::fromJson(metaDownloader.getData());
-	
-	//If this is the first metadata download, set the imagesTotal variable used to report progress.
-	if(firstMetadata)
-	{
-		//Calculate the total number of images possible to download if it were not limited.
+
+	// If this is the first metadata download, set the imagesTotal variable used to report progress.
+	if (firstMetadata) {
+		// Calculate the total number of images possible to download if it were not limited.
 		int total = json.object()["total"].toInt();
-		int imagesSkipped = (searchSettings.page - 1) * searchSettings.perPage;		//If the page were set to something other than 1 for the first download, those images aren't counted.
+		int imagesSkipped = (searchSettings.page - 1) * searchSettings.perPage;  //If the page were set to something other than 1 for the first download, those images aren't counted.
 		int totalPossible = total - imagesSkipped;
-		
-		//If no limit was set to how many images should be downloaded
-		if(maxImagesToDownload == -1)
-		{
-			//Then the limit is the most possible
+
+		// If no limit was set to how many images should be downloaded
+		if (maxImagesToDownload == -1) {
+			// Then the limit is the most possible
 			imagesTotal = totalPossible;
 		}
-		else
-		{
-			//maxImagesToDowload will be the total number of images downloaded, unless it isn't possible to get that many.
-			if(totalPossible < maxImagesToDownload)
-			{
+		else {
+			// maxImagesToDowload will be the total number of images downloaded, unless it isn't possible to get that many.
+			if(totalPossible < maxImagesToDownload) {
 				imagesTotal = totalPossible;
 			}
-			else
-			{
+			else {
 				imagesTotal = maxImagesToDownload;
 			}
 		}
 		firstMetadata = false;
 	}
-	
-	//Get the QJsonArray "search" and pass it to DerpiJson::splitArray to get a QVector of the image json files.
-  QVector<DerpiJson*> newImages = DerpiJson::splitArray(json.object()["images"].toArray());
-	
+
+	// Get the QJsonArray "search" and pass it to DerpiJson::splitArray to get a QVector of the image json files.
+	QVector<DerpiJson*> newImages = DerpiJson::splitArray(json.object()["images"].toArray());
+
 	//If the vector is empty, set noMoreImages to true and return
-	if(newImages.size() == 0)
-	{
+	if (newImages.size() == 0) {
 		noMoreImages = true;
 		QTimer::singleShot(0, this, SLOT(getMetadata()));
 		return;
 	}
-	
+
 	// TODO: This is pretty poorly written. Possibly rewrite this eventually
-	
-	
-	//Create a temporary vector to store all the ids on the current page.
+
+	// Create a temporary vector to store all the ids on the current page.
 	QVector<int> newIds;
-	
-	//Loop over every image in the vector
-	for(int i = 0; i < newImages.size(); i++)
-	{
-    int id = newImages.at(i)->getId();
-		
+
+	// Loop over every image in the vector
+	for (int i = 0; i < newImages.size(); i++) {
+		int id = newImages.at(i)->getId();
+
 		if (id == -1) {
 			// ID could not be found, skip this image and report the error
 			delete newImages.at(i);
 			newImages.remove(i);
 			i--;
-			
+
 			// Flag that no more images will be downloaded. The current queue will be cleared
 			noMoreImages = true;
-			
+
 			emit reportError("Could not determine image ID! Please report this to the developer");
 			continue;
 		}
-		
-    //Check every image and see if its id is in lastPageIds. If so, delete the object and remove it from the vector.
+
+		// Check every image and see if its id is in lastPageIds. If so, delete the object and remove it from the vector.
 		newIds.append(id);
-		if(lastPageIds.contains(id))
-		{
+		if (lastPageIds.contains(id)) {
 			delete newImages.at(i);
 			newImages.remove(i);
 			i--;
 			continue;
 		}
-		
-		//Check if more images should be added.
-		//If there is a limit to how many images should be downloaded
-		if(maxImagesToDownload != -1)
-		{
-			//And if no more images should be added
-			if(maxImagesToDownload - imagesQueued == 0)
-			{
-				//Let the image downloader know that no more images are going to be added.
+
+		// Check if more images should be added.
+		// If there is a limit to how many images should be downloaded
+		if (maxImagesToDownload != -1) {
+			// And if no more images should be added
+			if (maxImagesToDownload - imagesQueued == 0) {
+				// Let the image downloader know that no more images are going to be added.
 				noMoreImages = true;
-				
-				//Delete the image and continue. At this point, all images will just get deleted.
+
+				// Delete the image and continue. At this point, all images will just get deleted.
 				delete newImages.at(i);
 				newImages.remove(i);
 				i--;
 				continue;
 			}
 		}
-		
-		//If neither of those applied, then add the image to the queue and increment imagesQueued
+
+		// If neither of those applied, then add the image to the queue and increment imagesQueued
 		queuedImages.append(newImages.at(i));
 		imagesQueued++;
 	}
-	
+
 	emit queueSizeChanged(queuedImages.size());
-	
+
 	if (!noMoreImages) {
 		//Increment page by 1 in the searchSettings
 		searchSettings.page++;
@@ -314,26 +291,24 @@ void DownloadManager::getMetadataResults()
 		searchSettings.lastIdFound = newImages.last()->getId();
 	}
 
-	//Use Qtimer to queue calling getMetadata after a delay of delayBetweenMetadata
+	// Use Qtimer to queue calling getMetadata after a delay of delayBetweenMetadata
 	QTimer::singleShot(delayBetweenMetadata, this, SLOT(getMetadata()));
 }
 
 /*
  * Handles queueing images to download
- * 
+ *
  */
-void DownloadManager::getImages()
-{
+void DownloadManager::getImages() {
 	qDebug() << "Get Images";
 	auto skipDownload = [this](bool skipJson) {
 		// If the current image is not an svg file, or if we are in the final stage of an SVG download (checking the png)
 		if (svgDownloadState == notCheckingSVG || svgDownloadState == checkingPNG) {
-			//If set to save json, do so now.
-			if(!skipJson && saveJson)
-			{
+			// If set to save json, do so now.
+			if (!skipJson && saveJson) {
 				saveJsonToFile();
 			}
-			
+
 			imagesDownloaded++;
 			svgDownloadState = notCheckingSVG;
 			emit downloaded(queuedImages.at(0)->getId());
@@ -341,255 +316,237 @@ void DownloadManager::getImages()
 			queuedImages.remove(0);
 			emit queueSizeChanged(queuedImages.size());
 			QTimer::singleShot(0, this, SLOT(getImages()));
-		} else {
+		}
+		else {
 			// We still need to check the PNG file for this SVG download
 			svgDownloadState = checkingPNG;
 			QTimer::singleShot(0, this, SLOT(getImages()));
 		}
 	};
-	
-	//Check if stopping
-	if(stoppingDownload)
-	{
+
+	// Check if stopping
+	if (stoppingDownload) {
 		imageDownloaderStopped = true;
 		return;
 	}
-	
-	//Check if paused
-	if(downloadPaused)
-	{
+
+	// Check if paused
+	if(downloadPaused) {
 		QTimer::singleShot(delayWhilePaused, this, SLOT(getImages()));
 		return;
 	}
-	
-	//Check if waiting due to a network error
-	if(imageWaiting)
-	{
+
+	// Check if waiting due to a network error
+	if(imageWaiting) {
 		emit imageTimeoutRemaining(imageTimeout);
-		
-		//If there is time left to wait
-		if(imageTimeout > 0)
-		{
+
+		// If there is time left to wait
+		if (imageTimeout > 0) {
 			QTimer::singleShot(1000, this, SLOT(getImages()));
 			imageTimeout--;
 			return;
 		}
-		else
-		{
-			//Stop waiting and try again
+		else {
+			// Stop waiting and try again
 			imageWaiting = false;
 		}
 	}
-	
-	//If there are no images in the queue
-	if(queuedImages.isEmpty())
-	{
+
+	// If there are no images in the queue
+	if (queuedImages.isEmpty()) {
 		qDebug() << "Queue empty";
-		//If there are no more images left to get
-		if(noMoreImages)
-		{
-			//The session is complete
+		// If there are no more images left to get
+		if (noMoreImages) {
+			// The session is complete
 			emit totalDownloadProgress(imagesTotal, imagesTotal);
 			stoppingDownload = true;
 			imageDownloaderStopped = true;
 			return;
 		}
-		else
-		{
+		else {
 			qDebug() << "Waiting for images";
-			//Wait for more images
+			// Wait for more images
 			QTimer::singleShot(delayWaitingForImages, this, SLOT(getImages()));
 			return;
 		}
 	}
-	
-	//Emit the total progress of the download session
+
+	// Emit the total progress of the download session
 	emit currentlyDownloading(queuedImages.at(0)->getId());
 	emit totalDownloadProgress(imagesDownloaded, imagesTotal);
-	
+
 	// Skip this image if it is not yet rendered on the server
-	if (!queuedImages.first()->isRendered())
-	{
+	if (!queuedImages.first()->isRendered()) {
 		qDebug() << "Skipping unrendered image";
 		skipDownload(true);
 		return;
 	}
 
-  // Save json and exit early if set to only save json
-  if (jsonOnly)
-  {
-    skipDownload(false);
-    return;
-  }
-	
+	// Save json and exit early if set to only save json
+	if (jsonOnly) {
+		skipDownload(false);
+		return;
+	}
+
 	// Whether this image is an svg file
 	bool isSVGFormat = queuedImages.first()->getFormat().toLower() == "svg";
-	
+
 	// If this is a new svg image, flag that we are currently checking the svg file
-	if (isSVGFormat && svgDownloadState == notCheckingSVG)
+	if (isSVGFormat && svgDownloadState == notCheckingSVG) {
 		svgDownloadState = checkingSVG;
-	
+	}
+
 	// True if checkingSVG, false if checkingPNG
 	bool gettingSVG = svgDownloadState == checkingSVG;
-	
+
 	// Check if the current image should be skipped due to SVG download rules
 	if ((svgDownloadState == checkingSVG && svgMode == savePNG) || (svgDownloadState == checkingPNG && svgMode == saveSVG)) {
 		qDebug() << "Skipping from svg download rules";
 		skipDownload(false);
 		return;
 	}
-	
-	//Get the url for the image
-  QUrl imageUrl = queuedImages.at(0)->getDownloadUrl(gettingSVG);
-	
+
+	// Get the url for the image
+	QUrl imageUrl = queuedImages.at(0)->getDownloadUrl(gettingSVG);
+
 	// Get the download location for the image
 	QString filePath = parseFormat(imageFileNameFormat, queuedImages.at(0), gettingSVG);
-  QFile imageFile(filePath);
-	
+	QFile imageFile(filePath);
+
 	//If the image already exists, skip it
-  if(imageFile.exists())
-	{
+	if (imageFile.exists()) {
 		qDebug() << "Image exists, skipping";
 		skipDownload(false);
 		return;
 	}
 
-  QFile* tempImageFile = new QFile(filePath + TEMP_EXT);
-	
-	//Try to create the path and open the file for writing
-	try
-	{
-		//Get the absolute path
-    QDir directoryPath = QFileInfo(*tempImageFile).absoluteDir();
-		//Create all directories leading up to the current one.
+	QFile* tempImageFile = new QFile(filePath + TEMP_EXT);
+
+	// Try to create the path and open the file for writing
+	try {
+		// Get the absolute path
+		QDir directoryPath = QFileInfo(*tempImageFile).absoluteDir();
+
+		// Create all directories leading up to the current one.
 		directoryPath.mkpath(".");
-		//Open the image file for writing
-    tempImageFile->open(QFile::WriteOnly);
+
+		// Open the image file for writing
+		tempImageFile->open(QFile::WriteOnly);
 	}
-	catch(...) //If there's a problem
-	{
-		//Stop the download
+	catch(...) {
+		// Stop the download
 		stoppingDownload = true;
 
-    tempImageFile->deleteLater();
+		tempImageFile->deleteLater();
 		return;
-  }
-	
-	//Download the first image in the queue
-	//This will automatically call getImageResults when it is finished.
+	}
+
+	// Download the first image in the queue
+	// This will automatically call getImageResults when it is finished.
 	qDebug() << "Downloading image";
-  imageDownloader.download(imageUrl, true, tempImageFile);
+	imageDownloader.download(imageUrl, true, tempImageFile);
 }
 
-void DownloadManager::getImageResults()
-{
-	//Flag the QFile object for deletion to prevent memory leaks
+void DownloadManager::getImageResults() {
+	// Flag the QFile object for deletion to prevent memory leaks
 	imageDownloader.getFile()->deleteLater();
-	
-	//No longer downloading anything
+
+	// No longer downloading anything
 	emit currentlyDownloading(-1);
 
-  bool retryDownload = false;
-	
-	//Check if there was an error
-	if(imageDownloader.hasError())
-	{
-    //Delete the temp image
+	bool retryDownload = false;
+
+	// Check if there was an error
+	if (imageDownloader.hasError()) {
+		// Delete the temp image
 		imageDownloader.getFile()->remove();
-		
-		//If it was a file error
-		if(imageDownloader.getErrorType() == Downloader::FileError)
-		{
-			//Stop the download
+
+		// If it was a file error
+		if (imageDownloader.getErrorType() == Downloader::FileError) {
+			// Stop the download
 			stoppingDownload = true;
 			return;
 		}
-		else //If it was a network error
-		{
-      // Try again, unless the server says the file does not exist
-      if(imageDownloader.getErrorCode() != QNetworkReply::ContentNotFoundError)
-			{
-        retryDownload = true;
+		else {  // If it was a network error
+			// Try again, unless the server says the file does not exist
+			if (imageDownloader.getErrorCode() != QNetworkReply::ContentNotFoundError) {
+				retryDownload = true;
 			}
 		}
 	}
 
-  // Check the image hash to make sure there was no corruption
-  // Currently disabled until Derpibooru fixes image hashes
-//  if (queuedImages.at(0)->getSha512Hash() != imageDownloader.getHash())
-//  {
-//    //Delete the temp image and try again
-//    imageDownloader.getFile()->remove();
-//    retryDownload = true;
-//  }
+	// Check the image hash to make sure there was no corruption
+	// Currently disabled until Derpibooru fixes image hashes
+	// if (queuedImages.at(0)->getSha512Hash() != imageDownloader.getHash())
+	// {
+	// 	//Delete the temp image and try again
+	// 	imageDownloader.getFile()->remove();
+	// 	retryDownload = true;
+	// }
 
-  if (retryDownload)
-  {
-    //Increment attempts and try again
-    imageAttempts++;
-    imageTimeout = expDelay(1, imageAttempts, 32);
-    imageWaiting = true;
-    QTimer::singleShot(0, this, SLOT(getImages()));
-    return;
-  }
+	if (retryDownload) {
+		// Increment attempts and try again
+		imageAttempts++;
+		imageTimeout = expDelay(1, imageAttempts, 32);
+		imageWaiting = true;
+		QTimer::singleShot(0, this, SLOT(getImages()));
+		return;
+	}
 
-  // Rename temp image file to correct name
-  QString fileName = imageDownloader.getFile()->fileName();
-  fileName = fileName.left(fileName.length() - TEMP_EXT.length());
-  imageDownloader.getFile()->rename(fileName);
+	// Rename temp image file to correct name
+	QString fileName = imageDownloader.getFile()->fileName();
+	fileName = fileName.left(fileName.length() - TEMP_EXT.length());
+	imageDownloader.getFile()->rename(fileName);
 
-  // If not in the middle of an SVG download, save the json
-  if (svgDownloadState != checkingSVG) {
-    //If set to save json, do so now.
-    if(saveJson)
-    {
-      saveJsonToFile();
-    }
+	// If not in the middle of an SVG download, save the json
+	if (svgDownloadState != checkingSVG) {
+		//If set to save json, do so now.
+		if (saveJson) {
+			saveJsonToFile();
+		}
 
-    //Emit successful download (Not used)
-    emit downloaded(queuedImages.at(0)->getId());
-  }
+		// Emit successful download (Not used)
+		emit downloaded(queuedImages.at(0)->getId());
+	}
 
-	//Reset attempts after a successful download
+	// Reset attempts after a successful download
 	imageAttempts = 0;
-	
+
 	// If in the middle of an SVG download
 	if (svgDownloadState == checkingSVG) {
 		// Move on to check the png next
 		svgDownloadState = checkingPNG;
-	} else {
-		//Increment number of images downloaded and remove the downloaded image from the queue
+	}
+	else {
+		// Increment number of images downloaded and remove the downloaded image from the queue
 		imagesDownloaded++;
 		svgDownloadState = notCheckingSVG;
 		delete queuedImages.at(0);
 		queuedImages.remove(0);
 		emit queueSizeChanged(queuedImages.size());
 	}
-	
-	//Use Qtimer to queue calling getImages after a delay of delayBetweenImages
+
+	// Use Qtimer to queue calling getImages after a delay of delayBetweenImages
 	QTimer::singleShot(delayBetweenImages, this, SLOT(getImages()));
 }
 
-void DownloadManager::stopDownload()
-{
+void DownloadManager::stopDownload() {
 	stoppingDownload = true;
 }
 
-void DownloadManager::pauseDownload()
-{
+void DownloadManager::pauseDownload() {
 	downloadPaused = true;
 }
 
-void DownloadManager::unpauseDownload()
-{
+void DownloadManager::unpauseDownload() {
 	downloadPaused = false;
 }
 
 /*
  * Parses the file naming format to create a file path.
- * 
+ *
  * Filename formatting:
- * 
+ *
  * {id} -						Image id
  * {name} -						Full image name
  * {original_name} -			Original file name
@@ -602,28 +559,30 @@ void DownloadManager::unpauseDownload()
  *								Combination of multiple tags:
  *								{######}/{####}/{id}.{ext}: 505597 -> 500000/505000/505597.jpeg
  */
-QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveSVG)
-{
+QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveSVG) {
 	QMap<QString, QString> tags;
 	tags["{id}"] = QString::number(json->getId());
 	tags["{name}"] = json->getName();
 	tags["{original_name}"] = json->getOriginalName();
 	tags["{uploader}"] = json->getUploader();
-	
+
 	// Set extension. Special checking for SVG files to determine whether to use svg or png as the extension.
 	QString imageFormat = json->getFormat().toLower();
 	if (imageFormat == "svg") {
-		if (saveSVG)
+		if (saveSVG) {
 			tags["{ext}"] = "svg";
-		else
+		}
+		else {
 			tags["{ext}"] = "png";
-	} else {
-		 tags["{ext}"] = imageFormat;
+		}
 	}
-	
+	else {
+		tags["{ext}"] = imageFormat;
+	}
+
 	tags["{year}"] = QString::number(json->getYear());
-  tags["{month}"] = QString::number(json->getMonth()).rightJustified(2, QChar('0'));
-  tags["{day}"] = QString::number(json->getDay()).rightJustified(2, QChar('0'));
+	tags["{month}"] = QString::number(json->getMonth()).rightJustified(2, QChar('0'));
+	tags["{day}"] = QString::number(json->getDay()).rightJustified(2, QChar('0'));
 	tags["{score}"] = QString::number(json->getScore());
 	tags["{upvotes}"] = QString::number(json->getUpvotes());
 	tags["{downvotes}"] = QString::number(json->getDownvotes());
@@ -632,83 +591,78 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 	tags["{width}"] = QString::number(json->getWidth());
 	tags["{height}"] = QString::number(json->getHeight());
 	tags["{aspect_ratio}"] = QString::number(json->getAspectRatio());
-	
-	
+
 	// ================
 	// Get image rating tag
 	// ----------------
-	
+
 	QStringList RATING_TAGS;
-	RATING_TAGS << "safe" << "suggestive" << "questionable" << "explicit" <<
-				   "semi-grimdark" << "grimdark" << "grotesque";
-	
+	RATING_TAGS
+		<< "safe"
+		<< "suggestive"
+		<< "questionable"
+		<< "explicit"
+		<< "semi-grimdark"
+		<< "grimdark"
+		<< "grotesque";
+
 	// qDebug() << RATING_TAGS;
-	
+
 	QString imageRatingString("");
 	bool onFirstRating = true;  // Keep track of whether a rating has been added
-	
+
 	QStringList imageTags = json->getTags();
-	
+
 	// qDebug() << imageTags;
-	
+
 	// For each possible rating, add the rating to the string if it is on the image
-	for (QString testRating : RATING_TAGS)
-	{
-		if (imageTags.contains(testRating))
-		{
-			if (onFirstRating)
-			{
+	for (QString testRating : RATING_TAGS) {
+		if (imageTags.contains(testRating)) {
+			if (onFirstRating) {
 				imageRatingString += testRating;
 				onFirstRating = false;
 			}
-			else
-			{
+			else {
 				imageRatingString += QString("+") + testRating;
 			}
 		}
 	}
-	
+
 	// If no ratings were found on the image, add a placeholder tag
-	if (imageRatingString.isEmpty())
-	{
+	if (imageRatingString.isEmpty()) {
 		imageRatingString = "no_rating";
 	}
-	
+
 	tags["{rating}"] = imageRatingString;
-	
-	
+
 	// Process all basic tags, replacing them with their value
 	QMapIterator<QString, QString> i(tags);
-	while(i.hasNext())
-	{
+	while (i.hasNext()) {
 		i.next();
 		format.replace(i.key(), i.value());
 	}
-	
-	
-	//Find all # tag matches
+
+	// Find all # tag matches
 	QRegularExpression re("{#+}");
 	QRegularExpressionMatch match = re.match(format);
-	while(match.hasMatch())
-	{
-		//Get the number of '#'s
+	while (match.hasMatch()) {
+		// Get the number of '#'s
 		int places = match.capturedEnd(0) - match.capturedStart(0) - 2;
-		
+
 		int tagContent = floorNumber(json->getId(), places);
-		
-		//cut out the tag and replace it with the new number
+
+		// Cut out the tag and replace it with the new number
 		format = format.left(match.capturedStart()) + QString::number(tagContent) + format.right(format.length() - match.capturedEnd());
-		
-		//Find additional matches
+
+		// Find additional matches
 		match = re.match(format);
 	}
-	
+
 	// qDebug() << format;
 	return format;
 }
 
-int DownloadManager::floorNumber(int number, int places)
-{
+int DownloadManager::floorNumber(int number, int places) {
 	int div = qPow(10, places - 1);
 	return (number / div) * div;
 }
@@ -716,43 +670,40 @@ int DownloadManager::floorNumber(int number, int places)
 /*
  * Determines the time to wait on failure (network issue, etc.) in an exponential manner.
  * Ex: 1 sec, then 2 sec, then 4 sec, then 8 sec...
- * 
+ *
  */
-int DownloadManager::expDelay(int base, int attempts, int maxDelay)
-{
+int DownloadManager::expDelay(int base, int attempts, int maxDelay) {
 	int delay = base * qPow(2, attempts - 1);
-	if(delay < maxDelay)
+	if (delay < maxDelay) {
 		return delay;
-	else
+	}
+	else {
 		return maxDelay;
+	}
 }
 
-void DownloadManager::saveJsonToFile()
-{
-	//Create the file object
+void DownloadManager::saveJsonToFile() {
+	// Create the file object
 	QFile jsonFile(parseFormat(jsonFileNameFormat, queuedImages.at(0)));
-	
-	//Try to create the file and directories leading up to it, then write the data
-	try
-	{
-		//Get the absolute path
+
+	// Try to create the file and directories leading up to it, then write the data
+	try {
+		// Get the absolute path
 		QDir directoryPath = QFileInfo(jsonFile).absoluteDir();
-		
-		//Create all directories leading up to the current one.
+
+		// Create all directories leading up to the current one.
 		directoryPath.mkpath(".");
-		
-		//If file doesn't exist write data. If it does exist and updateJson is true, do the same. Otherwise skip writing data.
-		if(!jsonFile.exists() || (jsonFile.exists() && updateJson))
-		{
-			//Open the file for writing
+
+		// If file doesn't exist write data. If it does exist and updateJson is true, do the same. Otherwise skip writing data.
+		if (!jsonFile.exists() || (jsonFile.exists() && updateJson)) {
+			// Open the file for writing
 			jsonFile.open(QFile::WriteOnly);
 			jsonFile.write(queuedImages.at(0)->getJson().toJson());
 			jsonFile.close();
 		}
 	}
-	catch(...)
-	{
-		//Stop the download
+	catch(...) {
+		// Stop the download
 		stoppingDownload = true;
 		emit fileError((int) jsonFile.error(), jsonFile.errorString(), 0);
 		return;
