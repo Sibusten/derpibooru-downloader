@@ -51,7 +51,7 @@ QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings) {
         temp += "&page=" + QString::number(settings.page);
     }
 
-    temp = "https://www.derpibooru.org/api/v1/json/search/images?q=" + temp;
+    temp = settings.booruUrl + "/api/v1/json/search/images?q=" + temp;
 
     temp += "&per_page=" + QString::number(settings.perPage);
 
