@@ -1,5 +1,7 @@
 #include "derpijson.h"
 
+const QString DerpiJson::DEFAULT_BOORU("https://www.derpibooru.org/");
+
 QVector<DerpiJson*> DerpiJson::splitArray(QJsonArray jsonArray) {
     QVector<DerpiJson*> images;
 
@@ -49,7 +51,7 @@ QUrl DerpiJson::getSearchUrl(DerpiJson::SearchSettings settings) {
         temp += "&page=" + QString::number(settings.page);
     }
 
-    temp = "https://www.derpibooru.org/api/v1/json/search/images?q=" + temp;
+    temp = settings.booruUrl + "/api/v1/json/search/images?q=" + temp;
 
     temp += "&per_page=" + QString::number(settings.perPage);
 
@@ -220,7 +222,7 @@ bool DerpiJson::isOptimized() {
 }
 
 DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, bool showComments, bool showFavorites, int searchFormat,
-        int searchDirection, QString apiKey, int filterId, int random_seed, int lastIdDownloaded) {
+        int searchDirection, QString apiKey, int filterId, int random_seed, QString booruUrl, int lastIdDownloaded) {
     this->query = query;
     this->page = page;
     this->perPage = perPage;
@@ -231,5 +233,6 @@ DerpiJson::SearchSettings::SearchSettings(QString query, int page, int perPage, 
     this->apiKey = apiKey;
     this->filterId = filterId;
     this->random_seed = random_seed;
+    this->booruUrl = booruUrl;
     this->lastIdFound = lastIdDownloaded;
 }

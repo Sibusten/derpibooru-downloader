@@ -110,6 +110,10 @@ int main(int argc, char *argv[])
         }, {
             {"A", "use-saved-api-key"},
             QCoreApplication::translate("main", "The program will use the saved API key instead.")
+        }, {
+            {"b", "booru-url"},
+            QCoreApplication::translate("main", "The booru to download from. If not specified, uses the saved booru. Should be a url such as https://derpibooru.org/"),
+            "booru-url"
         }
     });
 
@@ -142,6 +146,16 @@ int main(int argc, char *argv[])
         else {
             apiKey = tempApiKey;
         }
+    }
+
+    // Get the booru url. Uses the saved url if the booru flag is not set.
+    QString booruUrl;
+    if (parser.isSet("booru-url")) {
+        // TODO: validation?
+        booruUrl = parser.value("booru-url");
+    }
+    else {
+        booruUrl = settings.value("booruUrl", DerpiJson::DEFAULT_BOORU).toString();
     }
 
     QJsonObject basePreset;
@@ -292,7 +306,7 @@ int main(int argc, char *argv[])
         basePreset.value("perPage").toInt(), basePreset.value("jsonComments").toBool(),
         basePreset.value("jsonFaves").toBool(), basePreset.value("searchFormat").toInt(),
         basePreset.value("searchDirection").toInt(), apiKey, filterID,
-        qrand()
+        qrand(), booruUrl
     );
 
     dlcmd.start(

@@ -506,6 +506,7 @@ void MainWindow::saveSettings() {
     settings.setValue("showAdditionalInfo", ui->showAdditionalInfo->isChecked());
     settings.setValue("suppressWarnings", ui->suppressWarnings->isChecked());
     settings.setValue("apiKey", apiKey);
+    settings.setValue("booruUrl", ui->booruUrl->text());
 
     QJsonObject tempPresets = presets;
     tempPresets.remove("-Default-");  // Do not save the default preset in the settings file
@@ -537,6 +538,7 @@ void MainWindow::loadSettings() {
         }
 
         apiKey = settings.value("apiKey", QString()).toString();
+        ui->booruUrl->setText(settings.value("booruUrl", DerpiJson::DEFAULT_BOORU).toString());
 
         QString settingPresets = settings.value("presets", QString()).toString();
         if (!settingPresets.isEmpty()) {
@@ -718,8 +720,7 @@ void MainWindow::on_stopButton_clicked() {
     ui->stopButton->setEnabled(false);
 }
 
-DerpiJson::SearchSettings MainWindow::getSearchSettings()
-{
+DerpiJson::SearchSettings MainWindow::getSearchSettings() {
     // Get filter id
     int filterId = 0;
     if (ui->customFilterCheck->isChecked()) {
@@ -747,7 +748,8 @@ DerpiJson::SearchSettings MainWindow::getSearchSettings()
         ui->searchDirection->currentIndex(),
         apiKey,
         filterId,
-        qrand()
+        qrand(),
+        ui->booruUrl->text()
     );
 }
 

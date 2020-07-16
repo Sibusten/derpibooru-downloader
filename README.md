@@ -1,12 +1,12 @@
 # Derpibooru Downloader
-Downloads images from derpibooru.org using a variety of options
+Downloads images from derpibooru.org or any other Philomena booru using a variety of options
 
 ## Screenshots
 ![Main Window](/Screenshots/MainWindow.png?raw=true)
 ![Main Window](/Screenshots/Running.png?raw=true)
 
 ## Features
-* Download any search that can be made on the site
+* Download any search that can be made on any Philomena booru
   * View the "Search terms" on the [Search Page](https://derpibooru.org/search) and the advanced [Search Help]() page for all of the queries you can make
 * Skips images that are already downloaded
   * Save yourself and the server bandwidth by only downloading what's needed. If a file were to have the same name as an existing one, it is not downloaded.
@@ -37,6 +37,8 @@ The field "Save Images As" (as well as "Save Json As") allow for special tags to
   * The full name of the file, without extension
 * ```{ext}``` -> jpg
   * The extension of the image. Required if you want your downloads to be the proper file type
+* ```{booru_url}``` -> derpibooru.org
+  * The booru URL the image was downloaded from. Useful if you download from multiple boorus and don't want image names or IDs to conflict
 * ```{rating}``` -> safe
   * The rating (or ratings) that the image is tagged with. Multiple ratings will be joined with a ```+```.
 * ```{year}``` -> 2012, ```{month}``` -> 06, ```{day}``` -> 18

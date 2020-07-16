@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>819</height>
+    <width>903</width>
+    <height>889</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -81,7 +81,7 @@
             <property name="horizontalSpacing">
              <number>0</number>
             </property>
-            <item row="0" column="0">
+            <item row="1" column="0">
              <widget class="QGroupBox" name="groupSearchOptions">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -374,7 +374,57 @@
               </layout>
              </widget>
             </item>
-            <item row="1" column="0" colspan="2">
+            <item row="1" column="1">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Minimum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="4" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <property name="spacing">
+               <number>6</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="startButton">
+                <property name="text">
+                 <string>Start</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pauseButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Pause</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="stopButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Stop</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="0" colspan="2">
              <widget class="QGroupBox" name="groupFileOptions">
               <property name="title">
                <string>File Options</string>
@@ -445,55 +495,24 @@
               </layout>
              </widget>
             </item>
-            <item row="0" column="1">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Minimum</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>0</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
             <item row="2" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <property name="spacing">
-               <number>6</number>
+             <widget class="QGroupBox" name="groupBooruOptions">
+              <property name="title">
+               <string>Booru Options</string>
               </property>
-              <item>
-               <widget class="QPushButton" name="startButton">
-                <property name="text">
-                 <string>Start</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pauseButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Pause</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="stopButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Stop</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+              <layout class="QVBoxLayout" name="verticalLayout_10">
+               <item>
+                <widget class="QLabel" name="booruUrlLabel">
+                 <property name="text">
+                  <string>Booru URL</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="booruUrl"/>
+               </item>
+              </layout>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1137,7 +1156,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>864</width>
+     <width>903</width>
      <height>21</height>
     </rect>
    </property>
