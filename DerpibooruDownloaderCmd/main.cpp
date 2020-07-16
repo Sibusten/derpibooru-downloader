@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
         booruUrl = parser.value("booru-url");
     }
     else {
-        booruUrl = settings.value("booru-url", DerpiJson::DEFAULT_BOORU).toString();
+        booruUrl = settings.value("booruUrl", DerpiJson::DEFAULT_BOORU).toString();
     }
 
     QJsonObject basePreset;
