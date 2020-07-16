@@ -49,6 +49,9 @@ MainWindow::MainWindow(DownloadManager* manager, QWidget *parent) :
     on_saveJson_toggled(false);
     on_showAdditionalInfo_toggled(false);
 
+    // Set any default settings in case the settings file is not found
+    ui->booruUrl->setText(DerpiJson::DEFAULT_BOORU);
+
     // Load settings from disk
     loadSettings();
 
