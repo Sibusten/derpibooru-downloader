@@ -634,11 +634,10 @@ QString DownloadManager::parseFormat(QString format, DerpiJson* json, bool saveS
 
     tags["{rating}"] = imageRatingString;
 
-    // Get booru tag. Start by removing the "http://" or "https://"
-    QString tempBooruUrl = searchSettings.booruUrl.replace(QRegularExpression("^https?://"), "");
-
-    // Remove any trailing slash
-    tags["{booru_url}"] = tempBooruUrl.replace(QRegularExpression("/$"), "");
+    // Get booru tag. Remove the "http://" or "https://" and trailing slash.
+    tags["{booru_url}"] = QString(searchSettings.booruUrl)
+            .replace(QRegularExpression("^https?://"), "")
+            .replace(QRegularExpression("/$"), "");
 
     // Process all basic tags, replacing them with their value
     QMapIterator<QString, QString> i(tags);
