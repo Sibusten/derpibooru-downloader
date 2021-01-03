@@ -1,0 +1,36 @@
+language: csharp
+solution: Sibusten.Philomena.Downloader.sln
+mono: none
+dotnet: 5.0.101
+os: linux
+dist: xenial
+
+# Define reusable jobs
+
+_test_job: &test_job
+  stage: "Test"
+  script: dotnet test -c $CONFIGURATION
+
+# TODO: Create deploy job for GitHub releases that packages executable
+# _deploy_job: &deploy_job
+#   stage: "Deploy"
+#   if: tag IS present
+#   script: dotnet pack ./Sibusten.Philomena.Client/Sibusten.Philomena.Client.csproj -c $CONFIGURATION
+#   deploy:
+#     on:
+#       tags: true
+#     provider: script
+#     edge: true
+#     script: dotnet nuget push ./Sibusten.Philomena.Client/bin/$CONFIGURATION/Sibusten.Philomena.Client.*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+
+# Specify jobs to run
+
+jobs:
+  include:
+    - <<: *test_job
+      env: CONFIGURATION=Debug
+    - <<: *test_job
+      env: CONFIGURATION=Release
+
+    # - <<: *deploy_job
+    #   env: CONFIGURATION=Release  # Only deploy with release configuration
