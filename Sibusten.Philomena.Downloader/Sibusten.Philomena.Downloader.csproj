@@ -5,4 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Sibusten.Philomena.Client" Version="1.0.0-alpha1" />
+  </ItemGroup>
+
 </Project>
