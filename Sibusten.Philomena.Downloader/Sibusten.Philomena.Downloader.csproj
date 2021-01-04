@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
     <PackageReference Include="Sibusten.Philomena.Client" Version="1.0.0-alpha1" />
   </ItemGroup>
 
