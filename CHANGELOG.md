@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ## [Unreleased]
 
+### Changed
+- Rewrote app in C# using .NET 5
+
 ## [2.1.0] - 2020-07-15
 
 ### Added
