@@ -3,8 +3,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][Keep a Changelog] and this project adheres to [Semantic Versioning][Semantic Versioning].
 
----
-
 ## [Unreleased]
 
 ## [2.1.0] - 2020-07-15
