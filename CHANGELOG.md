@@ -7,8 +7,6 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ## [Unreleased]
 
----
-
 ## [2.1.0] - 2020-07-15
 
 ### Added
@@ -16,14 +14,10 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 - `{booru_url}` file naming tag
 - `--booru-url` (`-b`) command line option to set custom booru URL for a query
 
----
-
 ## [2.0.1] - 2020-07-03
 
 ### Fixed
 - Downloader getting stuck when using the `OR` (`||`) operator
-
----
 
 ## [2.0.0] - 2020-02-15
 
@@ -33,8 +27,6 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ### Fixed
 - Crash when image limit is set to a multiple of images per page
-
----
 
 ## [1.4.5] - 2019-06-29
 
@@ -50,8 +42,6 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 - Image corruption when a download is interrupted
     - Images are downloaded to a temp file first, and moved after downloading
 
----
-
 ## [1.4.3] - 2019-04-22
 
 ### Changed
@@ -60,14 +50,10 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 ### Fixed
 - `{month}` and `{day}` tags not having a leading zero when the number is a single digit
 
----
-
 ## [1.4.2] - 2019-03-27
 
 ### Added
 - Option to download only JSON files
-
----
 
 ## [1.4.1] - 2018-11-06
 
@@ -81,8 +67,6 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 - Skip downloading unrendered images
     - This can happen if an image is downloaded very shortly after being uploaded
 
----
-
 ## [1.4.0] - 2018-08-08
 
 ### Added
@@ -92,15 +76,11 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
     - Can use presets created in the Gui version
     - *NOTE:* The GUI version must be ran first to generate the settings file. The command line version cannot create the file.
 
----
-
 ## [1.3.7] - 2018-06-22
 
 ### Added
 - `{rating}` tag for path formatting
     - It will contain the rating (or ratings, if there are multiple) that the image is tagged with.
-
----
 
 ## [1.3.6] - 2018-04-22
 
@@ -110,8 +90,6 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
     - Download SVG version only
     - Download both
 
----
-
 ## [1.3.5] - 2018-04-07
 
 ### Changed
@@ -120,22 +98,16 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 ### Fixed
 - SVG images not being downloaded
 
----
-
 ## [1.3.4] - 2018-02-25
 
 ### Fixed
 - Image IDs incorrectly read from metadata
     - Derpibooru changed IDs from strings back to ints
 
----
-
 ## [1.3.2] - 2017-09-06
 
 ### Fixed
 - Missing images causing the downloader to freeze
-
----
 
 ## [1.3.1] - 2017-03-11
 
@@ -146,15 +118,11 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 - Include `platforms\qwindows.dll` in binary release
 - Include openssl in binary release (`libeay32.dll`, `ssleay32.dll`)
 
----
-
 ## [1.3.0] - 2017-02-13
 
 ### Changed
 - Updated to support Derpibooru's new search methods
     - User-specific search parameters such as favorites and upvotes now go in the search query itself
-
----
 
 <!-- Links -->
 [Keep a Changelog]: https://keepachangelog.com/
