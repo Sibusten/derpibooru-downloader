@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using Sibusten.Philomena.Api;
 
@@ -22,5 +23,6 @@ namespace Sibusten.Philomena.Downloader.Settings
         // public LegacySvgActionIndex? SvgAction { get; set; }
         public bool ShouldSaveComments { get; set; } = false;
         public bool ShouldSaveFavorites { get; set; } = false;
+        public List<string> Boorus { get; set; } = new List<string>();
     }
 }
