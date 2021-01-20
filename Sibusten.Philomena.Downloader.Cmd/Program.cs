@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommandLine;
+using Sibusten.Philomena.Downloader.Settings;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {
@@ -34,6 +36,11 @@ namespace Sibusten.Philomena.Downloader.Cmd
                 args = GetArgsFromConsole();
             }
 #endif
+
+            Parser.Default.ParseArguments<SearchArguments>(args).WithParsed<SearchArguments>(searchArgs =>
+            {
+                SearchConfig config = searchArgs.ToSearchConfig();
+            });
 
             Console.WriteLine("Hello World!");
 
