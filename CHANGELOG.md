@@ -7,6 +7,22 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ### Changed
 - Rewrote app in C# using .NET 5
+- Some command line options are renamed
+    - `--search-format` => `--sort-field`
+    - `--search-direction` => `--sort-direction`
+- `--booru-url` is now `--boorus`
+    - Booru IDs are used instead of urls. Boorus are configured first and then used in searches.
+    - Multiple boorus can be listed, and images will be downloaded from all sites: `--boorus derpibooru ponybooru`
+
+### Removed
+- PerPage option
+    - The max of 50 images per page is always used
+- StartPage option
+    - Search terms should be used instead for this purpose (`id.gt:1234`, etc.)
+- Options to save comments and favorites in the JSON
+    - This feature hasn't worked for a long time, since Philomena changed how comments and favorites are requested
+- `--json-only` command line option
+    - Instead, use `--save-json --skip-images`
 
 ## [2.1.0] - 2020-07-15
 
