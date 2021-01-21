@@ -83,35 +83,15 @@ namespace Sibusten.Philomena.Downloader.Cmd
             Class1.HelloWorld();
         }
 
-        private static async Task DownloadCommand(string? preset, string? query, int? limit, int? filter, SortField? sortField, SortDirection? sortDirection, string? imagePath, string? jsonPath, bool? skipImages, bool? saveJson, bool? updateJson, List<string> boorus, string? apiKey)
+        private static async Task DownloadCommand(DownloadArgs downloadArgs)
         {
-            SearchConfig baseConfig;
-            if (preset is not null)
+            SearchConfig? baseConfig = null;
+            if (downloadArgs.Preset is not null)
             {
-                // TODO: Load the given preset
-                baseConfig = new SearchConfig();
-            }
-            else
-            {
-                baseConfig = new SearchConfig();
+                // TODO: load preset config from settings
             }
 
-            // Build a new search config based on the default config (or selected preset)
-            // Values are overridden if specified in the arguments
-            SearchConfig config = new SearchConfig()
-            {
-                Filter = filter is not null ? filter.Value : baseConfig.Filter,
-                ImageLimit = limit is not null ? limit.Value : baseConfig.ImageLimit,
-                ImagePathFormat = imagePath is not null ? imagePath : baseConfig.ImagePathFormat,
-                JsonPathFormat = jsonPath is not null ? jsonPath : baseConfig.JsonPathFormat,
-                Query = query is not null ? query : baseConfig.Query,
-                ShouldSaveImages = skipImages is not null ? !skipImages.Value : baseConfig.ShouldSaveImages,
-                ShouldSaveJson = saveJson is not null ? saveJson.Value : baseConfig.ShouldSaveJson,
-                ShouldUpdateJson = updateJson is not null ? updateJson.Value : baseConfig.ShouldUpdateJson,
-                SortDirection = sortDirection is not null ? sortDirection.Value : baseConfig.SortDirection,
-                SortField = sortField is not null ? sortField.Value : baseConfig.SortField,
-                Boorus = boorus.Any() ? boorus.ToList() : baseConfig.Boorus,
-            };
+            SearchConfig config = downloadArgs.GetSearchConfig(baseConfig);
         }
     }
 }
