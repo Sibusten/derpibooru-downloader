@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Sibusten.Philomena.Api;
 using System.Reflection;
 using System.CommandLine.Invocation;
+using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {
