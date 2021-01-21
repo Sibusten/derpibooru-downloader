@@ -18,7 +18,7 @@ namespace Sibusten.Philomena.Downloader.Settings
         public string JsonPathFormat { get; set; } = Path.Join("Downloads", "Json", "{id}.json");
         public bool ShouldSaveImages { get; set; } = true;
         public bool ShouldSaveJson { get; set; } = false;
-        public bool ShouldUpdateJson { get; set; } = true;
+        public bool ShouldUpdateJson { get; set; } = false;
         // TODO: Set when added to the client
         // public LegacySvgActionIndex? SvgAction { get; set; }
         public bool ShouldSaveComments { get; set; } = false;
