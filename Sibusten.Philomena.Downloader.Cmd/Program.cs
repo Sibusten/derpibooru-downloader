@@ -79,25 +79,81 @@ namespace Sibusten.Philomena.Downloader.Cmd
 
             RootCommand rootCommand = new RootCommand("A downloader for imageboards running Philomena, such as Derpibooru.")
             {
-                new Command("download", "Search for and download images")
+                new Command("download", "Search for and download images.")
                 {
                     new Option<string>(new[] { "--preset", "-p" }, "The preset to use. If no preset is given, the default is used."),
                     new Option<string>(new[] { "--api-key", "-a" }, "The API key to use."),
-                }.WithSearchQueryArgs().WithHandler(nameof(DownloadCommand))
+                }.WithSearchQueryArgs().WithHandler(nameof(DownloadCommand)),
+
+                new Command("preset", "Manage presets.")
+                {
+                    new Command("add", "Add a new preset.")
+                    {
+                        new Argument<string>("name", "The name of the new preset."),
+                    }.WithSearchQueryArgs().WithHandler(nameof(PresetAddCommand)),
+
+                    new Command("delete", "Delete a preset.")
+                    {
+                        new Argument<string>("name", "The preset to delete.")
+                    }.WithHandler(nameof(PresetRemoveCommand)),
+
+                    new Command("rename", "Rename a preset.")
+                    {
+                        new Argument<string>("from", "The preset to rename."),
+                        new Argument<string>("to", "The new name of the preset.")
+                    }.WithHandler(nameof(PresetRenameCommand)),
+
+                    new Command("copy", "Copy a preset.")
+                    {
+                        new Argument<string>("from", "The preset to copy from."),
+                        new Argument<string>("to", "The preset to copy to."),
+                        new Option<bool>(new[] { "--overwrite", "-o" }, "Overwrites an existing preset with the copy.")
+                    }.WithHandler(nameof(PresetCopyCommand)),
+
+                    new Command("update", "Update a preset. Only given options are modified.")
+                    {
+                        new Argument<string>("name", "The preset to update.")
+                    }.WithSearchQueryArgs().WithHandler(nameof(PresetUpdateCommand))
+                }
             };
 
             await rootCommand.InvokeAsync(args);
         }
 
-        private static async Task DownloadCommand(DownloadArgs downloadArgs)
+        private static async Task DownloadCommand(DownloadArgs args)
         {
             SearchConfig? baseConfig = null;
-            if (downloadArgs.Preset is not null)
+            if (args.Preset is not null)
             {
                 // TODO: load preset config from settings
             }
 
-            SearchConfig config = downloadArgs.GetSearchConfig(baseConfig);
+            SearchConfig config = args.GetSearchConfig(baseConfig);
+        }
+
+        private static async Task PresetAddCommand(PresetAddCommandArgs args)
+        {
+
+        }
+
+        private static async Task PresetRemoveCommand(PresetRemoveCommandArgs args)
+        {
+
+        }
+
+        private static async Task PresetRenameCommand(PresetRenameCommandArgs args)
+        {
+
+        }
+
+        private static async Task PresetCopyCommand(PresetCopyCommandArgs args)
+        {
+
+        }
+
+        private static async Task PresetUpdateCommand(PresetUpdateCommandArgs args)
+        {
+
         }
     }
 }
