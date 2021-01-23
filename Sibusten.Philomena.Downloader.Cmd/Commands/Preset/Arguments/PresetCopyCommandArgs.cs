@@ -1,4 +1,4 @@
-namespace Sibusten.Philomena.Downloader.Cmd.Commands.Arguments
+namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset.Arguments
 {
     public class PresetCopyCommandArgs
     {

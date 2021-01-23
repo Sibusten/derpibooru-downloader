@@ -10,6 +10,7 @@ using System.CommandLine.Invocation;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 using Newtonsoft.Json;
 using Sibusten.Philomena.Downloader.Cmd.Commands;
+using Sibusten.Philomena.Downloader.Cmd.Commands.Preset;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {

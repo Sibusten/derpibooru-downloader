@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
 using Newtonsoft.Json;
-using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
+using Sibusten.Philomena.Downloader.Cmd.Commands.Preset.Arguments;
 using Sibusten.Philomena.Downloader.Settings;
 
-namespace Sibusten.Philomena.Downloader.Cmd.Commands
+namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
 {
     public class PresetCommand
     {

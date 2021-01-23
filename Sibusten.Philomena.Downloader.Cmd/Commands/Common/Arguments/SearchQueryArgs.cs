@@ -3,7 +3,7 @@ using System.Linq;
 using Sibusten.Philomena.Api;
 using Sibusten.Philomena.Downloader.Settings;
 
-namespace Sibusten.Philomena.Downloader.Cmd.Commands.Arguments
+namespace Sibusten.Philomena.Downloader.Cmd.Commands.Common.Arguments
 {
     public class SearchQueryArgs
     {
