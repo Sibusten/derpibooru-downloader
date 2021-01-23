@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -48,17 +48,17 @@ namespace Sibusten.Philomena.Downloader.Cmd
         {
             List<Symbol> SearchQueryArgs = new List<Symbol>
             {
-                new Option<string>(new[] { "--query", "-q" }, "The search query."),
-                new Option<int>(new[] { "--limit", "-l" }, "The maximum number of images to download. Defaults to all images."),
-                new Option<int>(new[] { "--filter", "-f" }, "The ID of the filter to use."),
-                new Option<SortField>(new[] { "--sort-field", "-S" }, "How to sort images."),
-                new Option<SortDirection>(new[] { "--sort-direction", "-D" }, "The direction to sort images."),
-                new Option<string>(new[] { "--image-path", "-I" }, "Where to save images and how to name them."),
-                new Option<string>(new[] { "--json-path", "-J" }, "Where to save json files and how to name them."),
-                new Option<bool?>(new[] { "--skip-images", "-i" }, "Skip saving images."),
-                new Option<bool>(new[] { "--save-json", "-j" }, "Save json metadata files."),
-                new Option<bool>(new[] { "--update-json", "-u" }, "Overwrite json metadata files with new data."),
-                new Option<List<string>>(new[] { "--boorus", "-b" }, "What booru to download from. Multiple boorus can be given."),
+                new Option<string>(new[] { "--query", "-q" }, "The search query"),
+                new Option<int>(new[] { "--limit", "-l" }, "The maximum number of images to download. Defaults to all images"),
+                new Option<int>(new[] { "--filter", "-f" }, "The ID of the filter to use"),
+                new Option<SortField>(new[] { "--sort-field", "-S" }, "How to sort images"),
+                new Option<SortDirection>(new[] { "--sort-direction", "-D" }, "The direction to sort images"),
+                new Option<string>(new[] { "--image-path", "-I" }, "Where to save images and how to name them"),
+                new Option<string>(new[] { "--json-path", "-J" }, "Where to save json files and how to name them"),
+                new Option<bool?>(new[] { "--skip-images", "-i" }, "Skip saving images"),
+                new Option<bool>(new[] { "--save-json", "-j" }, "Save json metadata files"),
+                new Option<bool>(new[] { "--update-json", "-u" }, "Overwrite json metadata files with new data"),
+                new Option<List<string>>(new[] { "--boorus", "-b" }, "What booru to download from. Multiple boorus can be given"),
             };
 
             foreach (Symbol arg in SearchQueryArgs)
@@ -79,44 +79,44 @@ namespace Sibusten.Philomena.Downloader.Cmd
             }
 #endif
 
-            RootCommand rootCommand = new RootCommand("A downloader for imageboards running Philomena, such as Derpibooru.")
+            RootCommand rootCommand = new RootCommand("A downloader for imageboards running Philomena, such as Derpibooru")
             {
                 new Command("download", "Search for and download images.")
                 {
-                    new Option<string>(new[] { "--preset", "-p" }, "The preset to use. If no preset is given, the default is used."),
-                    new Option<string>(new[] { "--api-key", "-a" }, "The API key to use."),
+                    new Option<string>(new[] { "--preset", "-p" }, "The preset to use as a base. If no preset is given, the default is used"),
+                    new Option<string>(new[] { "--api-key", "-a" }, "The API key to use"),
                 }.WithSearchQueryArgs().WithHandler(nameof(DownloadCommand)),
 
-                new Command("preset", "Manage presets.")
+                new Command("preset", "Manage presets")
                 {
-                    new Command("list", "List presets.").WithHandler(nameof(PresetListCommand)),
+                    new Command("list", "List presets").WithHandler(nameof(PresetListCommand)),
 
-                    new Command("add", "Add a new preset.")
+                    new Command("add", "Add a new preset")
                     {
-                        new Argument<string>("name", "The name of the new preset."),
+                        new Argument<string>("name", "The name of the new preset"),
                     }.WithSearchQueryArgs().WithHandler(nameof(PresetAddCommand)),
 
-                    new Command("delete", "Delete a preset.")
+                    new Command("delete", "Delete a preset")
                     {
-                        new Argument<string>("name", "The preset to delete.")
+                        new Argument<string>("name", "The preset to delete")
                     }.WithHandler(nameof(PresetRemoveCommand)),
 
                     new Command("rename", "Rename a preset.")
                     {
-                        new Argument<string>("from", "The preset to rename."),
-                        new Argument<string>("to", "The new name of the preset.")
+                        new Argument<string>("from", "The preset to rename"),
+                        new Argument<string>("to", "The new name of the preset")
                     }.WithHandler(nameof(PresetRenameCommand)),
 
                     new Command("copy", "Copy a preset.")
                     {
-                        new Argument<string>("from", "The preset to copy from."),
-                        new Argument<string>("to", "The preset to copy to."),
-                        new Option<bool>(new[] { "--overwrite", "-o" }, "Overwrites an existing preset with the copy.")
+                        new Argument<string>("from", "The preset to copy from"),
+                        new Argument<string>("to", "The preset to copy to"),
+                        new Option<bool>(new[] { "--overwrite", "-o" }, "Overwrites an existing preset with the copy")
                     }.WithHandler(nameof(PresetCopyCommand)),
 
-                    new Command("update", "Update a preset. Only given options are modified.")
+                    new Command("update", "Update a preset. Only given options are modified")
                     {
-                        new Argument<string>("name", "The preset to update.")
+                        new Argument<string>("name", "The preset to update")
                     }.WithSearchQueryArgs().WithHandler(nameof(PresetUpdateCommand))
                 }
             };
@@ -143,7 +143,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
 
             if (string.IsNullOrEmpty(presetList))
             {
-                Console.WriteLine("There are no presets.");
+                Console.WriteLine("There are no presets");
             }
             else
             {
@@ -156,7 +156,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
             SearchPreset? existingPreset = configAccess.GetPreset(args.Name);
             if (existingPreset is not null)
             {
-                Console.WriteLine($"Cannot add preset: Preset '{args.Name}' already exists.");
+                Console.WriteLine($"Cannot add preset: Preset '{args.Name}' already exists");
                 return;
             }
 
