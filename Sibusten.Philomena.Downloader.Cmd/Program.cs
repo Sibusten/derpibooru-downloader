@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -184,7 +184,25 @@ namespace Sibusten.Philomena.Downloader.Cmd
 
         private static async Task PresetRenameCommand(PresetRenameCommandArgs args)
         {
+            SearchPreset? presetFrom = configAccess.GetPreset(args.From);
 
+            if (presetFrom is null)
+            {
+                Console.WriteLine($"Preset '{args.From}' does not exist");
+                return;
+            }
+
+            SearchPreset? presetTo = configAccess.GetPreset(args.To);
+
+            if (presetTo is not null)
+            {
+                Console.WriteLine($"Preset '{args.To}' already exists");
+                return;
+            }
+
+            // Update the preset's name
+            presetFrom.Name = args.To;
+            configAccess.UpsertPreset(presetFrom);
         }
 
         private static async Task PresetCopyCommand(PresetCopyCommandArgs args)
