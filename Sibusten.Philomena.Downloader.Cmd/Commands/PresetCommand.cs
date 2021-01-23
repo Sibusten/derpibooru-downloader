@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.Linq;
 using Newtonsoft.Json;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
@@ -14,6 +15,44 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands
         public PresetCommand(ConfigAccess configAccess)
         {
             _configAccess = configAccess;
+        }
+
+        public Command GetCommand()
+        {
+            return new Command("preset", "Manage presets")
+            {
+                new Command("list", "List presets")
+                {
+                    new Option<bool>(new[] { "--verbose", "-v" }, "Print all preset information as JSON")
+                }.WithHandler(new Action<PresetListCommandArgs>(ListCommand)),
+
+                new Command("add", "Add a new preset")
+                {
+                    new Argument<string>("name", "The name of the new preset"),
+                }.WithSearchQueryArgs().WithHandler(new Action<PresetAddCommandArgs>(AddCommand)),
+
+                new Command("delete", "Delete a preset")
+                {
+                    new Argument<string>("name", "The preset to delete")
+                }.WithHandler(new Action<PresetRemoveCommandArgs>(RemoveCommand)),
+
+                new Command("rename", "Rename a preset.")
+                {
+                    new Argument<string>("from", "The preset to rename"),
+                    new Argument<string>("to", "The new name of the preset")
+                }.WithHandler(new Action<PresetRenameCommandArgs>(RenameCommand)),
+
+                new Command("copy", "Copy a preset.")
+                {
+                    new Argument<string>("from", "The preset to copy from"),
+                    new Argument<string>("to", "The preset to copy to")
+                }.WithHandler(new Action<PresetCopyCommandArgs>(CopyCommand)),
+
+                new Command("update", "Update a preset. Only given options are modified")
+                {
+                    new Argument<string>("name", "The preset to update")
+                }.WithSearchQueryArgs().WithHandler(new Action<PresetUpdateCommandArgs>(UpdateCommand))
+            };
         }
 
         public void ListCommand(PresetListCommandArgs args)
