@@ -33,5 +33,15 @@ namespace Sibusten.Philomena.Downloader.Settings
         {
             return _presetCollection.FindAll().ToList();
         }
+
+        public SearchPreset? GetPreset(string name)
+        {
+            return _presetCollection.FindOne(p => p.Name == name);
+        }
+
+        public void UpsertPreset(SearchPreset preset)
+        {
+            _presetCollection.Upsert(preset);
+        }
     }
 }

@@ -151,9 +151,20 @@ namespace Sibusten.Philomena.Downloader.Cmd
             }
         }
 
-        private static async Task PresetAddCommand(PresetAddCommandArgs args)
+        private static void PresetAddCommand(PresetAddCommandArgs args)
         {
+            SearchPreset? existingPreset = configAccess.GetPreset(args.Name);
+            if (existingPreset is not null)
+            {
+                Console.WriteLine($"Cannot add preset: Preset '{args.Name}' already exists.");
+                return;
+            }
 
+            SearchConfig config = args.GetSearchConfig();
+            SearchPreset preset = new SearchPreset(args.Name, config);
+            configAccess.UpsertPreset(preset);
+
+            Console.WriteLine($"Added preset '{args.Name}");
         }
 
         private static async Task PresetRemoveCommand(PresetRemoveCommandArgs args)
