@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -163,7 +163,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
             SearchPreset preset = new SearchPreset(args.Name, config);
             configAccess.UpsertPreset(preset);
 
-            Console.WriteLine($"Added preset '{args.Name}");
+            Console.WriteLine($"Added preset '{args.Name}'");
         }
 
         private static void PresetRemoveCommand(PresetRemoveCommandArgs args)
@@ -241,7 +241,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
             preset.Config = config;
             configAccess.UpsertPreset(preset);
 
-            Console.WriteLine($"Updated preset '{args.Name}");
+            Console.WriteLine($"Updated preset '{args.Name}'");
         }
     }
 }
