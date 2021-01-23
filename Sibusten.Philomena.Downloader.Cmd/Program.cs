@@ -181,7 +181,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
             Console.WriteLine($"Deleted preset '{args.Name}'");
         }
 
-        private static async Task PresetRenameCommand(PresetRenameCommandArgs args)
+        private static void PresetRenameCommand(PresetRenameCommandArgs args)
         {
             SearchPreset? presetFrom = configAccess.GetPreset(args.From);
 
