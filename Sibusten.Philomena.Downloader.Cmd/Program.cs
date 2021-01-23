@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -110,8 +110,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
                     new Command("copy", "Copy a preset.")
                     {
                         new Argument<string>("from", "The preset to copy from"),
-                        new Argument<string>("to", "The preset to copy to"),
-                        new Option<bool>(new[] { "--overwrite", "-o" }, "Overwrites an existing preset with the copy")
+                        new Argument<string>("to", "The preset to copy to")
                     }.WithHandler(nameof(PresetCopyCommand)),
 
                     new Command("update", "Update a preset. Only given options are modified")
@@ -205,9 +204,27 @@ namespace Sibusten.Philomena.Downloader.Cmd
             configAccess.UpsertPreset(presetFrom);
         }
 
-        private static async Task PresetCopyCommand(PresetCopyCommandArgs args)
+        private static void PresetCopyCommand(PresetCopyCommandArgs args)
         {
+            SearchPreset? presetFrom = configAccess.GetPreset(args.From);
 
+            if (presetFrom is null)
+            {
+                Console.WriteLine($"Preset '{args.From}' does not exist");
+                return;
+            }
+
+            SearchPreset? presetTo = configAccess.GetPreset(args.To);
+
+            if (presetTo is not null)
+            {
+                Console.WriteLine($"Preset '{args.To}' already exists");
+                return;
+            }
+
+            // Create a new preset as a copy
+            presetTo = new SearchPreset(args.To, presetFrom.Config);
+            configAccess.UpsertPreset(presetTo);
         }
 
         private static async Task PresetUpdateCommand(PresetUpdateCommandArgs args)
