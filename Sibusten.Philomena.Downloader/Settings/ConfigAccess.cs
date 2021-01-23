@@ -43,5 +43,10 @@ namespace Sibusten.Philomena.Downloader.Settings
         {
             _presetCollection.Upsert(preset);
         }
+
+        public void DeletePreset(ObjectId presetId)
+        {
+            _presetCollection.Delete(presetId);
+        }
     }
 }
