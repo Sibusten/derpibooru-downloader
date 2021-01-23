@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -218,6 +218,8 @@ namespace Sibusten.Philomena.Downloader.Cmd
             // Update the preset's name
             presetFrom.Name = args.To;
             configAccess.UpsertPreset(presetFrom);
+
+            Console.WriteLine($"Renamed preset '{args.From}' to '{args.To}'");
         }
 
         private static void PresetCopyCommand(PresetCopyCommandArgs args)
@@ -241,6 +243,8 @@ namespace Sibusten.Philomena.Downloader.Cmd
             // Create a new preset as a copy
             presetTo = new SearchPreset(args.To, presetFrom.Config);
             configAccess.UpsertPreset(presetTo);
+
+            Console.WriteLine($"Copied preset '{args.From}' to '{args.To}'");
         }
 
         private static void PresetUpdateCommand(PresetUpdateCommandArgs args)
