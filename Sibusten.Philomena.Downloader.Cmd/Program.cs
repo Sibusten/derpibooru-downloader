@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -145,7 +145,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
             if (args.Verbose)
             {
                 // Convert presets to a JSON list
-                string presetsJson = JsonConvert.SerializeObject(presets);
+                string presetsJson = JsonConvert.SerializeObject(presets, Formatting.Indented);
 
                 Console.WriteLine(presetsJson);
             }
