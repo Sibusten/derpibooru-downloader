@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ### Added
 - Commands for preset management
+    - `preset list`: List presets.
     - `preset add`: Add a new preset.
     - `preset delete`: Delete a preset.
     - `preset rename`: Rename a preset.

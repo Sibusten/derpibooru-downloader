@@ -13,6 +13,8 @@ namespace Sibusten.Philomena.Downloader.Cmd
 {
     public static class Program
     {
+        private static ConfigAccess configAccess = new ConfigAccess();
+
         private static string[] GetArgsFromConsole()
         {
             Console.WriteLine("Enter program arguments, one per line. Finish by entering an empty line.");
@@ -87,6 +89,8 @@ namespace Sibusten.Philomena.Downloader.Cmd
 
                 new Command("preset", "Manage presets.")
                 {
+                    new Command("list", "List presets.").WithHandler(nameof(PresetListCommand)),
+
                     new Command("add", "Add a new preset.")
                     {
                         new Argument<string>("name", "The name of the new preset."),
@@ -129,6 +133,22 @@ namespace Sibusten.Philomena.Downloader.Cmd
             }
 
             SearchConfig config = args.GetSearchConfig(baseConfig);
+        }
+
+        private static void PresetListCommand()
+        {
+            List<SearchPreset> presets = configAccess.GetPresets();
+            IEnumerable<string> presetNames = presets.Select(p => p.Name);
+            string presetList = string.Join(Environment.NewLine, presetNames);
+
+            if (string.IsNullOrEmpty(presetList))
+            {
+                Console.WriteLine("There are no presets.");
+            }
+            else
+            {
+                Console.WriteLine(presetList);
+            }
         }
 
         private static async Task PresetAddCommand(PresetAddCommandArgs args)
