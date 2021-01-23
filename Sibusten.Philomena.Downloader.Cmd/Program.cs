@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -8,6 +8,7 @@ using Sibusten.Philomena.Api;
 using System.Reflection;
 using System.CommandLine.Invocation;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
+using Newtonsoft.Json;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {
@@ -89,7 +90,10 @@ namespace Sibusten.Philomena.Downloader.Cmd
 
                 new Command("preset", "Manage presets")
                 {
-                    new Command("list", "List presets").WithHandler(nameof(PresetListCommand)),
+                    new Command("list", "List presets")
+                    {
+                        new Option<bool>(new[] { "--verbose", "-v" }, "Print all preset information as JSON")
+                    }.WithHandler(nameof(PresetListCommand)),
 
                     new Command("add", "Add a new preset")
                     {
@@ -134,19 +138,31 @@ namespace Sibusten.Philomena.Downloader.Cmd
             SearchConfig config = args.GetSearchConfig(baseConfig);
         }
 
-        private static void PresetListCommand()
+        private static void PresetListCommand(PresetListCommandArgs args)
         {
             List<SearchPreset> presets = configAccess.GetPresets();
-            IEnumerable<string> presetNames = presets.Select(p => p.Name);
-            string presetList = string.Join(Environment.NewLine, presetNames);
 
-            if (string.IsNullOrEmpty(presetList))
+            if (args.Verbose)
             {
-                Console.WriteLine("There are no presets");
+                // Convert presets to a JSON list
+                string presetsJson = JsonConvert.SerializeObject(presets);
+
+                Console.WriteLine(presetsJson);
             }
             else
             {
-                Console.WriteLine(presetList);
+                // Create a list of the preset names
+                IEnumerable<string> presetNames = presets.Select(p => p.Name);
+                string presetList = string.Join(Environment.NewLine, presetNames);
+
+                if (string.IsNullOrEmpty(presetList))
+                {
+                    Console.WriteLine("There are no presets");
+                }
+                else
+                {
+                    Console.WriteLine(presetList);
+                }
             }
         }
 
