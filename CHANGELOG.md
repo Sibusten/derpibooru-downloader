@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ## [Unreleased]
 
+### Added
+- Commands for preset management
+    - `preset add`: Add a new preset.
+    - `preset delete`: Delete a preset.
+    - `preset rename`: Rename a preset.
+    - `preset copy`: Copy a preset.
+    - `preset update`: Update a preset. Only given options are modified.
+
 ### Changed
 - Rewrote app in C# using .NET 5
 - Some command line options are renamed
