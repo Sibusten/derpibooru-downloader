@@ -9,6 +9,7 @@ using System.Reflection;
 using System.CommandLine.Invocation;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 using Newtonsoft.Json;
+using Sibusten.Philomena.Downloader.Cmd.Commands;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {
@@ -41,6 +42,13 @@ namespace Sibusten.Philomena.Downloader.Cmd
             MethodInfo? method = typeof(Program).GetMethod(name, flags);
 
             ICommandHandler handler = CommandHandler.Create(method!);
+            command.Handler = handler;
+            return command;
+        }
+
+        static Command WithHandler(this Command command, Delegate handlerDelegate)
+        {
+            ICommandHandler handler = CommandHandler.Create(handlerDelegate);
             command.Handler = handler;
             return command;
         }
@@ -80,6 +88,8 @@ namespace Sibusten.Philomena.Downloader.Cmd
             }
 #endif
 
+            PresetCommand presetCommand = new PresetCommand(configAccess);
+
             RootCommand rootCommand = new RootCommand("A downloader for imageboards running Philomena, such as Derpibooru")
             {
                 new Command("download", "Search for and download images.")
@@ -93,34 +103,34 @@ namespace Sibusten.Philomena.Downloader.Cmd
                     new Command("list", "List presets")
                     {
                         new Option<bool>(new[] { "--verbose", "-v" }, "Print all preset information as JSON")
-                    }.WithHandler(nameof(PresetListCommand)),
+                    }.WithHandler(new Action<PresetListCommandArgs>(presetCommand.ListCommand)),
 
                     new Command("add", "Add a new preset")
                     {
                         new Argument<string>("name", "The name of the new preset"),
-                    }.WithSearchQueryArgs().WithHandler(nameof(PresetAddCommand)),
+                    }.WithSearchQueryArgs().WithHandler(new Action<PresetAddCommandArgs>(presetCommand.AddCommand)),
 
                     new Command("delete", "Delete a preset")
                     {
                         new Argument<string>("name", "The preset to delete")
-                    }.WithHandler(nameof(PresetRemoveCommand)),
+                    }.WithHandler(new Action<PresetRemoveCommandArgs>(presetCommand.RemoveCommand)),
 
                     new Command("rename", "Rename a preset.")
                     {
                         new Argument<string>("from", "The preset to rename"),
                         new Argument<string>("to", "The new name of the preset")
-                    }.WithHandler(nameof(PresetRenameCommand)),
+                    }.WithHandler(new Action<PresetRenameCommandArgs>(presetCommand.RenameCommand)),
 
                     new Command("copy", "Copy a preset.")
                     {
                         new Argument<string>("from", "The preset to copy from"),
                         new Argument<string>("to", "The preset to copy to")
-                    }.WithHandler(nameof(PresetCopyCommand)),
+                    }.WithHandler(new Action<PresetCopyCommandArgs>(presetCommand.CopyCommand)),
 
                     new Command("update", "Update a preset. Only given options are modified")
                     {
                         new Argument<string>("name", "The preset to update")
-                    }.WithSearchQueryArgs().WithHandler(nameof(PresetUpdateCommand))
+                    }.WithSearchQueryArgs().WithHandler(new Action<PresetUpdateCommandArgs>(presetCommand.UpdateCommand))
                 }
             };
 
@@ -136,132 +146,6 @@ namespace Sibusten.Philomena.Downloader.Cmd
             }
 
             SearchConfig config = args.GetSearchConfig(baseConfig);
-        }
-
-        private static void PresetListCommand(PresetListCommandArgs args)
-        {
-            List<SearchPreset> presets = configAccess.GetPresets();
-
-            if (args.Verbose)
-            {
-                // Convert presets to a JSON list
-                string presetsJson = JsonConvert.SerializeObject(presets, Formatting.Indented);
-
-                Console.WriteLine(presetsJson);
-            }
-            else
-            {
-                // Create a list of the preset names
-                IEnumerable<string> presetNames = presets.Select(p => p.Name);
-                string presetList = string.Join(Environment.NewLine, presetNames);
-
-                if (string.IsNullOrEmpty(presetList))
-                {
-                    Console.WriteLine("There are no presets");
-                }
-                else
-                {
-                    Console.WriteLine(presetList);
-                }
-            }
-        }
-
-        private static void PresetAddCommand(PresetAddCommandArgs args)
-        {
-            SearchPreset? existingPreset = configAccess.GetPreset(args.Name);
-            if (existingPreset is not null)
-            {
-                Console.WriteLine($"Preset '{args.Name}' already exists");
-                return;
-            }
-
-            SearchConfig config = args.GetSearchConfig();
-            SearchPreset preset = new SearchPreset(args.Name, config);
-            configAccess.UpsertPreset(preset);
-
-            Console.WriteLine($"Added preset '{args.Name}'");
-        }
-
-        private static void PresetRemoveCommand(PresetRemoveCommandArgs args)
-        {
-            SearchPreset? preset = configAccess.GetPreset(args.Name);
-
-            if (preset is null)
-            {
-                Console.WriteLine($"Preset '{args.Name}' does not exist");
-                return;
-            }
-
-            configAccess.DeletePreset(preset.Id);
-
-            Console.WriteLine($"Deleted preset '{args.Name}'");
-        }
-
-        private static void PresetRenameCommand(PresetRenameCommandArgs args)
-        {
-            SearchPreset? presetFrom = configAccess.GetPreset(args.From);
-
-            if (presetFrom is null)
-            {
-                Console.WriteLine($"Preset '{args.From}' does not exist");
-                return;
-            }
-
-            SearchPreset? presetTo = configAccess.GetPreset(args.To);
-
-            if (presetTo is not null)
-            {
-                Console.WriteLine($"Preset '{args.To}' already exists");
-                return;
-            }
-
-            // Update the preset's name
-            presetFrom.Name = args.To;
-            configAccess.UpsertPreset(presetFrom);
-
-            Console.WriteLine($"Renamed preset '{args.From}' to '{args.To}'");
-        }
-
-        private static void PresetCopyCommand(PresetCopyCommandArgs args)
-        {
-            SearchPreset? presetFrom = configAccess.GetPreset(args.From);
-
-            if (presetFrom is null)
-            {
-                Console.WriteLine($"Preset '{args.From}' does not exist");
-                return;
-            }
-
-            SearchPreset? presetTo = configAccess.GetPreset(args.To);
-
-            if (presetTo is not null)
-            {
-                Console.WriteLine($"Preset '{args.To}' already exists");
-                return;
-            }
-
-            // Create a new preset as a copy
-            presetTo = new SearchPreset(args.To, presetFrom.Config);
-            configAccess.UpsertPreset(presetTo);
-
-            Console.WriteLine($"Copied preset '{args.From}' to '{args.To}'");
-        }
-
-        private static void PresetUpdateCommand(PresetUpdateCommandArgs args)
-        {
-            SearchPreset? preset = configAccess.GetPreset(args.Name);
-            if (preset is null)
-            {
-                Console.WriteLine($"Preset '{args.Name}' does not exists");
-                return;
-            }
-
-            // Create a new config based on the preset's config
-            SearchConfig config = args.GetSearchConfig(baseConfig: preset.Config);
-            preset.Config = config;
-            configAccess.UpsertPreset(preset);
-
-            Console.WriteLine($"Updated preset '{args.Name}'");
         }
     }
 }
