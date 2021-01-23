@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -227,9 +227,21 @@ namespace Sibusten.Philomena.Downloader.Cmd
             configAccess.UpsertPreset(presetTo);
         }
 
-        private static async Task PresetUpdateCommand(PresetUpdateCommandArgs args)
+        private static void PresetUpdateCommand(PresetUpdateCommandArgs args)
         {
+            SearchPreset? preset = configAccess.GetPreset(args.Name);
+            if (preset is null)
+            {
+                Console.WriteLine($"Preset '{args.Name}' does not exists");
+                return;
+            }
 
+            // Create a new config based on the preset's config
+            SearchConfig config = args.GetSearchConfig(baseConfig: preset.Config);
+            preset.Config = config;
+            configAccess.UpsertPreset(preset);
+
+            Console.WriteLine($"Updated preset '{args.Name}");
         }
     }
 }
