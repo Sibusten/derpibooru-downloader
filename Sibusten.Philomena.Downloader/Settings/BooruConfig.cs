@@ -5,17 +5,17 @@ namespace Sibusten.Philomena.Downloader.Settings
 {
     public class BooruConfig
     {
-        public ObjectId Id { get; set; }
-        public string Name { get; set; }
-        public string BaseUrl { get; set; }
+        public ObjectId Id { get; set; } = ObjectId.NewObjectId();
+        public string Name { get; set; } = "";
+        public string BaseUrl { get; set; } = "";
         public string? ApiKey { get; set; }
+
+        private BooruConfig() { }
 
         public BooruConfig(string baseUrl, string id)
         {
-            Id = ObjectId.NewObjectId();
             BaseUrl = baseUrl;
             Name = id;
         }
-
     }
 }
