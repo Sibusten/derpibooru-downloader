@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -87,15 +87,6 @@ namespace Sibusten.Philomena.Downloader.Cmd
             };
 
             await rootCommand.InvokeAsync(args);
-
-            // Parser.Default.ParseArguments<SearchArguments>(args).WithParsed<SearchArguments>(searchArgs =>
-            // {
-            //     SearchConfig config = searchArgs.ToSearchConfig();
-            // });
-
-            Console.WriteLine("Hello World!");
-
-            Class1.HelloWorld();
         }
 
         private static async Task DownloadCommand(DownloadArgs downloadArgs)
