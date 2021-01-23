@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -155,7 +155,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
             SearchPreset? existingPreset = configAccess.GetPreset(args.Name);
             if (existingPreset is not null)
             {
-                Console.WriteLine($"Cannot add preset: Preset '{args.Name}' already exists");
+                Console.WriteLine($"Preset '{args.Name}' already exists");
                 return;
             }
 
