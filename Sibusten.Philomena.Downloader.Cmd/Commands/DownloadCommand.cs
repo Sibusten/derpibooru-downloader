@@ -21,10 +21,10 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands
             {
                 new Option<string>(new[] { "--preset", "-p" }, "The preset to use as a base. If no preset is given, the default is used"),
                 new Option<string>(new[] { "--api-key", "-a" }, "The API key to use"),
-            }.WithSearchQueryArgs().WithHandler(new Func<DownloadArgs, Task>(DownloadCommand));
+            }.WithSearchQueryArgs().WithHandler(new Func<DownloadArgs, Task>(DownloadCommandFunc));
         }
 
-        private async Task DownloadCommand(DownloadArgs args)
+        private async Task DownloadCommandFunc(DownloadArgs args)
         {
             SearchConfig? baseConfig = null;
             if (args.Preset is not null)
