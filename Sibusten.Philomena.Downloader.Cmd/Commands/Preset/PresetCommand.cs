@@ -36,13 +36,13 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
                     new Argument<string>("name", "The preset to delete")
                 }.WithHandler(new Action<PresetRemoveCommandArgs>(RemoveCommand)),
 
-                new Command("rename", "Rename a preset.")
+                new Command("rename", "Rename a preset")
                 {
                     new Argument<string>("from", "The preset to rename"),
                     new Argument<string>("to", "The new name of the preset")
                 }.WithHandler(new Action<PresetRenameCommandArgs>(RenameCommand)),
 
-                new Command("copy", "Copy a preset.")
+                new Command("copy", "Copy a preset")
                 {
                     new Argument<string>("from", "The preset to copy from"),
                     new Argument<string>("to", "The preset to copy to")
