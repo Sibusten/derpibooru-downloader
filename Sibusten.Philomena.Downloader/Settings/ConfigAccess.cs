@@ -29,6 +29,21 @@ namespace Sibusten.Philomena.Downloader.Settings
             return _booruCollection.FindAll().ToList();
         }
 
+        public BooruConfig? GetBooru(string name)
+        {
+            return _booruCollection.FindOne(p => p.Name == name);
+        }
+
+        public void UpsertBooru(BooruConfig booru)
+        {
+            _booruCollection.Upsert(booru);
+        }
+
+        public void DeleteBooru(ObjectId booruId)
+        {
+            _booruCollection.Delete(booruId);
+        }
+
         public List<SearchPreset> GetPresets()
         {
             return _presetCollection.FindAll().ToList();

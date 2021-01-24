@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -11,6 +11,7 @@ using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 using Newtonsoft.Json;
 using Sibusten.Philomena.Downloader.Cmd.Commands;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Preset;
+using Sibusten.Philomena.Downloader.Cmd.Commands.Booru;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {
@@ -48,6 +49,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
 #endif
 
             PresetCommand presetCommand = new PresetCommand(configAccess);
+            BooruCommand booruCommand = new BooruCommand(configAccess);
 
             RootCommand rootCommand = new RootCommand("A downloader for imageboards running Philomena, such as Derpibooru")
             {
@@ -57,7 +59,8 @@ namespace Sibusten.Philomena.Downloader.Cmd
                     new Option<string>(new[] { "--api-key", "-a" }, "The API key to use"),
                 }.WithSearchQueryArgs().WithHandler(new Func<DownloadArgs, Task>(DownloadCommand)),
 
-                presetCommand.GetCommand()
+                presetCommand.GetCommand(),
+                booruCommand.GetCommand(),
             };
 
             await rootCommand.InvokeAsync(args);

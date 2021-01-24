@@ -14,10 +14,10 @@ namespace Sibusten.Philomena.Downloader.Settings
 
         private BooruConfig() { }
 
-        public BooruConfig(string baseUrl, string id)
+        public BooruConfig(string name, string baseUrl)
         {
+            Name = name;
             BaseUrl = baseUrl;
-            Name = id;
         }
     }
 }

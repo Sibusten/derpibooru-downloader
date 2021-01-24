@@ -13,6 +13,12 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
     - `preset rename`: Rename a preset.
     - `preset copy`: Copy a preset.
     - `preset update`: Update a preset. Only given options are modified.
+- Commands for booru management
+    - `booru list`: List boorus
+    - `booru add`: Add a new booru
+    - `booru delete`: Delete a booru
+    - `booru rename`: Rename a booru
+    - `booru update`: Update a booru. Only given options are modified
 
 ### Changed
 - Rewrote app in C# using .NET 5
