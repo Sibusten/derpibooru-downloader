@@ -4,6 +4,5 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset.Arguments
     {
         public string From { get; set; } = "";
         public string To { get; set; } = "";
-        public bool Overwrite { get; set; } = false;
     }
 }
