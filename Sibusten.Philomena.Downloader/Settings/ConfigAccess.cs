@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,7 +6,7 @@ using LiteDB;
 
 namespace Sibusten.Philomena.Downloader.Settings
 {
-    public class ConfigAccess
+    public class ConfigAccess : IDisposable
     {
         private const string configFilename = "PhilomenaDownloader.db";
         private const string booruCollectionName = "boorus";
@@ -62,6 +63,11 @@ namespace Sibusten.Philomena.Downloader.Settings
         public void DeletePreset(ObjectId presetId)
         {
             _presetCollection.Delete(presetId);
+        }
+
+        public void Dispose()
+        {
+            _db.Dispose();
         }
     }
 }

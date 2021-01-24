@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -17,8 +17,6 @@ namespace Sibusten.Philomena.Downloader.Cmd
 {
     public static class Program
     {
-        private static ConfigAccess configAccess = new ConfigAccess();
-
         private static string[] GetArgsFromConsole()
         {
             Console.WriteLine("Enter program arguments, one per line. Finish by entering an empty line.");
@@ -47,7 +45,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
                 args = GetArgsFromConsole();
             }
 #endif
-
+            using ConfigAccess configAccess = new ConfigAccess();
             PresetCommand presetCommand = new PresetCommand(configAccess);
             BooruCommand booruCommand = new BooruCommand(configAccess);
 
