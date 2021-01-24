@@ -53,7 +53,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Booru
             };
         }
 
-        public void ListCommand(BooruListCommandArgs args)
+        private void ListCommand(BooruListCommandArgs args)
         {
             List<BooruConfig> boorus = _configAccess.GetBoorus();
 
@@ -81,7 +81,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Booru
             }
         }
 
-        public void AddCommand(BooruAddCommandArgs args)
+        private void AddCommand(BooruAddCommandArgs args)
         {
             BooruConfig? existingBooru = _configAccess.GetBooru(args.Name);
             if (existingBooru is not null)
@@ -99,7 +99,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Booru
             Console.WriteLine($"Added booru '{args.Name}'");
         }
 
-        public void RemoveCommand(BooruRemoveCommandArgs args)
+        private void RemoveCommand(BooruRemoveCommandArgs args)
         {
             BooruConfig? booru = _configAccess.GetBooru(args.Name);
 
@@ -124,7 +124,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Booru
             Console.WriteLine($"Deleted booru '{args.Name}'");
         }
 
-        public void RenameCommand(BooruRenameCommandArgs args)
+        private void RenameCommand(BooruRenameCommandArgs args)
         {
             BooruConfig? booruFrom = _configAccess.GetBooru(args.From);
 
@@ -160,7 +160,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Booru
             Console.WriteLine($"Renamed booru '{args.From}' to '{args.To}'");
         }
 
-        public void UpdateCommand(BooruUpdateCommandArgs args)
+        private void UpdateCommand(BooruUpdateCommandArgs args)
         {
             BooruConfig? booru = _configAccess.GetBooru(args.Name);
             if (booru is null)

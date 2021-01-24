@@ -55,7 +55,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
             };
         }
 
-        public void ListCommand(PresetListCommandArgs args)
+        private void ListCommand(PresetListCommandArgs args)
         {
             List<SearchPreset> presets = _configAccess.GetPresets();
 
@@ -83,7 +83,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
             }
         }
 
-        public void AddCommand(PresetAddCommandArgs args)
+        private void AddCommand(PresetAddCommandArgs args)
         {
             SearchPreset? existingPreset = _configAccess.GetPreset(args.Name);
             if (existingPreset is not null)
@@ -99,7 +99,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
             Console.WriteLine($"Added preset '{args.Name}'");
         }
 
-        public void RemoveCommand(PresetRemoveCommandArgs args)
+        private void RemoveCommand(PresetRemoveCommandArgs args)
         {
             SearchPreset? preset = _configAccess.GetPreset(args.Name);
 
@@ -114,7 +114,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
             Console.WriteLine($"Deleted preset '{args.Name}'");
         }
 
-        public void RenameCommand(PresetRenameCommandArgs args)
+        private void RenameCommand(PresetRenameCommandArgs args)
         {
             SearchPreset? presetFrom = _configAccess.GetPreset(args.From);
 
@@ -139,7 +139,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
             Console.WriteLine($"Renamed preset '{args.From}' to '{args.To}'");
         }
 
-        public void CopyCommand(PresetCopyCommandArgs args)
+        private void CopyCommand(PresetCopyCommandArgs args)
         {
             SearchPreset? presetFrom = _configAccess.GetPreset(args.From);
 
@@ -164,7 +164,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
             Console.WriteLine($"Copied preset '{args.From}' to '{args.To}'");
         }
 
-        public void UpdateCommand(PresetUpdateCommandArgs args)
+        private void UpdateCommand(PresetUpdateCommandArgs args)
         {
             SearchPreset? preset = _configAccess.GetPreset(args.Name);
             if (preset is null)
