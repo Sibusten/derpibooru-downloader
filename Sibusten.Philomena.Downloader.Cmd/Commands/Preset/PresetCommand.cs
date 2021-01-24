@@ -92,6 +92,16 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
                 return;
             }
 
+            foreach (string booruName in args.Boorus)
+            {
+                BooruConfig? booru = _configAccess.GetBooru(booruName);
+                if (booru is null)
+                {
+                    Console.WriteLine($"Booru '{booruName}' does not exist");
+                    return;
+                }
+            }
+
             SearchConfig config = args.GetSearchConfig();
             SearchPreset preset = new SearchPreset(args.Name, config);
             _configAccess.UpsertPreset(preset);
@@ -171,6 +181,16 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
             {
                 Console.WriteLine($"Preset '{args.Name}' does not exists");
                 return;
+            }
+
+            foreach (string booruName in args.Boorus)
+            {
+                BooruConfig? booru = _configAccess.GetBooru(booruName);
+                if (booru is null)
+                {
+                    Console.WriteLine($"Booru '{booruName}' does not exist");
+                    return;
+                }
             }
 
             // Create a new config based on the preset's config
