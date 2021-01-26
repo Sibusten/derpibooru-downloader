@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using IniParser;
 using IniParser.Model;
 using Newtonsoft.Json;
+using Sibusten.Philomena.Downloader.Utility;
 
 namespace Sibusten.Philomena.Downloader.Settings.Legacy
 {
@@ -31,10 +32,10 @@ namespace Sibusten.Philomena.Downloader.Settings.Legacy
             }
 
             // Name the booru after the domain
-            string booruId = Regex.Match(booruUrl, "https:\\/\\/(.*?)\\/?$").Captures.FirstOrDefault()?.Value ?? "unnamed";
+            string booruName = UrlUtilities.GetDomain(booruUrl) ?? "unnamed";
 
             // Create the booru from legacy settings
-            BooruConfig booruConfig = new BooruConfig(booruUrl, booruId);
+            BooruConfig booruConfig = new BooruConfig(booruUrl, booruName);
             booruConfig.ApiKey = apiKey;
 
             // TODO: Should the current options be ported?
