@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Threading.Tasks;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
@@ -40,9 +41,29 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands
                 baseConfig = preset.Config;
             }
 
-            SearchConfig config = args.GetSearchConfig(baseConfig);
+            SearchConfig searchConfig = args.GetSearchConfig(baseConfig);
 
-            // TODO: Start download
+            // Gather all boorus and ensure they exist
+            List<BooruConfig> booruConfigs = new List<BooruConfig>();
+            foreach (string booruName in searchConfig.Boorus)
+            {
+                BooruConfig? booruConfig = _configAccess.GetBooru(booruName);
+
+                if (booruConfig is null)
+                {
+                    Console.WriteLine($"Booru '{booruName}' was not found");
+                    return;
+                }
+
+                booruConfigs.Add(booruConfig);
+            }
+
+            // Download images on each booru
+            foreach (BooruConfig booruConfig in booruConfigs)
+            {
+                ImageDownloader downloader = new ImageDownloader(booruConfig, searchConfig);
+                await downloader.StartDownload();
+            }
         }
     }
 }

@@ -19,9 +19,12 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
     - `booru delete`: Delete a booru
     - `booru rename`: Rename a booru
     - `booru update`: Update a booru. Only given options are modified
+- File path tags
+    - `{booru_name}`: The name of the booru
 
 ### Changed
 - Rewrote app in C# using .NET 5
+- Move image downloads to `download` sub-command
 - Some command line options are renamed
     - `--search-format` => `--sort-field`
     - `--search-direction` => `--sort-direction`
