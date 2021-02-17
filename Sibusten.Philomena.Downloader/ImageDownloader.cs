@@ -54,7 +54,7 @@ namespace Sibusten.Philomena.Downloader
                 "grotesque",
             };
 
-            List<string> imageRatingTags = image.Model.Tags?.Where(t => ratingTags.Contains(t)).ToList() ?? new List<string>();
+            List<string> imageRatingTags = image.TagNames?.Where(t => ratingTags.Contains(t)).ToList() ?? new List<string>();
 
             string ratingString = imageRatingTags.Any() ? string.Join("+", imageRatingTags) : "no_rating";
 
@@ -64,19 +64,19 @@ namespace Sibusten.Philomena.Downloader
                 { "id", image.Id.ToString() },
                 { "name", image.Name },
                 { "original_name", image.OriginalName },
-                { "uploader", image.Model.Uploader },
-                { "ext", image.Model.Format?.ToLower() },  // Will be png or svg, depending on which version is being downloaded
-                { "year", image.Model.CreatedAt?.Year.ToString() },
-                { "month", image.Model.CreatedAt?.Month.ToString("00") },
-                { "day", image.Model.CreatedAt?.Day.ToString("00") },
-                { "score", image.Model.Score?.ToString() },
-                { "upvotes", image.Model.Upvotes?.ToString() },
-                { "downvotes", image.Model.Downvotes?.ToString() },
-                { "faves", image.Model.Faves?.ToString() },
-                { "comments", image.Model.CommentCount?.ToString() },
-                { "width", image.Model.Width?.ToString() },
-                { "height", image.Model.Height?.ToString() },
-                { "aspect_ratio", image.Model.AspectRatio?.ToString() },
+                { "uploader", image.Uploader },
+                { "ext", image.Format?.ToLower() },  // Will be png or svg, depending on which version is being downloaded
+                { "year", image.CreatedAt?.Year.ToString() },
+                { "month", image.CreatedAt?.Month.ToString("00") },
+                { "day", image.CreatedAt?.Day.ToString("00") },
+                { "score", image.Score?.ToString() },
+                { "upvotes", image.Upvotes?.ToString() },
+                { "downvotes", image.Downvotes?.ToString() },
+                { "faves", image.Faves?.ToString() },
+                { "comments", image.CommentCount?.ToString() },
+                { "width", image.Width?.ToString() },
+                { "height", image.Height?.ToString() },
+                { "aspect_ratio", image.AspectRatio?.ToString() },
                 { "rating", ratingString },
                 { "booru_url", UrlUtilities.GetDomain(_booruConfig.BaseUrl) },
                 { "booru_name", _booruConfig.Name },

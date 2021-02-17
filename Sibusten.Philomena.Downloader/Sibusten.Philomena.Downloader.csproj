@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
     <PackageReference Include="LiteDB" Version="5.0.10" />
-    <PackageReference Include="Sibusten.Philomena.Client" Version="1.0.0-alpha2" />
+    <PackageReference Include="Sibusten.Philomena.Client" Version="1.0.0-alpha3" />
   </ItemGroup>
 
 </Project>
