@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
     - `booru update`: Update a booru. Only given options are modified
 - File path tags
     - `{booru_name}`: The name of the booru
+- Progress reporting
 
 ### Changed
 - Rewrote app in C# using .NET 5
