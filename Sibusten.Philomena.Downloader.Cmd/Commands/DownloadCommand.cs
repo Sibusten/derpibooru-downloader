@@ -62,6 +62,10 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands
 
                 booruConfigs.Add(booruConfig);
             }
+            if (booruConfigs.Count == 0)
+            {
+                Console.WriteLine("No boorus given, nothing to download");
+            }
 
             // Download images on each booru
             foreach (BooruConfig booruConfig in booruConfigs)
