@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Sibusten.Philomena.Client;
+using Sibusten.Philomena.Client.Extensions;
+using Sibusten.Philomena.Client.Images;
+using Sibusten.Philomena.Downloader.Reporters;
 using Sibusten.Philomena.Downloader.Settings;
 using Sibusten.Philomena.Downloader.Utility;
 
@@ -17,31 +20,42 @@ namespace Sibusten.Philomena.Downloader
 
         private BooruConfig _booruConfig;
         private SearchConfig _searchConfig;
-        private IPhilomenaImageSearchQuery _search;
 
         public ImageDownloader(BooruConfig booruConfig, SearchConfig searchConfig)
         {
             _booruConfig = booruConfig;
             _searchConfig = searchConfig;
+        }
 
-            IPhilomenaClient client = new PhilomenaClient(booruConfig.BaseUrl)
+        public async Task StartDownload(CancellationToken cancellation = default, IImageDownloadReporter? downloadReporter = null)
+        {
+            IPhilomenaClient client = new PhilomenaClient(_booruConfig.BaseUrl)
             {
-                ApiKey = booruConfig.ApiKey
+                ApiKey = _booruConfig.ApiKey
             };
 
-            _search = client.Search(searchConfig.Query)
-                .Limit(searchConfig.ImageLimit)
-                .SortBy(searchConfig.SortField, searchConfig.SortDirection)
-                .WithFilter(searchConfig.Filter)
-                .WithMaxDownloadThreads(_maxDownloadThreads);
+            await client
+                .GetImageSearch(_searchConfig.Query, o => o
+                    .WithMaxImages(_searchConfig.ImageLimit)
+                    .WithSortField(_searchConfig.SortField)
+                    .WithSortDirection(_searchConfig.SortDirection)
+                    .WithFilterId(_searchConfig.Filter)
+                )
+                .CreateParallelDownloader(_maxDownloadThreads, o => o
+                    .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
+                        .WithImageFileDownloader(GetFileForImage)
+                    )
+                    .WithConditionalDownloader(image => _searchConfig.ShouldUpdateJson || !HasImageBeenDownloaded(image), o => o
+                        .WithImageMetadataFileDownloader(GetFileForImageMetadata)
+                    )
+                )
+                .BeginDownload(cancellation, downloadReporter?.SearchProgress, downloadReporter?.SearchDownloadProgress, downloadReporter?.IndividualDownloadProgresses);
         }
 
-        public async Task StartDownload(CancellationToken cancellation = default, IProgress<ImageDownloadProgressInfo>? progress = null)
-        {
-            await _search.DownloadAllToFilesAsync(GetFileForImage, SkipDownloadedImages, cancellation, progress);
-        }
+        private string GetFileForImage(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.ImagePathFormat);
+        private string GetFileForImageMetadata(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.JsonPathFormat);
 
-        private string GetFileForImage(IPhilomenaImage image)
+        private string GetFileForPathFormat(IPhilomenaImage image, string filePath)
         {
             List<string> ratingTags = new List<string>
             {
@@ -82,9 +96,6 @@ namespace Sibusten.Philomena.Downloader
                 { "booru_name", _booruConfig.Name },
             };
 
-            // Begin with the path format
-            string filePath = _searchConfig.ImagePathFormat;
-
             // First, replace all instances of '#" tags
             // Ex: With {###}
             //  1234 => 1200
@@ -116,10 +127,15 @@ namespace Sibusten.Philomena.Downloader
             return filePath;
         }
 
-        private bool SkipDownloadedImages(IPhilomenaImage image)
+        /// <summary>
+        /// Determines if an image has been downloaded
+        /// </summary>
+        /// <param name="image">The image</param>
+        /// <returns>True if the image has been downloaded</returns>
+        private bool HasImageBeenDownloaded(IPhilomenaImage image)
         {
             // TODO
-            return true;
+            return false;
         }
     }
 }

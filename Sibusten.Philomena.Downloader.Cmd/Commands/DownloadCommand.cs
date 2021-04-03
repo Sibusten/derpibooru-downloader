@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Threading.Tasks;
-using ShellProgressBar;
-using Sibusten.Philomena.Client;
-using Sibusten.Philomena.Client.Utilities;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 using Sibusten.Philomena.Downloader.Cmd.Reporters;
 using Sibusten.Philomena.Downloader.Reporters;
@@ -70,12 +67,10 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands
             // Download images on each booru
             foreach (BooruConfig booruConfig in booruConfigs)
             {
-                IImageDownloadReporter reporter = new SingleLineImageDownloadConsoleReporter();
-
-                IProgress<ImageDownloadProgressInfo> progress = new SyncProgress<ImageDownloadProgressInfo>(reporter.ReportProgress);
+                IImageDownloadReporter reporter = new SimpleConsoleReporter();
 
                 ImageDownloader downloader = new ImageDownloader(booruConfig, searchConfig);
-                await downloader.StartDownload(progress: progress);
+                await downloader.StartDownload(downloadReporter: reporter);
             }
         }
     }
