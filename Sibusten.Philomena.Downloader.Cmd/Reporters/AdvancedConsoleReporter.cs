@@ -78,7 +78,8 @@ namespace Sibusten.Philomena.Downloader.Cmd.Reporters
                 return;
             }
 
-            _individualDownloadProgressBars[threadIndex].Tick(GetProgressBarTicks(progress.Current, progress.Total.Value), progress.Action);
+            string message = $"Downloading {progress.Action}";
+            _individualDownloadProgressBars[threadIndex].Tick(GetProgressBarTicks(progress.Current, progress.Total.Value), message);
         }
 
         public void Dispose()
