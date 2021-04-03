@@ -5,7 +5,7 @@ using Sibusten.Philomena.Client.Images.Downloaders;
 
 namespace Sibusten.Philomena.Downloader.Reporters
 {
-    public interface IImageDownloadReporter
+    public interface IImageDownloadReporter : IDisposable
     {
         /// <summary>
         /// A reporter for the progress of the image search

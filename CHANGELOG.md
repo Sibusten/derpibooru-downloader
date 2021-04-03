@@ -22,6 +22,8 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 - File path tags
     - `{booru_name}`: The name of the booru
 - Progress reporting
+    - Total download progress
+    - Individual download progress
 
 ### Changed
 - Rewrote app in C# using .NET 5

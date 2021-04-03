@@ -67,7 +67,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands
             // Download images on each booru
             foreach (BooruConfig booruConfig in booruConfigs)
             {
-                IImageDownloadReporter reporter = new SimpleConsoleReporter();
+                using IImageDownloadReporter reporter = new AdvancedConsoleReporter(ImageDownloader.MaxDownloadThreads, $"Downloading search '{searchConfig.Query}' from '{booruConfig.Name}'");
 
                 ImageDownloader downloader = new ImageDownloader(booruConfig, searchConfig);
                 await downloader.StartDownload(downloadReporter: reporter);

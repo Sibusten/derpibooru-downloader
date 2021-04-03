@@ -32,5 +32,10 @@ namespace Sibusten.Philomena.Downloader.Cmd.Reporters
             double downloadPercent = (double)progress.ImagesDownloaded / progress.ImagesTotal;
             Console.WriteLine($"{downloadPercent:P} {progress.ImagesDownloaded}/{progress.ImagesTotal}");
         }
+
+        public void Dispose()
+        {
+            // Nothing to dispose
+        }
     }
 }

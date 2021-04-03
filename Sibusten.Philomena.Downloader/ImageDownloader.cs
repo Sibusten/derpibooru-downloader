@@ -16,7 +16,7 @@ namespace Sibusten.Philomena.Downloader
     public class ImageDownloader
     {
         // TODO: Make configurable
-        private const int _maxDownloadThreads = 8;
+        public const int MaxDownloadThreads = 8;
 
         private BooruConfig _booruConfig;
         private SearchConfig _searchConfig;
@@ -41,7 +41,7 @@ namespace Sibusten.Philomena.Downloader
                     .WithSortDirection(_searchConfig.SortDirection)
                     .WithFilterId(_searchConfig.Filter)
                 )
-                .CreateParallelDownloader(_maxDownloadThreads, o => o
+                .CreateParallelDownloader(MaxDownloadThreads, o => o
                     .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
                         .WithImageFileDownloader(GetFileForImage)
                     )
