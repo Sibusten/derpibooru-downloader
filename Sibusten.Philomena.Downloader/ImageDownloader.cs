@@ -36,10 +36,14 @@ namespace Sibusten.Philomena.Downloader
 
             await client
                 .GetImageSearch(_searchConfig.Query, o => o
-                    .WithMaxImages(_searchConfig.ImageLimit)
                     .WithSortField(_searchConfig.SortField)
                     .WithSortDirection(_searchConfig.SortDirection)
-                    .WithFilterId(_searchConfig.Filter)
+                    .If(_searchConfig.ImageLimit != SearchConfig.NoLimit, o => o
+                        .WithMaxImages(_searchConfig.ImageLimit)
+                    )
+                    .If(_searchConfig.Filter != SearchConfig.NoFilter, o => o
+                        .WithFilterId(_searchConfig.Filter)
+                    )
                 )
                 .CreateParallelDownloader(MaxDownloadThreads, o => o
                     .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
