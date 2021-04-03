@@ -12,6 +12,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Reporters
     {
         private const int _progressBarResolution = 10000;
 
+        private readonly string _downloadMessage;
         private readonly ProgressBar _progressBar;
         private readonly List<ChildProgressBar> _individualDownloadProgressBars = new List<ChildProgressBar>();
 
@@ -23,6 +24,8 @@ namespace Sibusten.Philomena.Downloader.Cmd.Reporters
 
         public AdvancedConsoleReporter(int maxConcurrentDownloads, string downloadMessage)
         {
+            _downloadMessage = downloadMessage;
+
             // Create progress bars
             _progressBar = new ProgressBar(_progressBarResolution, downloadMessage);
             for (int i = 0; i < maxConcurrentDownloads; i++)
@@ -63,7 +66,8 @@ namespace Sibusten.Philomena.Downloader.Cmd.Reporters
 
         private void OnSearchDownloadProgressReported(PhilomenaImageSearchDownloadProgressInfo progress)
         {
-            _progressBar.Tick(GetProgressBarTicks(progress.ImagesDownloaded, progress.ImagesTotal));
+            string message = $"{progress.ImagesDownloaded}/{progress.ImagesTotal} - {_downloadMessage}";
+            _progressBar.Tick(GetProgressBarTicks(progress.ImagesDownloaded, progress.ImagesTotal), message);
         }
 
         private void OnIndividualSearchDownloadProgressReported(int threadIndex, PhilomenaImageDownloadProgressInfo progress)
