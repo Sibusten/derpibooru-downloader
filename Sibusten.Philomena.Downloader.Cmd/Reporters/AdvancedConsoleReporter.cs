@@ -22,15 +22,29 @@ namespace Sibusten.Philomena.Downloader.Cmd.Reporters
 
         public IReadOnlyCollection<IProgress<PhilomenaImageDownloadProgressInfo>> IndividualDownloadProgresses { get; }
 
+        private readonly ProgressBarOptions _mainBarOptions = new()
+        {
+            ProgressCharacter = '─',
+            ForegroundColor = ConsoleColor.Blue,
+            BackgroundColor = ConsoleColor.DarkGray
+        };
+
+        private readonly ProgressBarOptions _individualDownloadBarOptions = new()
+        {
+            ProgressCharacter = '─',
+            ForegroundColor = ConsoleColor.Gray,
+            BackgroundColor = ConsoleColor.DarkGray
+        };
+
         public AdvancedConsoleReporter(int maxConcurrentDownloads, string downloadMessage)
         {
             _downloadMessage = downloadMessage;
 
             // Create progress bars
-            _progressBar = new ProgressBar(_progressBarResolution, downloadMessage);
+            _progressBar = new ProgressBar(_progressBarResolution, downloadMessage, _mainBarOptions);
             for (int i = 0; i < maxConcurrentDownloads; i++)
             {
-                _individualDownloadProgressBars.Add(_progressBar.Spawn(_progressBarResolution, ""));
+                _individualDownloadProgressBars.Add(_progressBar.Spawn(_progressBarResolution, "", _individualDownloadBarOptions));
             }
 
             // Set up progress report handlers
