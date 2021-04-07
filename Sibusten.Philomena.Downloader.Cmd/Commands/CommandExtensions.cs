@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using Sibusten.Philomena.Api;
+using Sibusten.Philomena.Client.Options;
 
 namespace Sibusten.Philomena.Downloader.Cmd.Commands
 {
@@ -30,6 +31,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands
                 new Option<bool>(new[] { "--save-json", "-j" }, "Save json metadata files"),
                 new Option<bool>(new[] { "--update-json", "-u" }, "Overwrite json metadata files with new data"),
                 new Option<List<string>>(new[] { "--boorus", "-b" }, "What booru to download from. Multiple boorus can be given"),
+                new Option<SvgMode>(new[] { "--svg-mode", "-g" }, "How to download SVG images"),
             };
 
             foreach (Symbol arg in SearchQueryArgs)

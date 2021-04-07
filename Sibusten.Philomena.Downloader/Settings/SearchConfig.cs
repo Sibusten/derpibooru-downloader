@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Sibusten.Philomena.Api;
+using Sibusten.Philomena.Client.Options;
 
 namespace Sibusten.Philomena.Downloader.Settings
 {
@@ -19,10 +20,9 @@ namespace Sibusten.Philomena.Downloader.Settings
         public bool ShouldSaveImages { get; set; } = true;
         public bool ShouldSaveJson { get; set; } = false;
         public bool ShouldUpdateJson { get; set; } = false;
-        // TODO: Set when added to the client
-        // public LegacySvgActionIndex? SvgAction { get; set; }
         public bool ShouldSaveComments { get; set; } = false;
         public bool ShouldSaveFavorites { get; set; } = false;
         public List<string> Boorus { get; set; } = new List<string>();
+        public SvgMode SvgMode { get; set; } = SvgMode.RasterOnly;
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Api;
+using Sibusten.Philomena.Client.Options;
 using Sibusten.Philomena.Downloader.Settings;
 
 namespace Sibusten.Philomena.Downloader.Cmd.Commands.Common.Arguments
@@ -18,6 +19,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Common.Arguments
         public bool? SaveJson { get; set; }
         public bool? UpdateJson { get; set; }
         public List<string> Boorus { get; set; } = new List<string>();
+        public SvgMode? SvgMode { get; set; }
 
         public SearchConfig GetSearchConfig(SearchConfig? baseConfig = null)
         {
@@ -41,6 +43,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Common.Arguments
                 SortDirection = SortDirection is not null ? SortDirection.Value : baseConfig.SortDirection,
                 SortField = SortField is not null ? SortField.Value : baseConfig.SortField,
                 Boorus = Boorus.Any() ? Boorus : baseConfig.Boorus,
+                SvgMode = SvgMode is not null ? SvgMode.Value : baseConfig.SvgMode,
             };
         }
     }
