@@ -58,6 +58,11 @@ namespace Sibusten.Philomena.Downloader.Cmd
             };
 
             await rootCommand.InvokeAsync(args);
+
+#if DEBUG
+            Console.WriteLine("Press enter to continue");
+            Console.ReadLine();
+#endif
         }
     }
 }
