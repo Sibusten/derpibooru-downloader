@@ -38,7 +38,6 @@ namespace Sibusten.Philomena.Downloader
                 .GetImageSearch(_searchConfig.Query, o => o
                     .WithSortField(_searchConfig.SortField)
                     .WithSortDirection(_searchConfig.SortDirection)
-                    .WithSvgMode(_searchConfig.SvgMode)
                     .If(_searchConfig.ImageLimit != SearchConfig.NoLimit, o => o
                         .WithMaxImages(_searchConfig.ImageLimit)
                     )
@@ -47,20 +46,43 @@ namespace Sibusten.Philomena.Downloader
                     )
                 )
                 .CreateParallelDownloader(MaxDownloadThreads, o => o
-                    .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
-                        .WithImageFileDownloader(GetFileForImage)
+                    // If image saving is enabled
+                    .If(_searchConfig.ShouldSaveImages, o => o
+                        // Only download images that have not been downloaded already
+                        .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
+                            // Svg images require special download logic
+                            .WithConditionalDownloader(image => image.IsSvgImage, o => o
+                                // Download raster versions of the SVG image if set to do so
+                                .If(_searchConfig.SvgMode is SvgMode.RasterOnly or SvgMode.Both, o => o
+                                    .WithImageFileDownloader(GetFileForImage)
+                                )
+                                // Download SVG versions of the SVG image if set to do so
+                                .If(_searchConfig.SvgMode is SvgMode.SvgOnly or SvgMode.Both, o => o
+                                    .WithImageSvgFileDownloader(GetFileForSvgImage)
+                                )
+                            )
+                            // Non-svg images are downloaded normally
+                            .WithConditionalDownloader(image => !image.IsSvgImage, o => o
+                                .WithImageFileDownloader(GetFileForImage)
+                            )
+                        )
                     )
-                    .WithConditionalDownloader(image => _searchConfig.ShouldUpdateJson || !HasImageBeenDownloaded(image), o => o
-                        .WithImageMetadataFileDownloader(GetFileForImageMetadata)
+                    // If JSON saving is enabled
+                    .If(_searchConfig.ShouldSaveJson, o => o
+                        // Only save JSON if the image has not been downloaded already, or if set to
+                        .WithConditionalDownloader(image => _searchConfig.ShouldUpdateJson || !HasImageBeenDownloaded(image), o => o
+                            .WithImageMetadataFileDownloader(GetFileForImageMetadata)
+                        )
                     )
                 )
                 .BeginDownload(cancellation, downloadReporter?.SearchProgress, downloadReporter?.SearchDownloadProgress, downloadReporter?.IndividualDownloadProgresses);
         }
 
         private string GetFileForImage(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.ImagePathFormat);
+        private string GetFileForSvgImage(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.ImagePathFormat, isSvgImage: true);
         private string GetFileForImageMetadata(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.JsonPathFormat);
 
-        private string GetFileForPathFormat(IPhilomenaImage image, string filePath)
+        private string GetFileForPathFormat(IPhilomenaImage image, string filePath, bool isSvgImage = false)
         {
             List<string> ratingTags = new List<string>
             {
@@ -84,7 +106,7 @@ namespace Sibusten.Philomena.Downloader
                 { "name", image.Name },
                 { "original_name", image.OriginalName },
                 { "uploader", image.Uploader },
-                { "ext", image.Format?.ToLower() },  // Will be png or svg, depending on which version is being downloaded
+                { "ext", isSvgImage ? "svg" : image.Format?.ToLower() },  // Override image format for SVG images
                 { "year", image.CreatedAt?.Year.ToString() },
                 { "month", image.CreatedAt?.Month.ToString("00") },
                 { "day", image.CreatedAt?.Day.ToString("00") },

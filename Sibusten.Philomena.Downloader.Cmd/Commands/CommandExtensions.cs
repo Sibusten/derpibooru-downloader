@@ -4,6 +4,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using Sibusten.Philomena.Api;
 using Sibusten.Philomena.Client.Options;
+using Sibusten.Philomena.Downloader.Settings;
 
 namespace Sibusten.Philomena.Downloader.Cmd.Commands
 {
