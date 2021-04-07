@@ -86,14 +86,13 @@ namespace Sibusten.Philomena.Downloader.Cmd.Reporters
 
         private void OnIndividualSearchDownloadProgressReported(int threadIndex, PhilomenaImageDownloadProgressInfo progress)
         {
-            if (progress.Total is null)
-            {
-                // No progress can be reported
-                return;
-            }
-
+            ChildProgressBar childProgressBar = _individualDownloadProgressBars[threadIndex];
             string message = $"Downloading {progress.Action}";
-            _individualDownloadProgressBars[threadIndex].Tick(GetProgressBarTicks(progress.Current, progress.Total.Value), message);
+
+            // If total progress is not given, a percentage can't be calculated. Just display 0%
+            int progressTicks = progress.Total is null ? 0 : GetProgressBarTicks(progress.Current, progress.Total.Value);
+
+            childProgressBar.Tick(progressTicks, message);
         }
 
         public void Dispose()
