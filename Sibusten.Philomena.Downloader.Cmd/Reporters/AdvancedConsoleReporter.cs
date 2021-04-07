@@ -98,6 +98,10 @@ namespace Sibusten.Philomena.Downloader.Cmd.Reporters
 
         public void Dispose()
         {
+            foreach (ChildProgressBar childProgressBar in _individualDownloadProgressBars) {
+                childProgressBar.Dispose();
+            }
+
             _progressBar.Dispose();
         }
     }
