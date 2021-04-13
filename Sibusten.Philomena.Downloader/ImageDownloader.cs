@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -123,7 +124,16 @@ namespace Sibusten.Philomena.Downloader
                 { "booru_name", _booruConfig.Name },
             };
 
-            // First, replace all instances of '#" tags
+            // Sanitize replacement tag values
+            foreach ((string key, string? tag) in tagReplacements)
+            {
+                if (tag is not null)
+                {
+                    tagReplacements[key] = SanitizeFilename(tag);
+                }
+            }
+
+            // First, replace all instances of "#" tags
             // Ex: With {###}
             //  1234 => 1200
             //   234 =>  200
@@ -152,6 +162,21 @@ namespace Sibusten.Philomena.Downloader
             }
 
             return filePath;
+        }
+
+        /// <summary>
+        /// Sanitize a string for use in a filename
+        /// </summary>
+        /// <param name="filename">The string to sanitize</param>
+        /// <returns>The sanitized string</returns>
+        private string SanitizeFilename(string filename)
+        {
+            foreach (char invalidChar in Path.GetInvalidFileNameChars())
+            {
+                filename = filename.Replace(invalidChar, '_');
+            }
+
+            return filename;
         }
 
         /// <summary>
