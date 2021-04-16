@@ -27,7 +27,7 @@ jobs:
         run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
 
       - name: Zip
-        run: zip -r philomena-downloader-${{matrix.runtime}}.zip ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/
+        run: zip -r philomena-downloader-${{matrix.runtime}}.zip ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/*
 
       - name: Upload
         uses: actions/upload-artifact@v2
