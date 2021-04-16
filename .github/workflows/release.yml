@@ -16,23 +16,21 @@ jobs:
         runtime: [win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64]
 
     steps:
-      - name: Hello World
-        run: echo Hello World
-#       - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-#       - name: Setup .NET Core SDK
-#         uses: actions/setup-dotnet@v1.7.2
-#         with:
-#           dotnet-version: 5.0.101
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: 5.0.101
 
-#       - name: Publish
-#         run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
+      - name: Publish
+        run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
 
-#       - name: Zip
-#         run: zip -r philomena-downloader-${{matrix.runtime}}.zip ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/
+      - name: Zip
+        run: zip -r philomena-downloader-${{matrix.runtime}}.zip ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/
 
-#       - name: Upload
-#         uses: actions/upload-artifact@v2
-#         with:
-#           name: philomena-downloader-${{matrix.runtime}}
-#           path: philomena-downloader-${{matrix.runtime}}.zip
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: philomena-downloader-${{matrix.runtime}}
+          path: philomena-downloader-${{matrix.runtime}}.zip
