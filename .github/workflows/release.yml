@@ -26,17 +26,11 @@ jobs:
       - name: Publish
         run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
 
-      - name: Zip
-        uses: thedoctor0/zip-release@0.4.1
-        with:
-          filename: philomena-downloader-${{matrix.runtime}}.zip
-          path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish
-
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: philomena-downloader-${{matrix.runtime}}
-          path: philomena-downloader-${{matrix.runtime}}.zip
+          path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/*
 
   publish_nix:
     runs-on: ubuntu-latest
@@ -56,14 +50,8 @@ jobs:
       - name: Publish
         run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
 
-      - name: Zip
-        uses: thedoctor0/zip-release@0.4.1
-        with:
-          filename: philomena-downloader-${{matrix.runtime}}.zip
-          path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish
-
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: philomena-downloader-${{matrix.runtime}}
-          path: philomena-downloader-${{matrix.runtime}}.zip
+          path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/*
