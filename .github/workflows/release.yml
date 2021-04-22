@@ -75,7 +75,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v1
         with:
-          body: ${{steps.changelog.outputs.changes
+          body: ${{steps.changelog.outputs.changes}}
           draft: true
           prerelease: ${{steps.changelog.outputs.status == 'prereleased'}}
           # files: TODO
