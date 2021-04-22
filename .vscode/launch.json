@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Sibusten.Philomena.Downloader.Cmd/bin/Debug/net5.0/Sibusten.Philomena.Downloader.Cmd.dll",
+            "program": "${workspaceFolder}/Sibusten.Philomena.Downloader.Cmd/bin/Debug/net5.0/philomena-downloader.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Sibusten.Philomena.Downloader.Cmd",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
