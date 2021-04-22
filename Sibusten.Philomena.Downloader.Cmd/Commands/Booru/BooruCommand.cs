@@ -165,7 +165,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Booru
             BooruConfig? booru = _configAccess.GetBooru(args.Name);
             if (booru is null)
             {
-                Console.WriteLine($"Booru '{args.Name}' does not exists");
+                Console.WriteLine($"Booru '{args.Name}' does not exist");
                 return;
             }
 

@@ -179,7 +179,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Preset
             SearchPreset? preset = _configAccess.GetPreset(args.Name);
             if (preset is null)
             {
-                Console.WriteLine($"Preset '{args.Name}' does not exists");
+                Console.WriteLine($"Preset '{args.Name}' does not exist");
                 return;
             }
 
