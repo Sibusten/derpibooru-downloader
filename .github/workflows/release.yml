@@ -72,6 +72,16 @@ jobs:
         uses: mindsers/changelog-reader-action@v2
         with:
           version: ${{github.event.inputs.version}}
+      
+      # Download all binaries
+      - uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+      
+      # DEBUG
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: artifacts
 
       - uses: softprops/action-gh-release@v1
         env:
@@ -80,6 +90,6 @@ jobs:
           body: ${{steps.changelog.outputs.changes}}
           draft: true
           prerelease: ${{steps.changelog.outputs.status == 'prereleased'}}
-          # files: TODO
+          files: artifacts/*
           name: Philomena Downloader v${{github.event.inputs.version}}
           tag_name: v${{github.event.inputs.version}}
