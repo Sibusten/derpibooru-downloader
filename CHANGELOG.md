@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ## [Unreleased]
 
+## [3.0.0-alpha.1] - 2021-04-21
+
 ### Added
 - Commands for preset management
     - `preset list`: List presets.
@@ -36,6 +38,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
     - Multiple boorus can be listed, and images will be downloaded from all sites: `--boorus derpibooru ponybooru`
 
 ### Removed
+- GUI version of the program
 - PerPage option
     - The max of 50 images per page is always used
 - StartPage option
