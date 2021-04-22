@@ -26,11 +26,18 @@ jobs:
       - name: Publish
         run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
 
+      - name: Zip
+        uses: vimtor/action-zip@v1
+        with:
+          dest: philomena-downloader-${{matrix.runtime}}.zip
+          files: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/
+          recursive: false
+
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: philomena-downloader-${{matrix.runtime}}
-          path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/*
+          path: philomena-downloader-${{matrix.runtime}}.zip
 
   publish-nix:
     runs-on: ubuntu-latest
@@ -50,11 +57,17 @@ jobs:
       - name: Publish
         run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
 
+      - name: Tar
+        uses: thedoctor0/zip-release@0.4.1
+        with:
+          filename: philomena-downloader-${{matrix.runtime}}.tar.gz
+          path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish
+
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: philomena-downloader-${{matrix.runtime}}
-          path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/*
+          path: philomena-downloader-${{matrix.runtime}}.tar.gz
 
   create-release:
     runs-on: ubuntu-latest
@@ -90,6 +103,6 @@ jobs:
           body: ${{steps.changelog.outputs.changes}}
           draft: true
           prerelease: ${{steps.changelog.outputs.status == 'prereleased'}}
-          files: artifacts/*
+          files: artifacts/**.*
           name: Philomena Downloader v${{github.event.inputs.version}}
           tag_name: v${{github.event.inputs.version}}
