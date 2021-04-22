@@ -56,7 +56,7 @@ jobs:
           name: philomena-downloader-${{matrix.runtime}}
           path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/*
 
-  create_release:
+  create-release:
     runs-on: ubuntu-latest
 
     needs:
@@ -74,6 +74,8 @@ jobs:
           version: ${{github.event.inputs.version}}
 
       - uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           body: ${{steps.changelog.outputs.changes}}
           draft: true
