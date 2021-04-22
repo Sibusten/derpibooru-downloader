@@ -90,11 +90,19 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Booru
                 return;
             }
 
-            BooruConfig booru = new BooruConfig(args.Name, args.BaseUrl)
+            try
             {
-                ApiKey = args.ApiKey
-            };
-            _configAccess.UpsertBooru(booru);
+                BooruConfig booru = new BooruConfig(args.Name, args.BaseUrl)
+                {
+                    ApiKey = args.ApiKey
+                };
+                _configAccess.UpsertBooru(booru);
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Failed to add booru: {ex.Message}");
+                return;
+            }
 
             Console.WriteLine($"Added booru '{args.Name}'");
         }
@@ -176,7 +184,15 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Booru
 
             if (args.BaseUrl is not null)
             {
-                booru.BaseUrl = args.BaseUrl;
+                try
+                {
+                    booru.BaseUrl = args.BaseUrl;
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Failed to update booru: {ex.Message}");
+                    return;
+                }
             }
 
             _configAccess.UpsertBooru(booru);
