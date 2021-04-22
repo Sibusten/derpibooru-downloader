@@ -1,4 +1,6 @@
 # Philomena Downloader
+[![CI](https://github.com/Sibusten/derpibooru-downloader/actions/workflows/ci.yml/badge.svg)](https://github.com/Sibusten/derpibooru-downloader/actions/workflows/ci.yml)
+
 A downloader for imageboards running [Philomena](https://github.com/derpibooru/philomena), such as [Derpibooru](https://derpibooru.org).
 
 **NOTE:** Philomena Downloader v3.0.0 is currently in alpha. Data may not migrate nicely between versions just yet. The documentation for v2.1.0 can be found in the [v2.1.0 branch](https://github.com/Sibusten/derpibooru-downloader/tree/release-v2.1.0)
