@@ -1,5 +1,6 @@
 # Philomena Downloader
 [![CI](https://github.com/Sibusten/derpibooru-downloader/actions/workflows/ci.yml/badge.svg)](https://github.com/Sibusten/derpibooru-downloader/actions/workflows/ci.yml)
+[![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/Sibusten/derpibooru-downloader?include_prereleases)](https://github.com/Sibusten/derpibooru-downloader/releases)
 
 A downloader for imageboards running [Philomena](https://github.com/derpibooru/philomena), such as [Derpibooru](https://derpibooru.org).
 
