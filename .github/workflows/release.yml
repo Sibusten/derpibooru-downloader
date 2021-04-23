@@ -27,11 +27,7 @@ jobs:
         run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
 
       - name: Zip
-        uses: vimtor/action-zip@v1
-        with:
-          dest: philomena-downloader-${{matrix.runtime}}.zip
-          files: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/
-          recursive: false
+        run: powershell Compress-Archive ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish/* philomena-downloader-${{matrix.runtime}}.zip
 
       - name: Upload
         uses: actions/upload-artifact@v2
@@ -58,10 +54,7 @@ jobs:
         run: dotnet publish ./Sibusten.Philomena.Downloader.Cmd/Sibusten.Philomena.Downloader.Cmd.csproj -c Release -r ${{matrix.runtime}} --self-contained false -p:PublishSingleFile=true -p:DebugType=None
 
       - name: Tar
-        uses: thedoctor0/zip-release@0.4.1
-        with:
-          filename: philomena-downloader-${{matrix.runtime}}.tar.gz
-          path: ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish
+        run: (cd ./Sibusten.Philomena.Downloader.Cmd/bin/Release/net5.0/${{matrix.runtime}}/publish && tar -czvf - *) > philomena-downloader-${{matrix.runtime}}.tar.gz
 
       - name: Upload
         uses: actions/upload-artifact@v2
@@ -103,6 +96,6 @@ jobs:
           body: ${{steps.changelog.outputs.changes}}
           draft: true
           prerelease: ${{steps.changelog.outputs.status == 'prereleased'}}
-          files: artifacts/**.*
+          files: artifacts/**/*.*
           name: Philomena Downloader v${{github.event.inputs.version}}
           tag_name: v${{github.event.inputs.version}}
