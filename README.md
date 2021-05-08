@@ -1,9 +1,16 @@
 # Philomena Downloader
 [![CI](https://github.com/Sibusten/derpibooru-downloader/actions/workflows/ci.yml/badge.svg)](https://github.com/Sibusten/derpibooru-downloader/actions/workflows/ci.yml)
+[![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/Sibusten/derpibooru-downloader?include_prereleases)](https://github.com/Sibusten/derpibooru-downloader/releases)
 
 A downloader for imageboards running [Philomena](https://github.com/derpibooru/philomena), such as [Derpibooru](https://derpibooru.org).
 
 **NOTE:** Philomena Downloader v3.0.0 is currently in alpha. Data may not migrate nicely between versions just yet. The documentation for v2.1.0 can be found in the [v2.1.0 branch](https://github.com/Sibusten/derpibooru-downloader/tree/release-v2.1.0)
+
+## Install .NET 5
+
+This program requires the [.NET 5.0 runtime](https://dotnet.microsoft.com/download/dotnet/5.0/runtime/).
+
+[`dotnet-install`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script) is an alternative, and may be easier for some Linux users: `sudo bash dotnet-install.sh -c 5.0 --runtime dotnet --install-dir /usr/share/dotnet`
 
 ## Booru Setup
 Boorus must be set up before downloading images. They require a name and the base URL of the booru. For example, to add [Derpibooru](https://derpibooru.org):
