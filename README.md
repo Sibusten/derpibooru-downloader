@@ -26,7 +26,7 @@ Run `philomena-downloader download --help` for a list of available options
 
 Presets can be set up for commonly used search options. They require a name and the options to use. The options are the same as they are for downloading. For example, to create a preset for the query in the usage gif:
 
-`philomena-downloader preset add fluttershy --boorus derpibooru ponybooru --query fluttershy --limit 20`
+`philomena-downloader preset add fluttershy --boorus derpibooru furbooru manebooru ponybooru --query fluttershy --limit 20`
 
 Presets can be updated as well:
 
