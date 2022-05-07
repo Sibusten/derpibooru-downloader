@@ -42,25 +42,22 @@ namespace Sibusten.Philomena.Downloader
                     )
                 )
                 .CreateParallelDownloader(MaxDownloadThreads, o => o
-                    // If image saving is enabled
-                    .If(_searchConfig.ShouldSaveImages, o => o
-                        // Only download images that have not been downloaded already
-                        .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
-                            // Svg images require special download logic
-                            .WithConditionalDownloader(image => image.IsSvgImage, o => o
-                                // Download raster versions of the SVG image if set to do so
-                                .If(_searchConfig.SvgMode is SvgMode.RasterOnly or SvgMode.Both, o => o
-                                    .WithImageFileDownloader(GetFileForImage)
-                                )
-                                // Download SVG versions of the SVG image if set to do so
-                                .If(_searchConfig.SvgMode is SvgMode.SvgOnly or SvgMode.Both, o => o
-                                    .WithImageSvgFileDownloader(GetFileForSvgImage)
-                                )
-                            )
-                            // Non-svg images are downloaded normally
-                            .WithConditionalDownloader(image => !image.IsSvgImage, o => o
+                    // Only download images that have not been downloaded already
+                    .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
+                        // Svg images require special download logic
+                        .WithConditionalDownloader(image => image.IsSvgImage, o => o
+                            // Download raster versions of the SVG image if set to do so
+                            .If(_searchConfig.SvgMode is SvgMode.RasterOnly or SvgMode.Both, o => o
                                 .WithImageFileDownloader(GetFileForImage)
                             )
+                            // Download SVG versions of the SVG image if set to do so
+                            .If(_searchConfig.SvgMode is SvgMode.SvgOnly or SvgMode.Both, o => o
+                                .WithImageSvgFileDownloader(GetFileForSvgImage)
+                            )
+                        )
+                        // Non-svg images are downloaded normally
+                        .WithConditionalDownloader(image => !image.IsSvgImage, o => o
+                            .WithImageFileDownloader(GetFileForImage)
                         )
                     )
                     // If JSON saving is enabled

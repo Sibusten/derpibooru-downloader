@@ -15,7 +15,6 @@ namespace Sibusten.Philomena.Downloader.Settings
         public int Filter { get; set; } = NoFilter;
         public string ImagePathFormat { get; set; } = Path.Join("Downloads", "{id}.{ext}");
         public string JsonPathFormat { get; set; } = Path.Join("Downloads", "Json", "{id}.json");
-        public bool ShouldSaveImages { get; set; } = true;
         public bool ShouldSaveJson { get; set; } = false;
         public bool ShouldSaveComments { get; set; } = false;
         public bool ShouldSaveFavorites { get; set; } = false;

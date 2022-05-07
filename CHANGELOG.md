@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
     - Unnecessary to manage now that only one booru can be used at a time.
 - File path tags: `{score}`, `{upvotes}`, `{downvotes}`, `{faves}`, `{comments}`, `{width}`, `{height}`, `{aspect_ratio}`
     - These change frequently and/or don't seem to have much value.
-- `--update-json` option
+- Options: `--update-json`, `--skip-images`
 
 ## [3.0.0-alpha.1] - 2021-04-21
 
