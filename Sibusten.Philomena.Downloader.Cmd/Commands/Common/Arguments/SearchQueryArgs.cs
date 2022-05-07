@@ -16,15 +16,12 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Common.Arguments
         public bool? SkipImages { get; set; }
         public bool? SaveJson { get; set; }
         public bool? UpdateJson { get; set; }
-        public List<string> Boorus { get; set; } = new List<string>();
+        public string? Booru { get; set; }
         public SvgMode? SvgMode { get; set; }
 
-        public SearchConfig GetSearchConfig(SearchConfig? baseConfig = null)
+        public SearchConfig GetSearchConfig()
         {
-            if (baseConfig is null)
-            {
-                baseConfig = new SearchConfig();
-            }
+            SearchConfig baseConfig = new SearchConfig();
 
             // Build a new search config based on the base config
             // Values are overridden if specified in the arguments
@@ -38,7 +35,7 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Common.Arguments
                 ShouldSaveImages = SkipImages is not null ? !SkipImages.Value : baseConfig.ShouldSaveImages,
                 ShouldSaveJson = SaveJson is not null ? SaveJson.Value : baseConfig.ShouldSaveJson,
                 ShouldUpdateJson = UpdateJson is not null ? UpdateJson.Value : baseConfig.ShouldUpdateJson,
-                Boorus = Boorus.Any() ? Boorus : baseConfig.Boorus,
+                Booru = Booru ?? baseConfig.Booru,
                 SvgMode = SvgMode is not null ? SvgMode.Value : baseConfig.SvgMode,
             };
         }

@@ -6,72 +6,32 @@ using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 using Sibusten.Philomena.Downloader.Cmd.Reporters;
 using Sibusten.Philomena.Downloader.Reporters;
 using Sibusten.Philomena.Downloader.Settings;
+using Sibusten.Philomena.Downloader.Utility;
 
 namespace Sibusten.Philomena.Downloader.Cmd.Commands
 {
     public class DownloadCommand
     {
-        private ConfigAccess _configAccess;
-
-        public DownloadCommand(ConfigAccess configAccess)
-        {
-            _configAccess = configAccess;
-        }
-
         public Command GetCommand()
         {
             return new Command("download", "Search for and download images.")
             {
-                new Option<string>(new[] { "--preset", "-p" }, "The preset to use as a base. If no preset is given, the default is used"),
                 new Option<string>(new[] { "--api-key", "-a" }, "The API key to use"),
             }.WithSearchQueryArgs().WithHandler(new Func<DownloadArgs, Task>(DownloadCommandFunc));
         }
 
         private async Task DownloadCommandFunc(DownloadArgs args)
         {
-            SearchConfig? baseConfig = null;
-            if (args.Preset is not null)
-            {
-                SearchPreset? preset = _configAccess.GetPreset(args.Preset);
+            SearchConfig searchConfig = args.GetSearchConfig();
 
-                if (preset is null)
-                {
-                    Console.WriteLine($"Preset '{args.Preset}' does not exist");
-                    return;
-                }
+            // Verify booru
+            Uri booruBaseUri = UrlUtilities.GetWellFormedWebUri(searchConfig.Booru);
 
-                baseConfig = preset.Config;
-            }
+            // Download images
+            using IImageDownloadReporter reporter = new AdvancedConsoleReporter(ImageDownloader.MaxDownloadThreads, $"Downloading search '{searchConfig.Query}' from '{booruBaseUri}'");
 
-            SearchConfig searchConfig = args.GetSearchConfig(baseConfig);
-
-            // Gather all boorus and ensure they exist
-            List<BooruConfig> booruConfigs = new List<BooruConfig>();
-            foreach (string booruName in searchConfig.Boorus)
-            {
-                BooruConfig? booruConfig = _configAccess.GetBooru(booruName);
-
-                if (booruConfig is null)
-                {
-                    Console.WriteLine($"Booru '{booruName}' was not found");
-                    return;
-                }
-
-                booruConfigs.Add(booruConfig);
-            }
-            if (booruConfigs.Count == 0)
-            {
-                Console.WriteLine("No boorus given, nothing to download");
-            }
-
-            // Download images on each booru
-            foreach (BooruConfig booruConfig in booruConfigs)
-            {
-                using IImageDownloadReporter reporter = new AdvancedConsoleReporter(ImageDownloader.MaxDownloadThreads, $"Downloading search '{searchConfig.Query}' from '{booruConfig.Name}'");
-
-                ImageDownloader downloader = new ImageDownloader(booruConfig, searchConfig);
-                await downloader.StartDownload(downloadReporter: reporter);
-            }
+            ImageDownloader downloader = new ImageDownloader(booruBaseUri, searchConfig);
+            await downloader.StartDownload(downloadReporter: reporter);
         }
     }
 }

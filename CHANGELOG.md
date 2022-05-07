@@ -5,8 +5,19 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ## [Unreleased]
 
+### Changed
+- Update to .NET 6
+
 ### Removed
 - Sorting image searches
+- Presets
+    - Scripts can do everything presets can.
+- Multiple booru downloading
+    - Run the program once per booru instead.
+- `{booru_url}` and `{booru_name}` file path tags
+    - Unnecessary since only one booru can be used at a time now. Hard-code the booru name if needed.
+- Booru configs
+    - Unnecessary to manage now that only one booru can be used at a time.
 
 ## [3.0.0-alpha.1] - 2021-04-21
 

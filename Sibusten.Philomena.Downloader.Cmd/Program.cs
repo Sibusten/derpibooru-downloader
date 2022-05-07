@@ -10,8 +10,6 @@ using System.CommandLine.Invocation;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 using Newtonsoft.Json;
 using Sibusten.Philomena.Downloader.Cmd.Commands;
-using Sibusten.Philomena.Downloader.Cmd.Commands.Preset;
-using Sibusten.Philomena.Downloader.Cmd.Commands.Booru;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {
@@ -45,16 +43,11 @@ namespace Sibusten.Philomena.Downloader.Cmd
                 args = GetArgsFromConsole();
             }
 #endif
-            using ConfigAccess configAccess = new ConfigAccess();
-            DownloadCommand downloadCommand = new DownloadCommand(configAccess);
-            PresetCommand presetCommand = new PresetCommand(configAccess);
-            BooruCommand booruCommand = new BooruCommand(configAccess);
+            DownloadCommand downloadCommand = new DownloadCommand();
 
             RootCommand rootCommand = new RootCommand("A downloader for imageboards running Philomena, such as Derpibooru")
             {
                 downloadCommand.GetCommand(),
-                presetCommand.GetCommand(),
-                booruCommand.GetCommand(),
             };
 
             await rootCommand.InvokeAsync(args);

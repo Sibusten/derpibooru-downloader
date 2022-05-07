@@ -19,21 +19,18 @@ namespace Sibusten.Philomena.Downloader
         // TODO: Make configurable
         public const int MaxDownloadThreads = 8;
 
-        private BooruConfig _booruConfig;
+        private Uri _booruBaseUri;
         private SearchConfig _searchConfig;
 
-        public ImageDownloader(BooruConfig booruConfig, SearchConfig searchConfig)
+        public ImageDownloader(Uri booruBaseUri, SearchConfig searchConfig)
         {
-            _booruConfig = booruConfig;
+            _booruBaseUri = booruBaseUri;
             _searchConfig = searchConfig;
         }
 
         public async Task StartDownload(CancellationToken cancellation = default, IImageDownloadReporter? downloadReporter = null)
         {
-            IPhilomenaClient client = new PhilomenaClient(_booruConfig.BaseUrl)
-            {
-                ApiKey = _booruConfig.ApiKey
-            };
+            IPhilomenaClient client = new PhilomenaClient(_booruBaseUri.ToString());
 
             await client
                 .GetImageSearch(_searchConfig.Query, o => o
@@ -118,8 +115,6 @@ namespace Sibusten.Philomena.Downloader
                 { "height", image.Height?.ToString() },
                 { "aspect_ratio", image.AspectRatio?.ToString() },
                 { "rating", ratingString },
-                { "booru_url", UrlUtilities.GetDomain(_booruConfig.BaseUrl) },
-                { "booru_name", _booruConfig.Name },
             };
 
             // Sanitize replacement tag values

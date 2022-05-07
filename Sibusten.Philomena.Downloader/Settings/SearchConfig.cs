@@ -20,7 +20,7 @@ namespace Sibusten.Philomena.Downloader.Settings
         public bool ShouldUpdateJson { get; set; } = false;
         public bool ShouldSaveComments { get; set; } = false;
         public bool ShouldSaveFavorites { get; set; } = false;
-        public List<string> Boorus { get; set; } = new List<string>();
+        public string Booru { get; set; } = "https://derpibooru.org";
         public SvgMode SvgMode { get; set; } = SvgMode.RasterOnly;
     }
 }
