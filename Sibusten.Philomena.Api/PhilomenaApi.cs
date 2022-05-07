@@ -37,15 +37,5 @@ namespace Sibusten.Philomena.Api
                 .SetQueryParam(_apiKeyParam, apiKey)
                 .GetJsonAsync<ImageSearchModel>(cancellationToken);
         }
-
-        public async Task<TagSearchModel> SearchTagsAsync(string query, int? page = null, int? perPage = null, CancellationToken cancellationToken = default)
-        {
-            return await _apiRequest
-                .AppendPathSegment("search/tags")
-                .SetQueryParam(_queryParam, query)
-                .SetQueryParam(_pageParam, page)
-                .SetQueryParam(_perPageParam, perPage)
-                .GetJsonAsync<TagSearchModel>(cancellationToken);
-        }
     }
 }

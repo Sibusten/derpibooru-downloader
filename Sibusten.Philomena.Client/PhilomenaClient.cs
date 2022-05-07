@@ -31,26 +31,5 @@ namespace Sibusten.Philomena.Client
             PhilomenaImageSearchBuilder builder = new PhilomenaImageSearchBuilder(_api, query);
             return buildOptions(builder).Build();
         }
-
-        public async Task<TagModel> GetTagById(int tagId)
-        {
-            string tagQuery = $"id:{tagId}";
-
-            _logger.LogDebug("Searching for tags: '{Query}'", tagQuery);
-
-            TagSearchModel tagSearch = await _api.SearchTagsAsync(tagQuery, page: 1, perPage: 1);
-
-            if (tagSearch.Tags is null)
-            {
-                throw new InvalidOperationException("The search query did not provide a list of tags");
-            }
-
-            if (!tagSearch.Tags.Any())
-            {
-                throw new ArgumentOutOfRangeException(nameof(tagId), tagId, "A tag with this ID was not found");
-            }
-
-            return tagSearch.Tags.First();
-        }
     }
 }
