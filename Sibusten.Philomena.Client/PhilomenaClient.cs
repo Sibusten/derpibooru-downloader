@@ -26,16 +26,6 @@ namespace Sibusten.Philomena.Client
             _api = new PhilomenaApi(baseUrl);
         }
 
-        public IPhilomenaImageSearch GetImageSearch(string query)
-        {
-            return new PageBasedPhilomenaImageSearch(_api, query);
-        }
-
-        public IPhilomenaImageSearch GetImageSearch(string query, ImageSearchOptions searchOptions)
-        {
-            return new PageBasedPhilomenaImageSearch(_api, query, searchOptions);
-        }
-
         public IPhilomenaImageSearch GetImageSearch(string query, Func<PhilomenaImageSearchBuilder, PhilomenaImageSearchBuilder> buildOptions)
         {
             PhilomenaImageSearchBuilder builder = new PhilomenaImageSearchBuilder(_api, query);

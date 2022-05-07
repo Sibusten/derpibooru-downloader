@@ -8,9 +8,6 @@ namespace Sibusten.Philomena.Api.Models
         [JsonProperty("images")]
         public List<ImageModel>? Images { get; set; }
 
-        [JsonProperty("interactions")]
-        public List<InteractionModel>? Interactions { get; set; }
-
         [JsonProperty("total")]
         public int? Total { get; set; }
     }

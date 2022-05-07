@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Sibusten.Philomena.Api
 {
-    public class PhilomenaApi : IPhilomenaApi
+    public class PhilomenaApi
     {
         private const string _filterIdParam = "filter_id";
         private const string _apiKeyParam = "key";
@@ -89,14 +89,6 @@ namespace Sibusten.Philomena.Api
             _baseUrl = baseUrl;
         }
 
-        public async Task<TagResponseModel> GetTagAsync(string tagSlug, CancellationToken cancellationToken = default)
-        {
-            return await _apiRequest
-                .AppendPathSegment("tags")
-                .AppendPathSegment(tagSlug)
-                .GetJsonAsync<TagResponseModel>(cancellationToken);
-        }
-
         public async Task<ImageSearchModel> SearchImagesAsync(string query, int? page = null, int? perPage = null, SortField? sortField = null, SortDirection? sortDirection = null, int? filterId = null, string? apiKey = null, int? randomSeed = null, CancellationToken cancellationToken = default)
         {
             string? sortFieldParamValue = (sortField is null) ? null : GetSortFieldParamValue(sortField.Value, randomSeed);
@@ -122,14 +114,6 @@ namespace Sibusten.Philomena.Api
                 .SetQueryParam(_pageParam, page)
                 .SetQueryParam(_perPageParam, perPage)
                 .GetJsonAsync<TagSearchModel>(cancellationToken);
-        }
-
-        public async Task<ImageResponseModel> GetImage(int imageId, string? apiKey = null, CancellationToken cancellationToken = default)
-        {
-            return await _apiRequest
-                .AppendPathSegment("images")
-                .AppendPathSegment(imageId)
-                .GetJsonAsync<ImageResponseModel>(cancellationToken);
         }
     }
 }
