@@ -51,7 +51,6 @@ namespace Sibusten.Philomena.Downloader.Cmd
             {
                 new Option<string>(new[] { "--api-key", "-a" }, "The API key to use"),
                 new Option<string>(new[] { "--query", "-q" }, "The search query"),
-                new Option<int>(new[] { "--limit", "-l" }, "The maximum number of images to download. Defaults to all images"),
                 new Option<int>(new[] { "--filter", "-f" }, "The ID of the filter to use"),
                 new Option<string>(new[] { "--image-path", "-I" }, "Where to save images and how to name them"),
                 new Option<string>(new[] { "--json-path", "-J" }, "Where to save json files and how to name them"),

@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 - File path tags: `{score}`, `{upvotes}`, `{downvotes}`, `{faves}`, `{comments}`, `{width}`, `{height}`, `{aspect_ratio}`
     - These change frequently and/or don't seem to have much value.
 - Options: `--update-json`, `--skip-images`
+- `--limit`
+    - Use the query to limit results. For example, to only download the last week of uploads: `created_at.gt:1 week ago`
 
 ## [3.0.0-alpha.1] - 2021-04-21
 

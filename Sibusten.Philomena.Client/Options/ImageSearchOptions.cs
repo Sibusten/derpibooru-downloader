@@ -14,22 +14,5 @@ namespace Sibusten.Philomena.Client.Options
         /// The filter for the query
         /// </summary>
         public int? FilterId { get; init; }
-
-        /// <summary>
-        /// Limits the number of images queried. Defaults to querying all images.
-        /// </summary>
-        public int MaxImages
-        {
-            get => _maxImages;
-            init
-            {
-                if (value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException("Image limit must be greater than 0", nameof(value));
-                }
-                _maxImages = value;
-            }
-        }
-        private int _maxImages = int.MaxValue;
     }
 }

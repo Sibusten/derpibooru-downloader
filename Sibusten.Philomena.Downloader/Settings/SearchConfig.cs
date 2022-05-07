@@ -7,11 +7,9 @@ namespace Sibusten.Philomena.Downloader.Settings
 {
     public class SearchConfig
     {
-        public const int NoLimit = -1;
         public const int NoFilter = -1;
 
         public string Query { get; set; } = "*";
-        public int ImageLimit { get; set; } = NoLimit;
         public int Filter { get; set; } = NoFilter;
         public string ImagePathFormat { get; set; } = Path.Join("Downloads", "{id}.{ext}");
         public string JsonPathFormat { get; set; } = Path.Join("Downloads", "Json", "{id}.json");

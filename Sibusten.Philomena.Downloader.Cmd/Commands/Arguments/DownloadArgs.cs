@@ -6,7 +6,6 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Arguments
     {
         public string? ApiKey { get; set; }
         public string? Query { get; set; }
-        public int? Limit { get; set; }
         public int? Filter { get; set; }
         public string? ImagePath { get; set; }
         public string? JsonPath { get; set; }
@@ -23,7 +22,6 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Arguments
             return new SearchConfig()
             {
                 Filter = Filter is not null ? Filter.Value : baseConfig.Filter,
-                ImageLimit = Limit is not null ? Limit.Value : baseConfig.ImageLimit,
                 ImagePathFormat = ImagePath is not null ? ImagePath : baseConfig.ImagePathFormat,
                 JsonPathFormat = JsonPath is not null ? JsonPath : baseConfig.JsonPathFormat,
                 Query = Query is not null ? Query : baseConfig.Query,

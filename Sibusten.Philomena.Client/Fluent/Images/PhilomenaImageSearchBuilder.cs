@@ -53,17 +53,5 @@ namespace Sibusten.Philomena.Client.Fluent.Images
             };
             return this;
         }
-
-        /// <summary>
-        /// Limits the number of images queried. Defaults to querying all images.
-        /// </summary>
-        public PhilomenaImageSearchBuilder WithMaxImages(int maxImages)
-        {
-            _options = _options with
-            {
-                MaxImages = maxImages
-            };
-            return this;
-        }
     }
 }

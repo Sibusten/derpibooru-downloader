@@ -65,10 +65,8 @@ namespace Sibusten.Philomena.Client.Images
                 // Determine how much metadata has been downloaded
                 int metadataDownloaded = imagesProcessed + search.Images.Count;
 
-                // Cap the total number of images downloaded at the limit
-                int totalImagesToDownload = Math.Min(search.Total.Value, _options.MaxImages);
-
                 // Avoid reporting more metadata downloaded than total images to download
+                int totalImagesToDownload = search.Total.Value;
                 metadataDownloaded = Math.Min(metadataDownloaded, totalImagesToDownload);
 
                 _logger.LogDebug("Downloaded metadata for {MetadataDownloaded}/{TotalImagesToDownload} images", metadataDownloaded, totalImagesToDownload);
@@ -100,13 +98,6 @@ namespace Sibusten.Philomena.Client.Images
                     imagesProcessed++;
 
                     _logger.LogDebug("Processed {ImagesProcessed}/{TotalImagesToProcess} images", imagesProcessed, totalImagesToDownload);
-
-                    if (imagesProcessed >= _options.MaxImages)
-                    {
-                        _logger.LogDebug("Image search '{Query}' stopping due to reaching the max number of images ({MaxImages})", _query, _options.MaxImages);
-
-                        yield break;
-                    }
                 }
 
                 // Move to the next page
