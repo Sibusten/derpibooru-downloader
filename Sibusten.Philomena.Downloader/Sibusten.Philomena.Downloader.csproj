@@ -11,4 +11,8 @@
     <PackageReference Include="Sibusten.Philomena.Client" Version="1.0.0-alpha5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Sibusten.Philomena.Client\Sibusten.Philomena.Client.csproj" />
+  </ItemGroup>
+
 </Project>
