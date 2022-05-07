@@ -10,6 +10,9 @@ using System.CommandLine.Invocation;
 using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 using Newtonsoft.Json;
 using Sibusten.Philomena.Downloader.Cmd.Commands;
+using Sibusten.Philomena.Downloader.Utility;
+using Sibusten.Philomena.Downloader.Reporters;
+using Sibusten.Philomena.Downloader.Cmd.Reporters;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {
@@ -43,12 +46,23 @@ namespace Sibusten.Philomena.Downloader.Cmd
                 args = GetArgsFromConsole();
             }
 #endif
-            DownloadCommand downloadCommand = new DownloadCommand();
 
             RootCommand rootCommand = new RootCommand("A downloader for imageboards running Philomena, such as Derpibooru")
             {
-                downloadCommand.GetCommand(),
+                new Option<string>(new[] { "--api-key", "-a" }, "The API key to use"),
+                new Option<string>(new[] { "--query", "-q" }, "The search query"),
+                new Option<int>(new[] { "--limit", "-l" }, "The maximum number of images to download. Defaults to all images"),
+                new Option<int>(new[] { "--filter", "-f" }, "The ID of the filter to use"),
+                new Option<string>(new[] { "--image-path", "-I" }, "Where to save images and how to name them"),
+                new Option<string>(new[] { "--json-path", "-J" }, "Where to save json files and how to name them"),
+                new Option<bool?>(new[] { "--skip-images", "-i" }, "Skip saving images"),
+                new Option<bool>(new[] { "--save-json", "-j" }, "Save json metadata files"),
+                new Option<bool>(new[] { "--update-json", "-u" }, "Overwrite json metadata files with new data"),
+                new Option<List<string>>(new[] { "--booru", "-b" }, "What booru to download from"),
+                new Option<SvgMode>(new[] { "--svg-mode", "-g" }, "How to download SVG images"),
             };
+
+            rootCommand.WithHandler(new Func<DownloadArgs, Task>(DownloadCommandFunc));
 
             await rootCommand.InvokeAsync(args);
 
@@ -56,6 +70,20 @@ namespace Sibusten.Philomena.Downloader.Cmd
             Console.WriteLine("Press enter to continue");
             Console.ReadLine();
 #endif
+        }
+
+        private static async Task DownloadCommandFunc(DownloadArgs args)
+        {
+            SearchConfig searchConfig = args.GetSearchConfig();
+
+            // Verify booru
+            Uri booruBaseUri = UrlUtilities.GetWellFormedWebUri(searchConfig.Booru);
+
+            // Download images
+            using IImageDownloadReporter reporter = new AdvancedConsoleReporter(ImageDownloader.MaxDownloadThreads, $"Downloading search '{searchConfig.Query}' from '{booruBaseUri}'");
+
+            ImageDownloader downloader = new ImageDownloader(booruBaseUri, searchConfig);
+            await downloader.StartDownload(downloadReporter: reporter);
         }
     }
 }
