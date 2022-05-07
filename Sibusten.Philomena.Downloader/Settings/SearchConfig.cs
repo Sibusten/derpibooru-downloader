@@ -9,7 +9,7 @@ namespace Sibusten.Philomena.Downloader.Settings
     {
         public const int NoFilter = -1;
 
-        public string Query { get; set; } = "*";
+        public string Query { get; set; }
         public int Filter { get; set; } = NoFilter;
         public string ImagePathFormat { get; set; } = Path.Join("Downloads", "{id}.{ext}");
         public string JsonPathFormat { get; set; } = Path.Join("Downloads", "Json", "{id}.json");
@@ -18,5 +18,8 @@ namespace Sibusten.Philomena.Downloader.Settings
         public bool ShouldSaveFavorites { get; set; } = false;
         public string Booru { get; set; } = "https://derpibooru.org";
         public SvgMode SvgMode { get; set; } = SvgMode.RasterOnly;
+
+        public SearchConfig(string query) =>
+            Query = query;
     }
 }

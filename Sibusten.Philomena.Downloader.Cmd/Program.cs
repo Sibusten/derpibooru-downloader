@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -49,8 +49,8 @@ namespace Sibusten.Philomena.Downloader.Cmd
 
             RootCommand rootCommand = new RootCommand("A downloader for imageboards running Philomena, such as Derpibooru")
             {
+                new Argument<string>("query", "The search query"),
                 new Option<string>(new[] { "--api-key", "-a" }, "The API key to use"),
-                new Option<string>(new[] { "--query", "-q" }, "The search query"),
                 new Option<int>(new[] { "--filter", "-f" }, "The ID of the filter to use"),
                 new Option<string>(new[] { "--image-path", "-I" }, "Where to save images and how to name them"),
                 new Option<string>(new[] { "--json-path", "-J" }, "Where to save json files and how to name them"),
