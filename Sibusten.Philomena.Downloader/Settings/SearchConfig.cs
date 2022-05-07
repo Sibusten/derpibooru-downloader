@@ -17,7 +17,6 @@ namespace Sibusten.Philomena.Downloader.Settings
         public string JsonPathFormat { get; set; } = Path.Join("Downloads", "Json", "{id}.json");
         public bool ShouldSaveImages { get; set; } = true;
         public bool ShouldSaveJson { get; set; } = false;
-        public bool ShouldUpdateJson { get; set; } = false;
         public bool ShouldSaveComments { get; set; } = false;
         public bool ShouldSaveFavorites { get; set; } = false;
         public string Booru { get; set; } = "https://derpibooru.org";

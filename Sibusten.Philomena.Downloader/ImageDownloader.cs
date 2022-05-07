@@ -65,8 +65,8 @@ namespace Sibusten.Philomena.Downloader
                     )
                     // If JSON saving is enabled
                     .If(_searchConfig.ShouldSaveJson, o => o
-                        // Only save JSON if the image has not been downloaded already, or if set to always update
-                        .WithConditionalDownloader(image => _searchConfig.ShouldUpdateJson || !HasImageBeenDownloaded(image), o => o
+                        // Only save JSON if the image has not been downloaded already
+                        .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
                             .WithImageMetadataFileDownloader(GetFileForImageMetadata)
                         )
                     )

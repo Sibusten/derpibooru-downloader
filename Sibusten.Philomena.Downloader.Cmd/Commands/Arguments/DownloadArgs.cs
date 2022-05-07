@@ -12,7 +12,6 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Arguments
         public string? JsonPath { get; set; }
         public bool? SkipImages { get; set; }
         public bool? SaveJson { get; set; }
-        public bool? UpdateJson { get; set; }
         public string? Booru { get; set; }
         public SvgMode? SvgMode { get; set; }
 
@@ -31,7 +30,6 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Arguments
                 Query = Query is not null ? Query : baseConfig.Query,
                 ShouldSaveImages = SkipImages is not null ? !SkipImages.Value : baseConfig.ShouldSaveImages,
                 ShouldSaveJson = SaveJson is not null ? SaveJson.Value : baseConfig.ShouldSaveJson,
-                ShouldUpdateJson = UpdateJson is not null ? UpdateJson.Value : baseConfig.ShouldUpdateJson,
                 Booru = Booru ?? baseConfig.Booru,
                 SvgMode = SvgMode is not null ? SvgMode.Value : baseConfig.SvgMode,
             };

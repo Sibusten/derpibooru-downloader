@@ -57,7 +57,6 @@ namespace Sibusten.Philomena.Downloader.Cmd
                 new Option<string>(new[] { "--json-path", "-J" }, "Where to save json files and how to name them"),
                 new Option<bool?>(new[] { "--skip-images", "-i" }, "Skip saving images"),
                 new Option<bool>(new[] { "--save-json", "-j" }, "Save json metadata files"),
-                new Option<bool>(new[] { "--update-json", "-u" }, "Overwrite json metadata files with new data"),
                 new Option<List<string>>(new[] { "--booru", "-b" }, "What booru to download from"),
                 new Option<SvgMode>(new[] { "--svg-mode", "-g" }, "How to download SVG images"),
             };
