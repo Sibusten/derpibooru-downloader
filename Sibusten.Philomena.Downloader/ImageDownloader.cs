@@ -37,8 +37,6 @@ namespace Sibusten.Philomena.Downloader
 
             await client
                 .GetImageSearch(_searchConfig.Query, o => o
-                    .WithSortField(_searchConfig.SortField)
-                    .WithSortDirection(_searchConfig.SortDirection)
                     .If(_searchConfig.ImageLimit != SearchConfig.NoLimit, o => o
                         .WithMaxImages(_searchConfig.ImageLimit)
                     )

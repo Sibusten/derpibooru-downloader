@@ -28,27 +28,6 @@ namespace Sibusten.Philomena.Downloader.Settings
                 };
             }
 
-            SortDirection sortDirection = legacyPreset.SearchDirection switch
-            {
-                LegacySearchDirectionIndex.Descending => SortDirection.Descending,
-                LegacySearchDirectionIndex.Ascending => SortDirection.Ascending,
-
-                _ => SortDirection.Descending
-            };
-
-            SortField sortField = legacyPreset.SearchFormat switch
-            {
-                LegacySearchFormatIndex.CreationDate => SortField.ImageId,
-                LegacySearchFormatIndex.Score => SortField.Score,
-                LegacySearchFormatIndex.Relevance => SortField.Relevance,
-                LegacySearchFormatIndex.Width => SortField.Width,
-                LegacySearchFormatIndex.Height => SortField.Height,
-                LegacySearchFormatIndex.Comments => SortField.Comments,
-                LegacySearchFormatIndex.Random => SortField.Random,
-
-                _ => SortField.ImageId
-            };
-
             return new SearchConfig
             {
                 Filter = filter,
@@ -61,8 +40,6 @@ namespace Sibusten.Philomena.Downloader.Settings
                 ShouldSaveImages = !legacyPreset.JsonOnly,
                 ShouldSaveJson = legacyPreset.SaveJson,
                 ShouldUpdateJson = legacyPreset.UpdateJson,
-                SortDirection = sortDirection,
-                SortField = sortField
                 // TODO: Add SVG action
             };
         }

@@ -55,40 +55,6 @@ namespace Sibusten.Philomena.Client.Fluent.Images
         }
 
         /// <summary>
-        /// What to sort images by
-        /// </summary>
-        public PhilomenaImageSearchBuilder WithSortField(SortField sortField)
-        {
-            SortOptions sortOptions = _options.SortOptions ?? new SortOptions();
-
-            _options = _options with
-            {
-                SortOptions = sortOptions with
-                {
-                    SortField = sortField
-                }
-            };
-            return this;
-        }
-
-        /// <summary>
-        /// The direction to sort images
-        /// </summary>
-        public PhilomenaImageSearchBuilder WithSortDirection(SortDirection sortDirection)
-        {
-            SortOptions sortOptions = _options.SortOptions ?? new SortOptions();
-
-            _options = _options with
-            {
-                SortOptions = sortOptions with
-                {
-                    SortDirection = sortDirection
-                }
-            };
-            return this;
-        }
-
-        /// <summary>
         /// Limits the number of images queried. Defaults to querying all images.
         /// </summary>
         public PhilomenaImageSearchBuilder WithMaxImages(int maxImages)

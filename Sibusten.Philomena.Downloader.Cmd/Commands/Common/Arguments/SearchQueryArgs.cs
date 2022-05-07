@@ -11,8 +11,6 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Common.Arguments
         public string? Query { get; set; }
         public int? Limit { get; set; }
         public int? Filter { get; set; }
-        public SortField? SortField { get; set; }
-        public SortDirection? SortDirection { get; set; }
         public string? ImagePath { get; set; }
         public string? JsonPath { get; set; }
         public bool? SkipImages { get; set; }
@@ -40,8 +38,6 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Common.Arguments
                 ShouldSaveImages = SkipImages is not null ? !SkipImages.Value : baseConfig.ShouldSaveImages,
                 ShouldSaveJson = SaveJson is not null ? SaveJson.Value : baseConfig.ShouldSaveJson,
                 ShouldUpdateJson = UpdateJson is not null ? UpdateJson.Value : baseConfig.ShouldUpdateJson,
-                SortDirection = SortDirection is not null ? SortDirection.Value : baseConfig.SortDirection,
-                SortField = SortField is not null ? SortField.Value : baseConfig.SortField,
                 Boorus = Boorus.Any() ? Boorus : baseConfig.Boorus,
                 SvgMode = SvgMode is not null ? SvgMode.Value : baseConfig.SvgMode,
             };

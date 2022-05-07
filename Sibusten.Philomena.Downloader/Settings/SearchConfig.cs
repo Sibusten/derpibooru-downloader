@@ -13,8 +13,6 @@ namespace Sibusten.Philomena.Downloader.Settings
         public string Query { get; set; } = "*";
         public int ImageLimit { get; set; } = NoLimit;
         public int Filter { get; set; } = NoFilter;
-        public SortField SortField { get; set; } = SortField.ImageId;
-        public SortDirection SortDirection { get; set; } = SortDirection.Descending;
         public string ImagePathFormat { get; set; } = Path.Join("Downloads", "{id}.{ext}");
         public string JsonPathFormat { get; set; } = Path.Join("Downloads", "Json", "{id}.json");
         public bool ShouldSaveImages { get; set; } = true;

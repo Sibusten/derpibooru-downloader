@@ -41,15 +41,6 @@ namespace Sibusten.Philomena.Client.Images
             // Track images processed
             int imagesProcessed = 0;
 
-            // Set the random seed if needed
-            int? _randomSeed = _options.SortOptions?.RandomSeed;
-            if (_options.SortOptions?.SortField == SortField.Random && _options.SortOptions?.RandomSeed is null)
-            {
-                _randomSeed = _api.GetRandomSearchSeed();  // TODO: Expose this method in the API interface
-
-                _logger.LogDebug("Search sort field is Random and a seed was not provided. Generated a new seed: {RandomSeed}", _randomSeed);
-            }
-
             _logger.LogDebug("Beginning image search for '{Query}'", _query);
 
             // Enumerate images
@@ -59,7 +50,7 @@ namespace Sibusten.Philomena.Client.Images
                 _logger.LogDebug("Downloading page {Page} of image search '{Query}'", page, _query);
 
                 // Get the current page of images
-                search = await _api.SearchImagesAsync(_query, page, _perPage, _options.SortOptions?.SortField, _options.SortOptions?.SortDirection, _options.FilterId, _options.ApiKey, _randomSeed, cancellationToken);
+                search = await _api.SearchImagesAsync(_query, page, _perPage, _options.FilterId, _options.ApiKey, cancellationToken);
 
                 if (search.Images is null)
                 {

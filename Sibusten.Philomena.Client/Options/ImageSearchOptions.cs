@@ -16,11 +16,6 @@ namespace Sibusten.Philomena.Client.Options
         public int? FilterId { get; init; }
 
         /// <summary>
-        /// The sort order for the query
-        /// </summary>
-        public SortOptions? SortOptions { get; init; }
-
-        /// <summary>
         /// Limits the number of images queried. Defaults to querying all images.
         /// </summary>
         public int MaxImages

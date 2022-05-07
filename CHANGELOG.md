@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
 
 ## [Unreleased]
 
+### Removed
+- Sorting image searches
+
 ## [3.0.0-alpha.1] - 2021-04-21
 
 ### Added
