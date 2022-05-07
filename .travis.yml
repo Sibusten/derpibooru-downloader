@@ -1,7 +1,7 @@
 language: csharp
 solution: Sibusten.Philomena.Downloader.sln
 mono: none
-dotnet: 5.0.101
+dotnet: 6.0.102
 os: linux
 dist: xenial
 
