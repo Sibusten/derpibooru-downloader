@@ -7,47 +7,16 @@ namespace Sibusten.Philomena.Api.Models
     public class ImageModel
     {
         /// <summary>
-        /// The image's width divided by its height.
-        /// </summary>
-        [JsonProperty("aspect_ratio")]
-        public double? AspectRatio { get; set; }
-
-        /// <summary>
-        /// The number of comments made on the image.
-        /// </summary>
-        [JsonProperty("comment_count")]
-        public int? CommentCount { get; set; }
-
-        /// <summary>
         /// The creation time, in UTC, of the image.
         /// </summary>
         [JsonProperty("created_at")]
         public DateTime? CreatedAt { get; set; }
 
         /// <summary>
-        /// The number of downvotes the image has.
-        /// </summary>
-        [JsonProperty("downvotes")]
-        public int? Downvotes { get; set; }
-
-        /// <summary>
-        /// The number of faves the image has.
-        /// </summary>
-        [JsonProperty("faves")]
-        public int? Faves { get; set; }
-
-        /// <summary>
         /// The file extension of the image. One of "gif", "jpg", "jpeg", "png", "svg", "webm".
         /// </summary>
         [JsonProperty("format")]
         public string? Format { get; set; }
-
-        /// <summary>
-        /// The image's height, in pixels.
-        /// </summary>
-        [JsonProperty("height")]
-        public int? Height { get; set; }
-
         /// <summary>
         /// The image's ID.
         /// </summary>
@@ -71,12 +40,6 @@ namespace Sibusten.Philomena.Api.Models
         /// </summary>
         [JsonProperty("representations")]
         public RepresentationsModel? Representations { get; set; }
-
-        /// <summary>
-        /// The image's number of upvotes minus the image's number of downvotes.
-        /// </summary>
-        [JsonProperty("score")]
-        public int? Score { get; set; }
 
         /// <summary>
         /// The SHA512 hash of this image after it has been processed.
@@ -109,22 +72,10 @@ namespace Sibusten.Philomena.Api.Models
         public string? Uploader { get; set; }
 
         /// <summary>
-        /// The image's number of upvotes.
-        /// </summary>
-        [JsonProperty("upvotes")]
-        public int? Upvotes { get; set; }
-
-        /// <summary>
         /// The image's view URL, including tags.
         /// </summary>
         [JsonProperty("view_url")]
         public string? ViewUrl { get; set; }
-
-        /// <summary>
-        /// The image's width, in pixels.
-        /// </summary>
-        [JsonProperty("width")]
-        public int? Width { get; set; }
     }
 
     public class RepresentationsModel

@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog][Keep a Changelog] and this project adh
     - Unnecessary since only one booru can be used at a time now. Hard-code the booru name if needed.
 - Booru configs
     - Unnecessary to manage now that only one booru can be used at a time.
+- File path tags: `{score}`, `{upvotes}`, `{downvotes}`, `{faves}`, `{comments}`, `{width}`, `{height}`, `{aspect_ratio}`
+    - These change frequently and/or don't seem to have much value.
 
 ## [3.0.0-alpha.1] - 2021-04-21
 

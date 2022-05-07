@@ -106,14 +106,6 @@ namespace Sibusten.Philomena.Downloader
                 { "year", image.CreatedAt?.Year.ToString() },
                 { "month", image.CreatedAt?.Month.ToString("00") },
                 { "day", image.CreatedAt?.Day.ToString("00") },
-                { "score", image.Score?.ToString() },
-                { "upvotes", image.Upvotes?.ToString() },
-                { "downvotes", image.Downvotes?.ToString() },
-                { "faves", image.Faves?.ToString() },
-                { "comments", image.CommentCount?.ToString() },
-                { "width", image.Width?.ToString() },
-                { "height", image.Height?.ToString() },
-                { "aspect_ratio", image.AspectRatio?.ToString() },
                 { "rating", ratingString },
             };
 

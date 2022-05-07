@@ -96,16 +96,8 @@ namespace Sibusten.Philomena.Client.Images
         public string? OriginalHash => Model.OrigSha512Hash;
         public List<string> TagNames => Model.Tags?.ToList() ?? new List<string>();  // .ToList to prevent editing the original model list
         public List<int> TagIds => Model.TagIds?.ToList() ?? new List<int>();  // .ToList to prevent editing the original model list
-        public int? Score => Model.Score;
         public bool? ThumbnailsGenerated => Model.ThumbnailsGenerated;
         public string? Uploader => Model.Uploader;
-        public int? Upvotes => Model.Upvotes;
-        public double? AspectRatio => Model.AspectRatio;
-        public int? CommentCount => Model.CommentCount;
         public DateTime? CreatedAt => Model.CreatedAt;
-        public int? Downvotes => Model.Downvotes;
-        public int? Width => Model.Width;
-        public int? Faves => Model.Faves;
-        public int? Height => Model.Height;
     }
 }

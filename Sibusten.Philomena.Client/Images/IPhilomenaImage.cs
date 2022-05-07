@@ -23,18 +23,10 @@ namespace Sibusten.Philomena.Client.Images
         string? OriginalHash { get; }
         List<string> TagNames { get; }
         List<int> TagIds { get; }
-        int? Score { get; }
         bool? ThumbnailsGenerated { get; }
         string? Uploader { get; }
-        int? Upvotes { get; }
         string? ShortViewUrl { get; }
         string? ShortSvgViewUrl { get; }
-        double? AspectRatio { get; }
-        int? CommentCount { get; }
         DateTime? CreatedAt { get; }
-        int? Downvotes { get; }
-        int? Width { get; }
-        int? Faves { get; }
-        int? Height { get; }
     }
 }
