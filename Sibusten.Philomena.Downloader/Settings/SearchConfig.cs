@@ -12,10 +12,7 @@ namespace Sibusten.Philomena.Downloader.Settings
         public string Query { get; set; }
         public int Filter { get; set; } = NoFilter;
         public string ImagePathFormat { get; set; } = Path.Join("Downloads", "{id}.{ext}");
-        public string JsonPathFormat { get; set; } = Path.Join("Downloads", "Json", "{id}.json");
-        public bool ShouldSaveJson { get; set; } = false;
-        public bool ShouldSaveComments { get; set; } = false;
-        public bool ShouldSaveFavorites { get; set; } = false;
+        public string? JsonPathFormat { get; set; }
         public string Booru { get; set; } = "https://derpibooru.org";
         public SvgMode SvgMode { get; set; } = SvgMode.RasterOnly;
 

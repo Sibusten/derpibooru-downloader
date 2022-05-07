@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sibusten.Philomena.Downloader.Settings;
@@ -53,8 +53,7 @@ namespace Sibusten.Philomena.Downloader.Cmd
                 new Option<string>(new[] { "--api-key", "-a" }, "The API key to use"),
                 new Option<int>(new[] { "--filter", "-f" }, "The ID of the filter to use"),
                 new Option<string>(new[] { "--image-path", "-I" }, "Where to save images and how to name them"),
-                new Option<string>(new[] { "--json-path", "-J" }, "Where to save json files and how to name them"),
-                new Option<bool>(new[] { "--save-json", "-j" }, "Save json metadata files"),
+                new Option<string>(new[] { "--json-path", "-J" }, "Where to save json files and how to name them. Json will not be saved unless this is given."),
                 new Option<List<string>>(new[] { "--booru", "-b" }, "What booru to download from"),
                 new Option<SvgMode>(new[] { "--svg-mode", "-g" }, "How to download SVG images"),
             };

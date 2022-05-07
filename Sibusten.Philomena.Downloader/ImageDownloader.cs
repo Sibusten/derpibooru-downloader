@@ -58,7 +58,7 @@ namespace Sibusten.Philomena.Downloader
                         )
                     )
                     // If JSON saving is enabled
-                    .If(_searchConfig.ShouldSaveJson, o => o
+                    .If(_searchConfig.JsonPathFormat is not null, o => o
                         // Only save JSON if the image has not been downloaded already
                         .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
                             .WithImageMetadataFileDownloader(GetFileForImageMetadata)
@@ -70,7 +70,7 @@ namespace Sibusten.Philomena.Downloader
 
         private string GetFileForImage(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.ImagePathFormat);
         private string GetFileForSvgImage(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.ImagePathFormat, isSvgImage: true);
-        private string GetFileForImageMetadata(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.JsonPathFormat);
+        private string GetFileForImageMetadata(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.JsonPathFormat!);
 
         private string GetFileForPathFormat(IPhilomenaImage image, string filePath, bool isSvgImage = false)
         {

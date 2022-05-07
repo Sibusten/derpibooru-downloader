@@ -24,7 +24,6 @@ namespace Sibusten.Philomena.Downloader.Cmd.Commands.Arguments
                 Filter = Filter is not null ? Filter.Value : baseConfig.Filter,
                 ImagePathFormat = ImagePath is not null ? ImagePath : baseConfig.ImagePathFormat,
                 JsonPathFormat = JsonPath is not null ? JsonPath : baseConfig.JsonPathFormat,
-                ShouldSaveJson = SaveJson is not null ? SaveJson.Value : baseConfig.ShouldSaveJson,
                 Booru = Booru ?? baseConfig.Booru,
                 SvgMode = SvgMode is not null ? SvgMode.Value : baseConfig.SvgMode,
             };
