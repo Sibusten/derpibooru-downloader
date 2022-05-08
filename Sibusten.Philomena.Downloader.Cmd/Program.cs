@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Sibusten.Philomena.Downloader.Settings;
 using System.CommandLine;
-using System.Threading.Tasks;
-using Sibusten.Philomena.Api;
-using System.Reflection;
 using System.CommandLine.Invocation;
-using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Sibusten.Philomena.Api;
+using Sibusten.Philomena.Client;
+using Sibusten.Philomena.Client.Images;
+using Sibusten.Philomena.Client.Images.Downloaders;
 using Sibusten.Philomena.Downloader.Cmd.Commands;
-using Sibusten.Philomena.Downloader.Utility;
-using Sibusten.Philomena.Downloader.Reporters;
+using Sibusten.Philomena.Downloader.Cmd.Commands.Arguments;
 using Sibusten.Philomena.Downloader.Cmd.Reporters;
+using Sibusten.Philomena.Downloader.Reporters;
+using Sibusten.Philomena.Downloader.Settings;
+using Sibusten.Philomena.Downloader.Utility;
 
 namespace Sibusten.Philomena.Downloader.Cmd
 {
@@ -77,9 +81,15 @@ namespace Sibusten.Philomena.Downloader.Cmd
 
             // Download images
             using IImageDownloadReporter reporter = new AdvancedConsoleReporter(ImageDownloader.MaxDownloadThreads, $"Downloading search '{searchConfig.Query}' from '{booruBaseUri}'");
+            PhilomenaApi api = new(booruBaseUri.ToString());
+            PageBasedPhilomenaImageSearch imageSearch = new(api, searchConfig.Query, new()
+            {
+                FilterId = searchConfig.Filter is SearchConfig.NoFilter ? null : searchConfig.Filter
+            });
+            ImageDownloader downloader = new ImageDownloader(searchConfig);
+            ParallelPhilomenaImageSearchDownloader imageSearchDownloader = new(imageSearch, downloader, ImageDownloader.MaxDownloadThreads);
 
-            ImageDownloader downloader = new ImageDownloader(booruBaseUri, searchConfig);
-            await downloader.StartDownload(downloadReporter: reporter);
+            await imageSearchDownloader.BeginDownload(CancellationToken.None, reporter.SearchProgress, reporter.SearchDownloadProgress, reporter.IndividualDownloadProgresses);
         }
     }
 }

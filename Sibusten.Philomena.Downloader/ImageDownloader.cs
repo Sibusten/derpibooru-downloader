@@ -6,66 +6,77 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Sibusten.Philomena.Client;
-using Sibusten.Philomena.Client.Extensions;
 using Sibusten.Philomena.Client.Images;
+using Sibusten.Philomena.Client.Images.Downloaders;
 using Sibusten.Philomena.Downloader.Reporters;
 using Sibusten.Philomena.Downloader.Settings;
 using Sibusten.Philomena.Downloader.Utility;
 
 namespace Sibusten.Philomena.Downloader
 {
-    public class ImageDownloader
+    public class ImageDownloader : IPhilomenaImageDownloader
     {
         // TODO: Make configurable
         public const int MaxDownloadThreads = 8;
 
-        private Uri _booruBaseUri;
         private SearchConfig _searchConfig;
 
-        public ImageDownloader(Uri booruBaseUri, SearchConfig searchConfig)
+        public ImageDownloader(SearchConfig searchConfig)
         {
-            _booruBaseUri = booruBaseUri;
             _searchConfig = searchConfig;
         }
 
-        public async Task StartDownload(CancellationToken cancellation = default, IImageDownloadReporter? downloadReporter = null)
+        public async Task Download(IPhilomenaImage image, CancellationToken cancellationToken = default, IProgress<PhilomenaImageDownloadProgressInfo>? progress = null)
         {
-            IPhilomenaClient client = new PhilomenaClient(_booruBaseUri.ToString());
+            if (HasImageBeenDownloaded(image))
+            {
+                return;
+            }
 
-            await client
-                .GetImageSearch(_searchConfig.Query, o => o
-                    .If(_searchConfig.Filter != SearchConfig.NoFilter, o => o
-                        .WithFilterId(_searchConfig.Filter)
-                    )
-                )
-                .CreateParallelDownloader(MaxDownloadThreads, o => o
-                    // Only download images that have not been downloaded already
-                    .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
-                        // Svg images require special download logic
-                        .WithConditionalDownloader(image => image.IsSvgImage, o => o
-                            // Download raster versions of the SVG image if set to do so
-                            .If(_searchConfig.SvgMode is SvgMode.RasterOnly or SvgMode.Both, o => o
-                                .WithImageFileDownloader(GetFileForImage)
-                            )
-                            // Download SVG versions of the SVG image if set to do so
-                            .If(_searchConfig.SvgMode is SvgMode.SvgOnly or SvgMode.Both, o => o
-                                .WithImageSvgFileDownloader(GetFileForSvgImage)
-                            )
-                        )
-                        // Non-svg images are downloaded normally
-                        .WithConditionalDownloader(image => !image.IsSvgImage, o => o
-                            .WithImageFileDownloader(GetFileForImage)
-                        )
-                    )
-                    // If JSON saving is enabled
-                    .If(_searchConfig.JsonPathFormat is not null, o => o
-                        // Only save JSON if the image has not been downloaded already
-                        .WithConditionalDownloader(image => !HasImageBeenDownloaded(image), o => o
-                            .WithImageMetadataFileDownloader(GetFileForImageMetadata)
-                        )
-                    )
-                )
-                .BeginDownload(cancellation, downloadReporter?.SearchProgress, downloadReporter?.SearchDownloadProgress, downloadReporter?.IndividualDownloadProgresses);
+            bool downloadImage;
+            bool downloadSvg;
+
+            if (image.IsSvgImage)
+            {
+                switch (_searchConfig.SvgMode)
+                {
+                    case SvgMode.RasterOnly:
+                        downloadImage = true;
+                        downloadSvg = false;
+                        break;
+
+                    case SvgMode.SvgOnly:
+                        downloadImage = false;
+                        downloadSvg = true;
+                        break;
+
+                    case SvgMode.Both:
+                    default:
+                        downloadImage = true;
+                        downloadSvg = true;
+                        break;
+                }
+            }
+            else
+            {
+                downloadImage = true;
+                downloadSvg = false;
+            }
+
+            if (downloadImage)
+            {
+                await new PhilomenaImageFileDownloader(GetFileForImage).Download(image, cancellationToken, progress);
+            }
+
+            if (downloadSvg)
+            {
+                await new PhilomenaImageSvgFileDownloader(GetFileForSvgImage).Download(image, cancellationToken, progress);
+            }
+
+            if (_searchConfig.JsonPathFormat is not null)
+            {
+                await new PhilomenaImageMetadataFileDownloader(GetFileForImageMetadata).Download(image, cancellationToken, progress);
+            }
         }
 
         private string GetFileForImage(IPhilomenaImage image) => GetFileForPathFormat(image, _searchConfig.ImagePathFormat);
