@@ -8,7 +8,7 @@ using Sibusten.Philomena.Client.Logging;
 
 namespace Sibusten.Philomena.Client.Images.Downloaders
 {
-    public class PhilomenaImageMetadataFileDownloader : PhilomenaImageDownloader
+    public class PhilomenaImageMetadataFileDownloader : IPhilomenaImageDownloader
     {
         private ILogger _logger;
 
@@ -23,7 +23,7 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
             _getFileForImage = getFileForImage;
         }
 
-        public override async Task Download(IPhilomenaImage downloadItem, CancellationToken cancellationToken = default, IProgress<PhilomenaImageDownloadProgressInfo>? progress = null)
+        public async Task Download(IPhilomenaImage downloadItem, CancellationToken cancellationToken = default, IProgress<PhilomenaImageDownloadProgressInfo>? progress = null)
         {
             try
             {

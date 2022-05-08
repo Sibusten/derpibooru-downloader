@@ -25,8 +25,8 @@ namespace Sibusten.Philomena.Client.Images
         List<int> TagIds { get; }
         bool? ThumbnailsGenerated { get; }
         string? Uploader { get; }
-        string? ShortViewUrl { get; }
-        string? ShortSvgViewUrl { get; }
+        string ShortViewUrl { get; }
+        string ShortSvgViewUrl { get; }
         DateTime? CreatedAt { get; }
     }
 }

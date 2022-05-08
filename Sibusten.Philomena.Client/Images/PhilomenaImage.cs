@@ -60,17 +60,12 @@ namespace Sibusten.Philomena.Client.Images
             }
         }
 
-        public string? ShortViewUrl => Model.Representations?.Full;
+        public string ShortViewUrl => Model.Representations.Full;
 
-        public string? ShortSvgViewUrl
+        public string ShortSvgViewUrl
         {
             get
             {
-                if (ShortViewUrl is null)
-                {
-                    return null;
-                }
-
                 // Modify the URL to point to the SVG image
                 string urlWithoutExtension = ShortViewUrl.Substring(0, ShortViewUrl.LastIndexOf('.'));
                 return urlWithoutExtension + ".svg";

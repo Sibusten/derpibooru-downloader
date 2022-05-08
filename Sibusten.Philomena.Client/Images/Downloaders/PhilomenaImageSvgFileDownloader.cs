@@ -9,7 +9,7 @@ using Sibusten.Philomena.Client.Utilities;
 
 namespace Sibusten.Philomena.Client.Images.Downloaders
 {
-    public class PhilomenaImageSvgFileDownloader : PhilomenaImageDownloader
+    public class PhilomenaImageSvgFileDownloader : IPhilomenaImageDownloader
     {
         private ILogger _logger;
 
@@ -24,7 +24,7 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
             _getFileForImage = getFileForImage;
         }
 
-        public override async Task Download(IPhilomenaImage downloadItem, CancellationToken cancellationToken = default, IProgress<PhilomenaImageDownloadProgressInfo>? progress = null)
+        public async Task Download(IPhilomenaImage downloadItem, CancellationToken cancellationToken = default, IProgress<PhilomenaImageDownloadProgressInfo>? progress = null)
         {
             if (!downloadItem.IsSvgImage)
             {
@@ -56,7 +56,7 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
                 });
 
                 // Get the download stream for the image
-                using Stream downloadStream = await GetDownloadStream(downloadItem, cancellationToken, streamProgress, isSvgVersion: true);
+                using Stream downloadStream = await UrlUtilities.GetProgressWrappedDownloadStream(downloadItem.ShortSvgViewUrl, streamProgress, cancellationToken);
 
                 _logger.LogDebug("Saving SVG image {ImageId} to {File}", downloadItem.Id, file);
 

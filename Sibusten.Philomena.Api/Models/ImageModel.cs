@@ -39,7 +39,7 @@ namespace Sibusten.Philomena.Api.Models
         /// A mapping of representation names to their respective URLs. Contains the keys "full", "large", "medium", "small", "tall", "thumb", "thumb_small", "thumb_tiny".
         /// </summary>
         [JsonProperty("representations")]
-        public RepresentationsModel? Representations { get; set; }
+        public RepresentationsModel Representations { get; set; } = default!;
 
         /// <summary>
         /// The SHA512 hash of this image after it has been processed.
@@ -81,6 +81,6 @@ namespace Sibusten.Philomena.Api.Models
     public class RepresentationsModel
     {
         [JsonProperty("full")]
-        public string? Full { get; set; }
+        public string Full { get; set; } = default!;
     }
 }

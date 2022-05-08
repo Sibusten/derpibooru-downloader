@@ -16,7 +16,7 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
     /// <returns>The file to download the image to</returns>
     public delegate string GetFileForImageDelegate(IPhilomenaImage image);
 
-    public class PhilomenaImageFileDownloader : PhilomenaImageDownloader
+    public class PhilomenaImageFileDownloader : IPhilomenaImageDownloader
     {
         private ILogger _logger;
 
@@ -31,7 +31,7 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
             _getFileForImage = getFileForImage;
         }
 
-        public override async Task Download(IPhilomenaImage downloadItem, CancellationToken cancellationToken = default, IProgress<PhilomenaImageDownloadProgressInfo>? progress = null)
+        public async Task Download(IPhilomenaImage downloadItem, CancellationToken cancellationToken = default, IProgress<PhilomenaImageDownloadProgressInfo>? progress = null)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
                 });
 
                 // Get the download stream for the image
-                using Stream downloadStream = await GetDownloadStream(downloadItem, cancellationToken, streamProgress);
+                using Stream downloadStream = await UrlUtilities.GetProgressWrappedDownloadStream(downloadItem.ShortViewUrl, streamProgress, cancellationToken);
 
                 _logger.LogDebug("Saving image {ImageId} to {File}", downloadItem.Id, file);
 
