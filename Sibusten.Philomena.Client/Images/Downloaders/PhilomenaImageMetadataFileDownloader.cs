@@ -30,27 +30,12 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
 
                 FileUtilities.CreateDirectoryForFile(file);
 
-                // Metadata is already downloaded, so just report 0 or 1 for progress
-                void reportProgress(bool isFinished)
-                {
-                    progress?.Report(new PhilomenaImageDownloadProgressInfo
-                    {
-                        Current = isFinished ? 1 : 0,
-                        Total = 1,
-                        Action = $"Downloading image {downloadItem.Id} Metadata",
-                    });
-                }
-
-                reportProgress(isFinished: false);
-
                 _logger.LogDebug("Saving image {ImageId} metadata to {File}", downloadItem.Id, file);
 
                 await FileUtilities.SafeFileWrite(file, async tempFile =>
                 {
                     await File.WriteAllTextAsync(tempFile, downloadItem.RawMetadata, Encoding.UTF8, cancellationToken);
                 });
-
-                reportProgress(isFinished: true);
             }
             catch (IOException ex)
             {
