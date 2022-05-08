@@ -20,8 +20,6 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
     {
         private ILogger _logger;
 
-        private const string _tempExtension = "tmp";
-
         private readonly GetFileForImageDelegate _getFileForImage;
 
         public PhilomenaImageFileDownloader(GetFileForImageDelegate getFileForImage)
@@ -37,13 +35,7 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
             {
                 string file = _getFileForImage(downloadItem);
 
-                // Create directory for image download
-                string? imageDirectory = Path.GetDirectoryName(file);
-                if (imageDirectory is null)
-                {
-                    throw new DirectoryNotFoundException($"The file does not have a parent directory: {file}");
-                }
-                Directory.CreateDirectory(imageDirectory);
+                FileUtilities.CreateDirectoryForFile(file);
 
                 // Create stream progress info
                 IProgress<StreamProgressInfo> streamProgress = new SyncProgress<StreamProgressInfo>(streamProgress =>
@@ -61,15 +53,11 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
 
                 _logger.LogDebug("Saving image {ImageId} to {File}", downloadItem.Id, file);
 
-                // Write to a temp file first
-                string tempFile = file + "." + _tempExtension;
-                using (FileStream tempFileStream = File.OpenWrite(tempFile))
+                await FileUtilities.SafeFileWrite(file, async tempFile =>
                 {
+                    using FileStream tempFileStream = File.OpenWrite(tempFile);
                     await downloadStream.CopyToAsync(tempFileStream, cancellationToken);
-                }
-
-                // Move the temp file to the destination file
-                File.Move(tempFile, file, overwrite: true);
+                });
             }
             catch (Exception ex) when (ex is FlurlHttpException or IOException)
             {

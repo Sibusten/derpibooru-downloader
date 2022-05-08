@@ -5,14 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Sibusten.Philomena.Client.Logging;
+using Sibusten.Philomena.Client.Utilities;
 
 namespace Sibusten.Philomena.Client.Images.Downloaders
 {
     public class PhilomenaImageMetadataFileDownloader : IPhilomenaImageDownloader
     {
         private ILogger _logger;
-
-        private const string _tempExtension = "tmp";
 
         private readonly GetFileForImageDelegate _getFileForImage;
 
@@ -29,13 +28,7 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
             {
                 string file = _getFileForImage(downloadItem);
 
-                // Create directory for image download
-                string? imageDirectory = Path.GetDirectoryName(file);
-                if (imageDirectory is null)
-                {
-                    throw new DirectoryNotFoundException($"The file does not have a parent directory: {file}");
-                }
-                Directory.CreateDirectory(imageDirectory);
+                FileUtilities.CreateDirectoryForFile(file);
 
                 // Metadata is already downloaded, so just report 0 or 1 for progress
                 void reportProgress(bool isFinished)
@@ -52,12 +45,10 @@ namespace Sibusten.Philomena.Client.Images.Downloaders
 
                 _logger.LogDebug("Saving image {ImageId} metadata to {File}", downloadItem.Id, file);
 
-                // Write to a temp file first
-                string tempFile = file + "." + _tempExtension;
-                await File.WriteAllTextAsync(tempFile, downloadItem.RawMetadata, Encoding.UTF8, cancellationToken);
-
-                // Move the temp file to the destination file
-                File.Move(tempFile, file, overwrite: true);
+                await FileUtilities.SafeFileWrite(file, async tempFile =>
+                {
+                    await File.WriteAllTextAsync(tempFile, downloadItem.RawMetadata, Encoding.UTF8, cancellationToken);
+                });
 
                 reportProgress(isFinished: true);
             }
