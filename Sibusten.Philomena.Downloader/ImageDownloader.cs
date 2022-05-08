@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Sibusten.Philomena.Client;
 using Sibusten.Philomena.Client.Images;
 using Sibusten.Philomena.Client.Images.Downloaders;
+using Sibusten.Philomena.Client.Utilities;
 using Sibusten.Philomena.Downloader.Reporters;
 using Sibusten.Philomena.Downloader.Settings;
 using Sibusten.Philomena.Downloader.Utility;
@@ -75,7 +77,14 @@ namespace Sibusten.Philomena.Downloader
 
             if (_searchConfig.JsonPathFormat is not null)
             {
-                await new PhilomenaImageMetadataFileDownloader(GetFileForImageMetadata).Download(image, cancellationToken, progress);
+                string metadataFile = GetFileForImageMetadata(image);
+
+                FileUtilities.CreateDirectoryForFile(metadataFile);
+
+                await FileUtilities.SafeFileWrite(metadataFile, async tempFile =>
+                {
+                    await File.WriteAllTextAsync(tempFile, image.RawMetadata, Encoding.UTF8, cancellationToken);
+                });
             }
         }
 
